@@ -51,7 +51,7 @@
                                 </a>
                           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a href="{{ route('master_ruangans.index') }}">Ruangan</a></li>
-                            <li><a href="#">User</a></li>
+                            <li><a href="{{ route('master_users.index') }}">User</a></li>
                             <li><a href="{{ route('master_mata_kuliahs.index') }}">Mata Kuliah</a></li> 
                             <li><a href="#">Blok</a></li> 
                             <li><a href="#">Otoritas</a></li>
