@@ -25,4 +25,18 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	Route::resource('master_ruangans', 'MasterRuanganController'); 
 	Route::resource('master_mata_kuliahs', 'MasterMataKuliahController'); 
 	Route::resource('master_blocks', 'MasterBlockController'); 
+	Route::resource('master_users', 'MasterUserController'); 
+
+
+	Route::get('master_users/no_konfirmasi/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'master_users.no_konfirmasi',
+	'uses' => 'MasterUserController@no_konfirmasi'
+	]);
+
+	Route::get('master_users/konfirmasi/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'master_users.konfirmasi',
+	'uses' => 'MasterUserController@konfirmasi'
+	]);
 });
