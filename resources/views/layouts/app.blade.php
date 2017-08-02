@@ -41,7 +41,23 @@
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
-                        &nbsp;
+
+
+
+                    @role('admin')
+                        <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                   Master Data
+                                </a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href="{{ route('master_ruangans.index') }}">Ruangan</a></li>
+                            <li><a href="#">User</a></li>
+                            <li><a href="#">Mata Kuliah</a></li> 
+                            <li><a href="#">Blok</a></li> 
+                            <li><a href="#">Otoritas</a></li>
+                          </ul>
+                        </li>
+                    @endrole   
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -87,6 +103,7 @@
 <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
 <script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script>
 <script src="{{ asset('js/selectize.min.js') }}"></script> 
+<script src="{{ asset('js/custom.js') }}"></script>
 @yield('scripts')
 </body>
 </html>
