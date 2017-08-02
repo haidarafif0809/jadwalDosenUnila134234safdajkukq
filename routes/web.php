@@ -26,6 +26,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	Route::resource('master_mata_kuliahs', 'MasterMataKuliahController'); 
 	Route::resource('master_blocks', 'MasterBlockController'); 
 	Route::resource('master_users', 'MasterUserController'); 
+	Route::resource('master_otoritas', 'MasterOtoritasController'); 
 
 
 	Route::get('master_users/no_konfirmasi/{id}',[
