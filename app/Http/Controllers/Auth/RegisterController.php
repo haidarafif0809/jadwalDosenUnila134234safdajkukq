@@ -37,6 +37,7 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->middleware('user-should-verified');
     }
 
     /**
@@ -51,6 +52,8 @@ class RegisterController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
+            'no_hp' => 'required',
+            'alamat' => 'required',
         ]);
     }
 
@@ -65,7 +68,14 @@ class RegisterController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'no_hp' => $data['no_hp'],
+            'alamat' => $data['alamat'],
             'password' => bcrypt($data['password']),
         ]);
+        
+
+        $memberRole = Role::where('name', 'mahasiswa')->first();
+        $user->attachRole($memberRole);
+        return $user; 
     }
 }
