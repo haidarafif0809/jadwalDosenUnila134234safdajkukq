@@ -15,8 +15,7 @@
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/dataTables.bootstrap.css') }}" rel="stylesheet"> 
     <link href="{{ asset('css/selectize.bootstrap3.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/bootstrap-datepicker.min.css') }}" rel="stylesheet"> 
-    
+    <link href="{{ asset('css/bootstrap-datepicker.min.css') }}" rel="stylesheet">  
 </head>
 <body>
     <div id="app">
@@ -74,6 +73,7 @@
 
                                 <ul class="dropdown-menu" role="menu">
                                     <li>
+                                        <a href="{{ url('/ubah-password') }}">Ubah Password</a>
                                         <a href="{{ route('logout') }}"
                                             onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

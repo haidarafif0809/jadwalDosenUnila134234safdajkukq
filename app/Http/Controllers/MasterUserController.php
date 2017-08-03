@@ -8,6 +8,7 @@ use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\User;
 use App\Role;
+use App\User_otoritas;
 use Auth;
 use Session;
 
@@ -173,6 +174,12 @@ class MasterUserController extends Controller
     public function destroy($id)
     {
         //
+        //
+        
+        $user_role = User::find($id);
+        $otoritas = User_otoritas::where('user_id',$id)->first();
+        $user_role->detachRole($otoritas->role_id);
+
         if (!User::destroy($id)) {
             return redirect()->back();
         }
