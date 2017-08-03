@@ -45,6 +45,7 @@ class UserSeeder extends Seeder
     $admin->password = bcrypt('rahasia'); 
     $admin->no_hp = '-';
     $admin->alamat = '-';
+    $admin->status = '1';
     $admin->save();
     $admin->attachRole($adminRole);
 
