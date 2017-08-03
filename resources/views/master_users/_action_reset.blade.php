@@ -1,0 +1,1 @@
+<a href="{{ $reset_url }}" class="btn btn-sm btn-info">Reset Password</a> 

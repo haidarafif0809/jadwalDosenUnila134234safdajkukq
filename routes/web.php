@@ -40,4 +40,10 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	'as' => 'master_users.konfirmasi',
 	'uses' => 'MasterUserController@konfirmasi'
 	]);
+
+	Route::get('master_users/reset/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'master_users.reset',
+	'uses' => 'MasterUserController@reset'
+	]);
 });

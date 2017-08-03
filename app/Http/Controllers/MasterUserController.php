@@ -40,6 +40,12 @@ class MasterUserController extends Controller
                         'no_konfirmasi_url' => route('master_users.no_konfirmasi', $user_konfirmasi->id),
                         ]);
                 })
+            ->addColumn('reset', function($reset){
+                    return view('master_users._action_reset', [
+                        'model'     => $reset,
+                        'reset_url' => route('master_users.reset', $reset->id),
+                        ]);
+                })
             ->addColumn('role', function($user){
                 $role = Role::where('id',$user->role->role_id)->first();
                 return $role->display_name;
@@ -51,6 +57,7 @@ class MasterUserController extends Controller
         ->addColumn(['data' => 'no_hp', 'name' => 'no_hp', 'title' => 'Nomor Hp'])
         ->addColumn(['data' => 'alamat', 'name' => 'alamat', 'title' => 'Alamat'])
         ->addColumn(['data' => 'role', 'name' => 'role', 'title' => 'Otoritas'])
+        ->addColumn(['data' => 'reset', 'name' => 'reset', 'title' => 'Reset Password'])
         ->addColumn(['data' => 'konfirmasi', 'name' => 'konfirmasi', 'title' => 'Konfirmasi', 'searchable'=>false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
 
@@ -88,6 +95,19 @@ class MasterUserController extends Controller
     } 
 
 
+    public function reset($id){ 
+
+            $master_users = User::find($id);   
+            $master_users->password = bcrypt('123456');
+            $master_users->save();  
+
+        Session::flash("flash_notification", [
+            "level"=>"success",
+            "message"=>"Password Berhasil Di Reset"
+        ]);
+ 
+        return redirect()->route('master_users.index');
+    } 
     /**
      * Show the form for editing the specified resource.
      *
