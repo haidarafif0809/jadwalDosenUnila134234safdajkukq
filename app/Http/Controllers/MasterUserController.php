@@ -37,16 +37,20 @@ class MasterUserController extends Controller
             ->addColumn('konfirmasi', function($user_konfirmasi){
                     return view('master_users._action', [
                         'model'     => $user_konfirmasi,
+                        'confirm_message'   => 'Apakah Anda Yakin Ingin Meng Konfirmasi User ' . $user_konfirmasi->name . '?',
+                        'no_confirm_message'   => 'Apakah Anda Yakin Tidak Meng Konfirmasi User ' . $user_konfirmasi->name . '?',
                         'konfirmasi_url' => route('master_users.konfirmasi', $user_konfirmasi->id),
                         'no_konfirmasi_url' => route('master_users.no_konfirmasi', $user_konfirmasi->id),
                         ]);
-                })
+                })//Konfirmasi User Apabila Bila Status User 1 Maka User sudah di konfirmasi oleh admin dan apabila status user 0 maka user belum di konfirmasi oleh admin
+
             ->addColumn('reset', function($reset){
                     return view('master_users._action_reset', [
                         'model'     => $reset,
+                        'confirm_message'   => 'Apakah Anda Yakin Ingin Me Reset Password User ' . $reset->name . '?',
                         'reset_url' => route('master_users.reset', $reset->id),
                         ]);
-                })
+                })//Reset Password apabila di klik tombol reset password maka password menjadi 123456
             ->addColumn('role', function($user){
                 $role = Role::where('id',$user->role->role_id)->first();
                 return $role->display_name;
