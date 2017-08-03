@@ -33,7 +33,7 @@ class MasterOtoritasController extends Controller
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'name', 'name' => 'name', 'title' => 'Nama'])
-        ->addColumn(['data' => 'display_name', 'name' => 'display_name', 'title' => 'Display Name'])
+        ->addColumn(['data' => 'display_name', 'name' => 'display_name', 'title' => 'Display Nama'])
         ->addColumn(['data' => 'description', 'name' => 'description', 'title' => 'Deskripsi'])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
 

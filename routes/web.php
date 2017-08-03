@@ -17,8 +17,19 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'HomeController@index')->name('home'); 
 
+	Route::get('/ubah-password',[
+	'middleware' => ['auth'],
+	'as' => 'users.ubah_password',
+	'uses' => 'UbahPasswordController@ubah_password'
+	]);
+
+	Route::put('/proses-ubah-password/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'users.proses_ubah_password',
+	'uses' => 'UbahPasswordController@proses_ubah_password'
+	]);
 
 Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function () {
 
@@ -39,5 +50,11 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	'middleware' => ['auth'],
 	'as' => 'master_users.konfirmasi',
 	'uses' => 'MasterUserController@konfirmasi'
+	]);
+
+	Route::get('master_users/reset/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'master_users.reset',
+	'uses' => 'MasterUserController@reset'
 	]);
 });
