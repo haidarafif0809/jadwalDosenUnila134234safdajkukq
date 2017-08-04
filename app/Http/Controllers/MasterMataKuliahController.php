@@ -7,6 +7,7 @@ use Yajra\Datatables\Html\Builder;
 use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\Master_mata_kuliah;
+use App\Penjadwalan; 
 use Auth;
 use Session;
 
@@ -136,11 +137,23 @@ class MasterMataKuliahController extends Controller
     public function destroy($id)
     {
         //
-        if(!Master_mata_kuliah::destroy($id)) 
-        {
-            return redirect()->back();
+        //menghapus data dengan pengecekan alert /peringatan
+        $penjadwalan = Penjadwalan::where('id_mata_kuliah',$id); 
+ 
+        if ($penjadwalan->count() > 0) {
+        // menyiapkan pesan error
+        $html = 'Mata Kuliah tidak bisa dihapus karena masih memiliki Penjadwalan'; 
+        
+        Session::flash("flash_notification", [
+          "level"=>"danger",
+          "message"=>$html
+        ]); 
+
+        return redirect()->route('master_mata_kuliahs.index');      
         }
         else{
+
+        Master_mata_kuliah::destroy($id);
         Session:: flash("flash_notification", [
             "level"=>"danger",
             "message"=>"Mata Kuliah Berhasil Di Hapus"

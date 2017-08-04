@@ -7,6 +7,7 @@ use Yajra\Datatables\Html\Builder;
 use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\Master_block; //Modal
+use App\Penjadwalan; 
 use Auth;
 use Session;
 
@@ -26,7 +27,7 @@ class MasterBlockController extends Controller
                     'model'             => $master_blocks,
                     'form_url'          => route('master_blocks.destroy', $master_blocks->id),
                     'edit_url'          => route('master_blocks.edit', $master_blocks->id),
-                    'confirm_message'   => 'Apakah Anda Yakin Ingin Menghapus Block' .$master_blocks->nama_block. '?'
+                    'confirm_message'   => 'Apakah Anda Yakin Ingin Menghapus Block ' .$master_blocks->nama_block. '?'
                 ]);
             })->make(true);
         }
@@ -132,10 +133,23 @@ class MasterBlockController extends Controller
      */
     public function destroy($id)
     {
-        if (!Master_block::destroy($id)) {
-            return redirect()->back();
+        //menghapus data dengan pengecekan alert /peringatan
+        $penjadwalan = Penjadwalan::where('id_block',$id); 
+ 
+        if ($penjadwalan->count() > 0) {
+        // menyiapkan pesan error
+        $html = 'Block tidak bisa dihapus karena masih memiliki Penjadwalan'; 
+        
+        Session::flash("flash_notification", [
+          "level"=>"danger",
+          "message"=>$html
+        ]); 
+
+        return redirect()->route('master_blocks.index');      
         }
         else{
+
+        Master_block::destroy($id);
             Session::flash("flash_notification", [
                 "level"     => "danger",
                 "message"   => "Master Data Block Berhasil Di Hapus"
