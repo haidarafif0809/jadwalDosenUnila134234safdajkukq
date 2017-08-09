@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Penjadwalan extends Model
 {
     //
-     protected $fillable = ['id_block','id_mata_kuliah','id_ruangan','id_jadwal_dosen','tanggal','waktu_mulai','waktu_selesai','status_jadwal'];
+     protected $fillable = ['id_block','id_mata_kuliah','id_ruangan','tanggal','waktu_mulai','waktu_selesai','status_jadwal'];
 
     	public function block()
 		  {
@@ -22,10 +22,5 @@ class Penjadwalan extends Model
     	public function ruangan()
 		  {
 		  	return $this->hasOne('App\Master_ruangan','id','id_ruangan');
-		  }
-
-    	public function jadwal_dosen()
-		  {
-		  	return $this->hasOne('App\Jadwal_dosen','id_jadwal','id_jadwal_dosen');
-		  }
+		  } 
 }

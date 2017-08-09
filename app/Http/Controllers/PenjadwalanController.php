@@ -8,6 +8,8 @@ use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\Penjadwalan; 
 use App\User; 
+use App\User_otoritas; 
+use App\Jadwal_dosen; 
 use Session;
 
 class PenjadwalanController extends Controller
@@ -22,7 +24,7 @@ class PenjadwalanController extends Controller
         //
         if ($request->ajax()) {
             # code...
-            $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','jadwal_dosen']);
+            $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan']);
             return Datatables::of($penjadwalans)->addColumn('action', function($penjadwalan){
                     return view('datatable._action', [
                         'model'     => $penjadwalan,
@@ -32,10 +34,9 @@ class PenjadwalanController extends Controller
                         ]);
                 })
             ->addColumn('jadwal_dosen', function($jadwal){
-                $user = User::where('id',$jadwal->jadwal_dosen->id_dosen)->get();
-                    return view('penjadwalans._action', [
-                        'model'     => $jadwal,
-                        'model_user'     => $user
+                $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
+                    return view('penjadwalans._action', [ 
+                        'model_user'     => $jadwal_dosens,
                         ]);
                 })->make(true);
         }
@@ -60,8 +61,13 @@ class PenjadwalanController extends Controller
      */
     public function create()
     {
-        //
-        return view('penjadwalans.create');
+        // 
+        $users = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',2)
+            ->pluck('name','id');
+
+        return view('penjadwalans.create',['users' => $users]);
     }
 
     /**
@@ -73,6 +79,48 @@ class PenjadwalanController extends Controller
     public function store(Request $request)
     {
         //
+
+         $this->validate($request, [
+            'tanggal'   => 'required',
+            'waktu_mulai'     => 'required',
+            'waktu_selesai'     => 'required',
+            'id_block'    => 'required|exists:master_blocks,id',
+            'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
+            'id_ruangan'    => 'required|exists:master_ruangans,id',
+            'id_user'    => 'required|exists:users,id'
+            ]); 
+
+            foreach ($request->id_user as $user_dosen) {
+                # code...
+
+            }
+
+
+
+         $penjadwalan = Penjadwalan::create([ 
+            'tanggal' =>$request->tanggal,
+            'waktu_mulai'=>$request->waktu_mulai,
+            'waktu_selesai'=>$request->waktu_selesai,
+            'id_block'=>$request->id_block,
+            'id_mata_kuliah'=>$request->id_mata_kuliah,
+            'id_ruangan'=>$request->id_ruangan]);
+
+
+
+            foreach ($request->id_user as $user_dosen) {
+                # code...
+                $jadwal_dosen = Jadwal_dosen::create([ 
+                    'id_jadwal' =>$penjadwalan->id,
+                    'id_dosen'=>$user_dosen,
+                    ]);
+                
+            }
+
+        Session::flash("flash_notification", [
+            "level"=>"success",
+            "message"=>"Berhasil Menambah Penjadwalan"
+            ]);
+        return redirect()->route('penjadwalans.index');
     }
 
     /**
@@ -95,6 +143,25 @@ class PenjadwalanController extends Controller
     public function edit($id)
     {
         //
+        $penjadwalans = Penjadwalan::find($id);
+        $users = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',2)
+            ->pluck('name','id');
+
+        $jadwal_dosen = DB::table('jadwal_dosens')
+            ->leftJoin('users', 'users.id', '=', 'jadwal_dosens.id_dosen')
+            ->where('jadwal_dosens.id_jadwal',$id)
+            ->pluck('users.name','users.id'); 
+            
+            $dosen = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$id)->get(); 
+            
+            foreach ($dosen as $dosens) { 
+             $jadwal_dosen_data = $dosens->dosen->id;
+            }
+
+            $jadwal_dosens = "'1','2'"; //untuk menampilkan data user yang sesuai ketika tambah
+        return view('penjadwalans.edit',['users' => $users,'jadwal_dosen_data' => $jadwal_dosen_data])->with(compact('penjadwalans')); 
     }
 
     /**
@@ -107,6 +174,40 @@ class PenjadwalanController extends Controller
     public function update(Request $request, $id)
     {
         //
+         $this->validate($request, [
+            'tanggal'   => 'required',
+            'waktu_mulai'     => 'required',
+            'waktu_selesai'     => 'required',
+            'id_block'    => 'required|exists:master_blocks,id',
+            'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
+            'id_ruangan'    => 'required|exists:master_ruangans,id',
+            'id_user'    => 'required|exists:users,id'
+            ]); 
+
+        Penjadwalan::where('id', $id) ->update([ 
+            'tanggal' =>$request->tanggal,
+            'waktu_mulai'=>$request->waktu_mulai,
+            'waktu_selesai'=>$request->waktu_selesai,
+            'id_block'=>$request->id_block,
+            'id_mata_kuliah'=>$request->id_mata_kuliah,
+            'id_ruangan'=>$request->id_ruangan]);
+
+        Jadwal_dosen::where('id_jadwal', $id)->delete();
+
+            foreach ($request->id_user as $user_dosen) {
+                # code...
+                $jadwal_dosen = Jadwal_dosen::create([ 
+                    'id_jadwal' =>$id,
+                    'id_dosen'=>$user_dosen,
+                    ]);
+                
+            }
+
+        Session::flash("flash_notification", [
+            "level"=>"success",
+            "message"=>"Penjadwalan Berhasil Di Ubah"
+            ]);
+        return redirect()->route('penjadwalans.index');
     }
 
     /**
@@ -118,5 +219,17 @@ class PenjadwalanController extends Controller
     public function destroy($id)
     {
         //
+         if(!Penjadwalan::destroy($id)) 
+        {
+            return redirect()->back();
+        }
+        else{
+        Jadwal_dosen::where('id_jadwal', $id)->delete();
+        Session:: flash("flash_notification", [
+            "level"=>"success",
+            "message"=>"Penjadwalan berhasil dihapus"
+            ]);
+        return redirect()->route('penjadwalans.index');
+            }
     }
 }

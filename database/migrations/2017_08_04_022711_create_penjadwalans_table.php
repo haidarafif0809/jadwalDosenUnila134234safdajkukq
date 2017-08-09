@@ -17,11 +17,10 @@ class CreatePenjadwalansTable extends Migration
             $table->increments('id');
             $table->integer('id_block');
             $table->integer('id_mata_kuliah');
-            $table->integer('id_ruangan');
-            $table->integer('id_jadwal_dosen');
-            $table->date('tanggal');
-            $table->time('waktu_mulai');
-            $table->time('waktu_selesai');
+            $table->integer('id_ruangan'); 
+            $table->string('tanggal');
+            $table->string('waktu_mulai');
+            $table->string('waktu_selesai');
             $table->integer('status_jadwal')->default(0);
             $table->timestamps();
         });
