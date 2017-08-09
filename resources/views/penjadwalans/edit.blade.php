@@ -15,7 +15,7 @@
 						<h2 class="panel-title">Edit Penjadwalan</h2>
 					</div>
 
-					<div class="panel-body">  
+					<div class="panel-body">    
 						{!! Form::model($penjadwalans, ['url' => route('penjadwalans.update', $penjadwalans->id), 'method' => 'put', 'files'=>'true','class'=>'form-horizontal']) !!}
 						@include('penjadwalans._form')
 						{!! Form::close() !!}
@@ -32,7 +32,7 @@
 	  sortField: 'text',
 	  delimiter: ',',
 	  maxItems: null,
-	  items: ['1','2']
+	  items: [<?php echo  $data_dosen; ?>]
 	});
 </script>
 @endsection

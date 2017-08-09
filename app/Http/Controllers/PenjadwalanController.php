@@ -155,13 +155,11 @@ class PenjadwalanController extends Controller
             ->pluck('users.name','users.id'); 
             
             $dosen = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$id)->get(); 
-            
+            $data_dosen = '';
             foreach ($dosen as $dosens) { 
-             $jadwal_dosen_data = $dosens->dosen->id;
-            }
-
-            $jadwal_dosens = "'1','2'"; //untuk menampilkan data user yang sesuai ketika tambah
-        return view('penjadwalans.edit',['users' => $users,'jadwal_dosen_data' => $jadwal_dosen_data])->with(compact('penjadwalans')); 
+              $data_dosen .= ( "'".$dosens->dosen->id ."'," ); //untuk menampilkan data user yang sesuai ketika tambah
+            }    
+        return view('penjadwalans.edit',['users' => $users])->with(compact('penjadwalans','data_dosen')); 
     }
 
     /**
