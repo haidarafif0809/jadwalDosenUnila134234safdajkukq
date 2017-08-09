@@ -88,14 +88,7 @@ class PenjadwalanController extends Controller
             'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
             'id_ruangan'    => 'required|exists:master_ruangans,id',
             'id_user'    => 'required|exists:users,id'
-            ]); 
-
-            foreach ($request->id_user as $user_dosen) {
-                # code...
-
-            }
-
-
+            ]);   
 
          $penjadwalan = Penjadwalan::create([ 
             'tanggal' =>$request->tanggal,

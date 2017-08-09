@@ -10,8 +10,9 @@ $('.js-selectize-multi').selectize({
 });
 
 $('.datepicker').datepicker({
-    format: 'yyyy-dd-mm',
+    format: 'dd-mm-yyyy',
     startDate: '-3d',
+    autoclose: true,
 });
 
 $('.clockpicker').clockpicker({
