@@ -39,6 +39,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	Route::resource('master_users', 'MasterUserController'); 
 	Route::resource('master_otoritas', 'MasterOtoritasController'); 
 	Route::resource('penjadwalans', 'PenjadwalanController'); 
+	Route::resource('modul', 'ModulController'); 
 
 
 	Route::get('master_users/no_konfirmasi/{id}',[

@@ -17,5 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MasterBlockSeeder::class);
         $this->call(PenjadwalanSeeder::class);
         $this->call(JadwalDosenSeeder::class);
+        $this->call(ModulSeeder::class);
+        $this->call(ModulBlokSeeder::class);
     }
 }
