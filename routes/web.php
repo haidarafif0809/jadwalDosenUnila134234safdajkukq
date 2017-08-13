@@ -14,10 +14,12 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/jadwal-kuliah', 'HomeController@jadwal_kuliah');
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home'); 
+
 
 	Route::get('/ubah-password',[
 	'middleware' => ['auth'],
@@ -46,6 +48,17 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	'middleware' => ['auth'],
 	'as' => 'master_users.no_konfirmasi',
 	'uses' => 'MasterUserController@no_konfirmasi'
+	]);	
+	Route::get('master_blocks/modul/{id}',[
+	'middleware' => ['auth','role:admin'],
+	'as' => 'master_blocks.modul',
+	'uses' => 'MasterBlockController@createModul'
+	]);
+
+	Route::put('/proses-kait-modul-blok/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'master_blocks.proses_kait_modul_blok',
+	'uses' => 'MasterBlockController@proses_kait_modul_blok'
 	]);
 
 	Route::get('master_users/konfirmasi/{id}',[

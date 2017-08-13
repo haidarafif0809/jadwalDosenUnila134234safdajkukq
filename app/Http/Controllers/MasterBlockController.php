@@ -8,6 +8,7 @@ use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\Master_block; //Modal
 use App\Penjadwalan; 
+use App\ModulBlok; 
 use Auth;
 use Session;
 
@@ -29,11 +30,14 @@ class MasterBlockController extends Controller
                     'edit_url'          => route('master_blocks.edit', $master_blocks->id),
                     'confirm_message'   => 'Apakah Anda Yakin Ingin Menghapus Block ' .$master_blocks->nama_block. '?'
                 ]);
+            })->addColumn('modul', function($master_blocks){
+                return '<a class="btn btn-default" href="'.route('master_blocks.modul',$master_blocks->id).'">Lihat Modul</a>';
             })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'kode_block', 'name' => 'kode_block', 'title' => 'Kode Block'])
         ->addColumn(['data' => 'nama_block', 'name' => 'nama_block', 'title' => 'Nama Block'])
+        ->addColumn(['data' => 'modul', 'name' => 'modul', 'title' => 'Modul','orderable' => false, 'searchable' => false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
 
         return view('master_blocks.index')->with(compact('html'));
@@ -47,6 +51,43 @@ class MasterBlockController extends Controller
     public function create()
     {
         return view('master_blocks.create');
+    }
+
+     public function createModul($id)
+    {
+
+        return view('master_blocks.create_modul',['id' =>$id]);
+    }   
+
+    public function proses_kait_modul_blok(Request $request,$id)
+    {
+
+
+        function tanggal_mysql($tanggal){
+                $date= date_create($tanggal);
+                return $date_format =  date_format($date,"Y-m-d");    
+         }
+         $this->validate($request, [
+       
+            'dari_tanggal'     => 'required',
+            'sampai_tanggal'     => 'required',
+            'id_modul'    => 'required|exists:moduls,id'
+            ]);   
+
+        
+
+
+         ModulBlok::create(['id_modul'=> $request->id_modul,'id_blok' => $id,'dari_tanggal' => tanggal_mysql($request->dari_tanggal),'sampai_tanggal' => tanggal_mysql($request->sampai_tanggal)]);
+
+        Session::flash("flash_notification", [
+            "level"     => "success",
+            "message"   => "Berhasil Mengaitkan Modul ke blok"
+        ]);
+
+         return redirect()->back();
+
+        
+    
     }
 
     /**

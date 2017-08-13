@@ -17,6 +17,8 @@
     <link href="{{ asset('css/selectize.bootstrap3.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap-datepicker.min.css') }}" rel="stylesheet">  
     <link href="{{ asset('css/bootstrap-clockpicker.min.css') }}" rel="stylesheet">  
+    <link rel="stylesheet" href="{{ asset('css/reset.css') }}"> <!-- CSS reset -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}"> <!-- Resource style -->
 </head>
 <body>
     <div id="app">
@@ -99,6 +101,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="{{ asset('js/modernizr.js') }}"></script>
      <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
 <script src="{{ asset('js/tether.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap.min.js') }}"></script>
@@ -108,6 +111,8 @@
 <script src="{{ asset('js/bootstrap-clockpicker.js') }}"></script>
 <script src="{{ asset('js/selectize.min.js') }}"></script> 
 <script src="{{ asset('js/custom.js') }}"></script>
+<script src="{{ asset('js/main.js') }}"></script> 
+
 @yield('scripts')
 </body>
 </html>
