@@ -17,6 +17,7 @@
     <link href="{{ asset('css/selectize.bootstrap3.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap-datepicker.min.css') }}" rel="stylesheet">  
     <link href="{{ asset('css/bootstrap-clockpicker.min.css') }}" rel="stylesheet">  
+    <link href="{{ asset('css/bootstrap-clockpicker.css') }}" rel="stylesheet">  
 </head>
 <body>
     <div id="app">
@@ -105,6 +106,7 @@
 <script src="{{ asset('js/jquery.dataTables.js') }}"></script>
 <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
 <script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap-clockpicker.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap-clockpicker.js') }}"></script>
 <script src="{{ asset('js/selectize.min.js') }}"></script> 
 <script src="{{ asset('js/custom.js') }}"></script>

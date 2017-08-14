@@ -11,7 +11,8 @@ $('.js-selectize-multi').selectize({
 
 $('.datepicker').datepicker({
     format: 'yyyy-mm-dd',
-    startDate: '-3d',
+    daysOfWeekDisabled: '0,6',
+    daysOfWeekHighlighted: '0,6',
     autoclose: true,
 });
 
@@ -19,5 +20,5 @@ $('.clockpicker').clockpicker({
     placement: 'bottom',
     align: 'left',
     autoclose: true,
-    'default': '00:00'
+    'default': '07:00'
 });

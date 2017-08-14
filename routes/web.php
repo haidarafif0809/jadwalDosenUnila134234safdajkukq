@@ -41,6 +41,23 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	Route::resource('penjadwalans', 'PenjadwalanController'); 
 	Route::resource('modul', 'ModulController'); 
 
+	Route::get('penjadwalans/belumterlaksana/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.belumterlaksana',
+	'uses' => 'PenjadwalanController@status_belum_terlaksana'
+	]);
+
+	Route::get('penjadwalans/terlaksana/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.terlaksana',
+	'uses' => 'PenjadwalanController@status_terlaksana'
+	]);
+
+	Route::get('penjadwalans/batal/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.batal',
+	'uses' => 'PenjadwalanController@status_batal'
+	]);
 
 	Route::get('master_users/no_konfirmasi/{id}',[
 	'middleware' => ['auth'],

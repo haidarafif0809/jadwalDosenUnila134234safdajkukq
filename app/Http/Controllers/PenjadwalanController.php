@@ -33,13 +33,24 @@ class PenjadwalanController extends Controller
                         'model'     => $penjadwalan,
                         'form_url'  => route('penjadwalans.destroy', $penjadwalan->id),
                         'edit_url'  => route('penjadwalans.edit', $penjadwalan->id),
-                        'confirm_message'   => 'Yakin Mau Menghapus Jadwal ?'
+                        'confirm_message'   => 'Apakah Anda Yakin Mau Menghapus Penjadwalan ?'
                         ]);
                 })
             ->addColumn('jadwal_dosen', function($jadwal){
                 $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
                     return view('penjadwalans._action', [ 
                         'model_user'     => $jadwal_dosens,
+                        ]);
+                })
+            ->addColumn('tombol_status', function($data_status){  
+                    return view('penjadwalans._action_status', [ 
+                        'model'     => $data_status,
+                        'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
+                        'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
+                        'batal_url' => route('penjadwalans.batal', $data_status->id),
+                        'terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Terlaksana ?',
+                        'belum_terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Belum Terlaksana?',
+                        'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
                         ]);
                 })
             ->addColumn('status',function($status_penjadwalan){
@@ -66,7 +77,8 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
         ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
-        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])     
+        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])    
+        ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
 
@@ -178,23 +190,51 @@ class PenjadwalanController extends Controller
         return redirect()->route('penjadwalans.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function status_terlaksana($id){ 
+
+            $penjadwalan = Penjadwalan::find($id);   
+            $penjadwalan->status_jadwal = 1;
+            $penjadwalan->save();  
+
+        Session::flash("flash_notification", [
+            "level"=>"info",
+            "message"=>"Penjadwalan Berhasil Terlaksana"
+        ]);
+ 
+        return redirect()->route('penjadwalans.index');
+    } 
+
+
+    public function status_belum_terlaksana($id){ 
+
+            $penjadwalan = Penjadwalan::find($id);   
+            $penjadwalan->status_jadwal = 0;
+            $penjadwalan->save();  
+
+        Session::flash("flash_notification", [
+            "level"=>"primary",
+            "message"=>"Penjadwalan Berhasil Belum Terlaksana"
+        ]);
+ 
+        return redirect()->route('penjadwalans.index');
+    } 
+
+    public function status_batal($id){ 
+
+            $penjadwalan = Penjadwalan::find($id);   
+            $penjadwalan->status_jadwal = 2;
+            $penjadwalan->save();  
+
+        Session::flash("flash_notification", [
+            "level"=>"danger",
+            "message"=>"Penjadwalan Berhasil Di Batalkan"
+        ]);
+ 
+        return redirect()->route('penjadwalans.index');
+    } 
+
+
     public function edit($id)
     {
         //
@@ -268,7 +308,7 @@ class PenjadwalanController extends Controller
                     ]);
                 return redirect()->back()->withInput();
             } 
-        }
+        } 
 
         Penjadwalan::where('id', $id)->update([ 
             'tanggal' =>$request->tanggal,
