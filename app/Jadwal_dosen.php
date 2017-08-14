@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Jadwal_dosen extends Model
 {
     // 
-    	protected $fillable = ['id_jadwal','id_dosen','tanggal','waktu_mulai','waktu_selesai'];
+    	protected $fillable = ['id_jadwal','id_dosen','tanggal','waktu_mulai','waktu_selesai','id_block','id_mata_kuliah','id_ruangan'];
 
 		public function jadwal()
 		  {
@@ -18,6 +18,23 @@ class Jadwal_dosen extends Model
 		  {
 		  	return $this->hasOne('App\User','id','id_dosen');
 		  }
+
+        public function block()
+      {
+        return $this->hasOne('App\Master_block','id','id_block');
+      }
+
+      public function mata_kuliah()
+      {
+        return $this->hasOne('App\Master_mata_kuliah','id','id_mata_kuliah');
+      }
+
+      public function ruangan()
+      {
+        return $this->hasOne('App\Master_ruangan','id','id_ruangan');
+      } 
+
+
 
 		public function scopeStatusDosen($query, $request,$user_dosen)
 		{

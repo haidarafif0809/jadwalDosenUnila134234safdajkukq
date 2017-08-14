@@ -1,5 +1,5 @@
 @if($model_user->count() > 1)
-  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Daftar Dosen</button> 
+  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal{{$id_jadwal}}">Daftar Dosen</button> 
 @elseif($model_user->count() == 1) 
    @foreach($model_user as $model_users)
     {{  $model_users->dosen->name }}
@@ -7,7 +7,7 @@
 @endif
  
   <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
+  <div class="modal fade" id="myModal{{$id_jadwal}}" role="dialog">
     <div class="modal-dialog modal-sm">
       
       <div class="modal-content">

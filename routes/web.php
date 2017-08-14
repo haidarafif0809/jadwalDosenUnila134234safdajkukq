@@ -33,6 +33,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 	'uses' => 'UbahPasswordController@proses_ubah_password'
 	]);
 
+	Route::get('admin/penjadwalans/filter',[
+	'middleware' => ['auth','role:admin'],
+	'as' => 'penjadwalans.filter',
+	'uses' => 'PenjadwalanController@filter'
+	]);	
+
 Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function () {
 
 	Route::resource('master_ruangans', 'MasterRuanganController'); 
@@ -42,6 +48,9 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	Route::resource('master_otoritas', 'MasterOtoritasController'); 
 	Route::resource('penjadwalans', 'PenjadwalanController'); 
 	Route::resource('modul', 'ModulController'); 
+
+	//filter jadwal dosen dan ruangan 
+
 
 
 	Route::get('master_users/no_konfirmasi/{id}',[

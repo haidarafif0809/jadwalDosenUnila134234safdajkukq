@@ -1,5 +1,11 @@
 @extends('layouts.app')
 @section('content')
+
+<style type="text/css">
+	#filter {
+		margin-top: 10px;
+	}
+</style>
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
@@ -15,7 +21,24 @@
 				</div>
 
 				<div class="panel-body">
-					<p> <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}">Tambah Penjadwalan </a> </p>
+					<p> <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}">Tambah Penjadwalan </a>
+
+					 <button data-toggle="collapse" data-target="#filter" class="btn btn-primary"> <span class="glyphicon glyphicon-filter"></span> Filter</button> <a class="btn btn-primary" href="{{ route('penjadwalans.index') }}"> <span class="glyphicon glyphicon-remove"></span>  Hapus Filter</a>
+
+
+					<div id="filter" class="collapse">
+					
+					{!! Form::open(['url' => route('penjadwalans.filter'),'method' => 'get', 'class'=>'form-inline']) !!}
+					@include('penjadwalans._form_filter')
+					{!! Form::close() !!}
+					</div>
+
+
+
+
+
+					 </p>
+					<br>
 					<div class="table-responsive">
 					{!! $html->table(['class'=>'table-striped table']) !!}
 					</div>
