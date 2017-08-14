@@ -51,8 +51,28 @@ class UserSeeder extends Seeder
 
     // Membuat sample dosen
     $dosen = new User();
-    $dosen->name = "Sample Dosen";
-    $dosen->email = 'dosen@gmail.com';
+    $dosen->name = "Dosen 1";
+    $dosen->email = 'dosen1@gmail.com';
+    $dosen->password = bcrypt('rahasia'); 
+    $dosen->no_hp = '-';
+    $dosen->alamat = '-';
+    $dosen->save();
+    $dosen->attachRole($dosenRole);
+
+    // Membuat sample dosen
+    $dosen = new User();
+    $dosen->name = "Dosen 2";
+    $dosen->email = 'dosen2@gmail.com';
+    $dosen->password = bcrypt('rahasia'); 
+    $dosen->no_hp = '-';
+    $dosen->alamat = '-';
+    $dosen->save();
+    $dosen->attachRole($dosenRole);
+
+    // Membuat sample dosen
+    $dosen = new User();
+    $dosen->name = "Dosen 3";
+    $dosen->email = 'dosen3@gmail.com';
     $dosen->password = bcrypt('rahasia'); 
     $dosen->no_hp = '-';
     $dosen->alamat = '-';

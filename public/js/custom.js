@@ -10,7 +10,7 @@ $('.js-selectize-multi').selectize({
 });
 
 $('.datepicker').datepicker({
-    format: 'dd-mm-yyyy',
+    format: 'yyyy-mm-dd',
     startDate: '-3d',
     autoclose: true,
 });

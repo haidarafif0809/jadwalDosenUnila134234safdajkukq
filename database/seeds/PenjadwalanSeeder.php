@@ -17,7 +17,7 @@ class PenjadwalanSeeder extends Seeder
     $penjadwalans->id_block   = "1";
     $penjadwalans->id_mata_kuliah   = "1";
     $penjadwalans->id_ruangan = "1"; 
-    $penjadwalans->tanggal = "2017-07-07";
+    $penjadwalans->tanggal = "2017-08-11";
     $penjadwalans->waktu_mulai = "01:00";
     $penjadwalans->waktu_selesai = "02:00";
     $penjadwalans->save();
