@@ -10,6 +10,7 @@ class ModulBlok extends Model
 
          protected $table = 'modul_bloks';
      protected $fillable = ['id_modul_blok','id_modul','id_blok','dari_tanggal','sampai_tanggal','urutan'];
+     protected $primaryKey = 'id_modul_blok';
 
      	public function modul()
 		  {

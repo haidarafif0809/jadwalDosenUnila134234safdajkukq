@@ -1,8 +1,8 @@
-<div class="form-group{{ $errors->has('id_modul') ? ' has-error' : '' }}">
-	{!! Form::label('id_modul', 'Modul', ['class'=>'col-md-2 control-label']) !!}
+<div class="form-group{{ $errors->has('modul') ? ' has-error' : '' }}">
+	{!! Form::label('modul', 'Modul', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::select('id_modul', []+App\Modul::pluck('nama_modul','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Modul']) !!}
-		{!! $errors->first('id_modul', '<p class="help-block">:message</p>') !!}
+		{!! Form::select('modul', []+App\Modul::pluck('nama_modul','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Modul']) !!}
+		{!! $errors->first('modul', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
 

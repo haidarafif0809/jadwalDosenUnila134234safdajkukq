@@ -6,28 +6,28 @@
 		<div class="col-md-12">
 			<ul class="breadcrumb">
 				<li><a href="{{ url('/home') }} ">Home</a></li>
-				<li><a href="{{ url('/admin/master_blocks') }}">Block</a></li>
-				<li class="active">Kaitkan Modul ke Block</li>
+				<li><a href="{{ url('/admin/master_blocks') }}">Block   </a></li>
+				<li class="active">Kaitkan Mahasiswa ke {{ $block->nama_block}}</li>
 			</ul>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h2 class="panel-title">Kaitkan Modul ke Block</h2>
+					<h2 class="panel-title">Kaitkan Mahasiswa ke Block {{ $block->nama_block}}</h2>
 				</div>
 
 				<div class="panel-body">
-					{!! Form::open(['url' => route('master_blocks.proses_kait_modul_blok',$id),'method' => 'put', 'class'=>'form-horizontal']) !!}
-						@include('master_blocks._form_modul')
+					{!! Form::open(['url' => route('master_blocks.proses_kait_mahasiswa_blok',$id),'method' => 'put', 'class'=>'form-horizontal']) !!}
+						@include('master_blocks._form_mahasiswa')
 					{!! Form::close() !!}
 				</div>
 			</div>
 			<!-- panel form  -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h2 class="panel-title">Data Modul Terkait</h2>
+					<h2 class="panel-title">Mahasiswa {{ $block->nama_block}}</h2>
 				</div>
 
 				<div class="panel-body">
-							<div class="table-responsive">
+						<div class="table-responsive">
 					{!! $html->table(['class'=>'table-striped table']) !!}
 					</div>
 				</div>
@@ -37,6 +37,7 @@
 	</div>
 </div>
 @endsection
+
 
 @section('scripts')
 {!! $html->scripts() !!}

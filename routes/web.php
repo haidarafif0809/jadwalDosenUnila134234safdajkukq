@@ -62,22 +62,43 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	'middleware' => ['auth','role:admin'],
 	'as' => 'master_blocks.modul',
 	'uses' => 'MasterBlockController@createModul'
+	]);	
+	Route::get('master_blocks/mahasiswa/{id}',[
+	'middleware' => ['auth','role:admin'],
+	'as' => 'master_blocks.mahasiswa',
+	'uses' => 'MasterBlockController@createMahasiswa'
 	]);
 
 	Route::put('/proses-kait-modul-blok/{id}',[
-	'middleware' => ['auth'],
+	'middleware' => ['auth','role:admin'],
 	'as' => 'master_blocks.proses_kait_modul_blok',
 	'uses' => 'MasterBlockController@proses_kait_modul_blok'
+	]);	
+	Route::put('/hapus-mahasiswa-block/{id}',[
+	'middleware' => ['auth','role:admin'],
+	'as' => 'mahasiswa_block.destroy',
+	'uses' => 'MasterBlockController@hapus_mahasiswa_block'
+	]);
+	Route::put('/hapus-modul-block/{id}',[
+	'middleware' => ['auth','role:admin'],
+	'as' => 'modul_block.destroy',
+	'uses' => 'MasterBlockController@hapus_modul_block'
+	]);
+
+	Route::put('/proses-kait-mahasiswa-blok/{id}',[
+	'middleware' => ['auth','role:admin'],
+	'as' => 'master_blocks.proses_kait_mahasiswa_blok',
+	'uses' => 'MasterBlockController@proses_kait_mahasiswa_blok'
 	]);
 
 	Route::get('master_users/konfirmasi/{id}',[
-	'middleware' => ['auth'],
+	'middleware' => ['auth','role:admin'],
 	'as' => 'master_users.konfirmasi',
 	'uses' => 'MasterUserController@konfirmasi'
 	]);
 
 	Route::get('master_users/reset/{id}',[
-	'middleware' => ['auth'],
+	'middleware' => ['auth','role:admin'],
 	'as' => 'master_users.reset',
 	'uses' => 'MasterUserController@reset'
 	]);
