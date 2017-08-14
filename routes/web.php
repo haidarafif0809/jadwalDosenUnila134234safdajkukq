@@ -48,6 +48,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	Route::resource('master_otoritas', 'MasterOtoritasController'); 
 	Route::resource('penjadwalans', 'PenjadwalanController'); 
 	Route::resource('modul', 'ModulController'); 
+	Route::resource('settingwaktu', 'SettingWaktuController'); 
 
 	//filter jadwal dosen dan ruangan 
 	Route::get('penjadwalans/belumterlaksana/{id}',[
