@@ -23,4 +23,30 @@ class Penjadwalan extends Model
 		  {
 		  	return $this->hasOne('App\Master_ruangan','id','id_ruangan');
 		  } 
+
+
+		public function scopeStatusRuangan($query, $request)
+		{
+
+			$query->where('id_ruangan',$request->id_ruangan)->where('tanggal',$request->tanggal)->where(function ($query) use ($request) {
+                  $query->where('waktu_mulai',$request->waktu_mulai)->orwhere( function ($query) use ($request) {
+                    $query->where(function ($query) use ($request) {
+                      $query->where('waktu_mulai','<',$request->waktu_mulai)->where('waktu_selesai','>',$request->waktu_mulai);
+                        })->orwhere(function($query) use ($request) {
+                         $query->where('waktu_mulai','<',$request->waktu_mulai)->where('waktu_selesai','>',$request->waktu_mulai);
+                          });
+                        });
+                      })->where(function($query) use ($request) {
+                $query->where('waktu_selesai',$request->waktu_selesai)
+                      ->orwhere(function($query) use ($request){
+                        $query->where('waktu_selesai','>=',$request->waktu_selesai)->where('waktu_mulai','<=',$request->waktu_selesai);
+                        })->orwhere(function($query) use ($request) {
+                           $query->where('waktu_selesai','<',$request->waktu_selesai)->where('waktu_mulai','<=',$request->waktu_selesai);
+                          });
+                            })->where('status_jadwal','<','2');
+
+              return $query;
+		
+		}
+
 }
