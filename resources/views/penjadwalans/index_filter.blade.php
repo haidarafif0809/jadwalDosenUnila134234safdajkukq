@@ -23,12 +23,12 @@
 				<div class="panel-body">
 					<p> <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}">Tambah Penjadwalan </a>
 
-					 <button data-toggle="collapse" data-target="#filter" class="btn btn-primary"> <span class="glyphicon glyphicon-filter"></span> Filter</button> <a class="btn btn-primary" href="{{ route('penjadwalans.index') }}"> <span class="glyphicon glyphicon-remove"></span>  Hapus Filter</a>
+					 <button data-toggle="collapse" data-target="#filter" class="btn btn-primary"> <span class="glyphicon glyphicon-filter"></span> Filter</button>
 
 
 					<div id="filter" class="collapse">
 					
-					{!! Form::open(['url' => route('penjadwalans.filter'),'method' => 'get', 'class'=>'form-inline']) !!}
+					{!! Form::open(['url' => route('penjadwalans.store'),'method' => 'post', 'class'=>'form-inline']) !!}
 					@include('penjadwalans._form_filter')
 					{!! Form::close() !!}
 					</div>

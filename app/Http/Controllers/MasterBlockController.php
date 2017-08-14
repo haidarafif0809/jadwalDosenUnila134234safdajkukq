@@ -8,6 +8,8 @@ use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\Master_block; //Modal
 use App\Penjadwalan; 
+use App\ModulBlok; 
+use App\MahasiswaBlock; 
 use Auth;
 use Session;
 
@@ -29,11 +31,17 @@ class MasterBlockController extends Controller
                     'edit_url'          => route('master_blocks.edit', $master_blocks->id),
                     'confirm_message'   => 'Apakah Anda Yakin Ingin Menghapus Block ' .$master_blocks->nama_block. '?'
                 ]);
+            })->addColumn('modul', function($master_blocks){
+                return '<a class="btn btn-default" href="'.route('master_blocks.modul',$master_blocks->id).'">Lihat Modul</a>';
+            })->addColumn('mahasiswa', function($master_blocks){
+                return '<a class="btn btn-default" href="'.route('master_blocks.mahasiswa',$master_blocks->id).'">Lihat Mahasiswa</a>';
             })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'kode_block', 'name' => 'kode_block', 'title' => 'Kode Block'])
         ->addColumn(['data' => 'nama_block', 'name' => 'nama_block', 'title' => 'Nama Block'])
+        ->addColumn(['data' => 'modul', 'name' => 'modul', 'title' => 'Modul','orderable' => false, 'searchable' => false]) 
+         ->addColumn(['data' => 'mahasiswa', 'name' => 'mahasiswa', 'title' => 'Mahasiswa','orderable' => false, 'searchable' => false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
 
         return view('master_blocks.index')->with(compact('html'));
@@ -47,6 +55,135 @@ class MasterBlockController extends Controller
     public function create()
     {
         return view('master_blocks.create');
+    }
+
+     public function createModul(Request $request, Builder $htmlBuilder,$id)
+    {
+
+          //datatable 
+        if ($request->ajax()) {
+            $modul = ModulBlok::with('modul')->where('id_blok',$id);
+            return Datatables::of($modul)->addColumn('action', function($modul){
+                return view('datatable._hapus', [
+                    'model'             => $modul,
+                    'form_url'          => route('modul_block.destroy', $modul->id_modul_blok),
+                  
+                    'confirm_message'   => 'Apakah Anda Yakin Ingin Menghapus Mahasiswa ' .$modul->modul->nama_modul. '?'
+                ]);
+            })->addColumn('tanggal', function($modul){
+                return $modul->dari_tanggal." - > ". $modul->sampai_tanggal;
+            })->make(true);
+        }
+
+        $html = $htmlBuilder
+        ->addColumn(['data' => 'modul.nama_modul', 'name' => 'modul.nama_modul', 'title' => 'Mahasiswa', 'orderable' => false])
+         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Periode', 'orderable' => false])
+           ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
+
+        return view('master_blocks.create_modul',['id' =>$id])->with(compact('html'));
+    }   
+
+  public function createMahasiswa(Request $request, Builder $htmlBuilder,$id)
+    {
+
+        $mahasiswa = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',3)
+            ->pluck('name','id');
+        $block = Master_block::find($id);
+
+        //datatable 
+        if ($request->ajax()) {
+            $mahasiswa_block = MahasiswaBlock::with('mahasiswa')->where('id_block',$id);
+            return Datatables::of($mahasiswa_block)->addColumn('action', function($mahasiswa_block){
+                return view('datatable._hapus', [
+                    'model'             => $mahasiswa_block,
+                    'form_url'          => route('mahasiswa_block.destroy', $mahasiswa_block->id),
+                  
+                    'confirm_message'   => 'Apakah Anda Yakin Ingin Menghapus Mahasiswa ' .$mahasiswa_block->mahasiswa->name. '?'
+                ]);
+            })->make(true);
+        }
+
+        $html = $htmlBuilder
+        ->addColumn(['data' => 'mahasiswa.name', 'name' => 'mahasiswa.name', 'title' => 'Mahasiswa', 'orderable' => false])
+           ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
+
+
+
+        return view('master_blocks.create_mahasiswa',['id' =>$id,'mahasiswa' => $mahasiswa,'block' => $block])->with(compact('html'));
+    }   
+
+    public function hapus_mahasiswa_block($id){
+        MahasiswaBlock::destroy($id);
+
+          Session::flash("flash_notification", [
+                "level"     => "danger",
+                "message"   => "Mahasiswa Berhasil Di Hapus"
+            ]);
+        return redirect()->back();
+
+    }  
+     public function hapus_modul_block($id){
+        ModulBlok::destroy($id);
+
+          Session::flash("flash_notification", [
+                "level"     => "danger",
+                "message"   => "Modul Berhasil Di Hapus"
+            ]);
+        return redirect()->back();
+
+    }
+
+    public function proses_kait_modul_blok(Request $request,$id)
+    {
+
+
+        function tanggal_mysql($tanggal){
+                $date= date_create($tanggal);
+                return $date_format =  date_format($date,"Y-m-d");    
+         }
+         $this->validate($request, [
+       
+            'dari_tanggal'     => 'required',
+            'sampai_tanggal'     => 'required',
+            'modul'    => 'required|exists:moduls,id|unique:modul_bloks,id_modul,NULL,id_modul_blok,id_blok,'.$id
+            ]);   
+
+        
+
+
+         ModulBlok::create(['id_modul'=> $request->modul,'id_blok' => $id,'dari_tanggal' => tanggal_mysql($request->dari_tanggal),'sampai_tanggal' => tanggal_mysql($request->sampai_tanggal)]);
+
+        Session::flash("flash_notification", [
+            "level"     => "success",
+            "message"   => "Berhasil Mengaitkan Modul ke blok"
+        ]);
+
+         return redirect()->back();
+
+        
+    
+    }  
+    public function proses_kait_mahasiswa_blok(Request $request,$id)
+    {
+
+         $this->validate($request, [
+       
+            'mahasiswa'    => 'required|unique:mahasiswa_block,id_mahasiswa,NULL,id,id_block,'.$id
+            ]);   
+
+         MahasiswaBlock::create(['id_mahasiswa'=> $request->mahasiswa,'id_block' => $id]);
+
+        Session::flash("flash_notification", [
+            "level"     => "success",
+            "message"   => "Berhasil Mengaitkan Mahasiswa ke block"
+        ]);
+
+         return redirect()->back();
+
+        
+    
     }
 
     /**

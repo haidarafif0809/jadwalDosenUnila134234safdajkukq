@@ -20,6 +20,10 @@ class JadwalDosenSeeder extends Seeder
         $jadwal_dosen->tanggal = "2017-08-11";
         $jadwal_dosen->waktu_mulai = "01:00";
         $jadwal_dosen->waktu_selesai = "02:00";
+        $jadwal_dosen->id_block = "1";
+        $jadwal_dosen->id_mata_kuliah = "1";
+        $jadwal_dosen->id_ruangan = "1";
+
 	    $jadwal_dosen->save();
 
         $jadwal_dosen = new Jadwal_dosen();
@@ -28,6 +32,9 @@ class JadwalDosenSeeder extends Seeder
         $jadwal_dosen->tanggal = "2017-08-11";
         $jadwal_dosen->waktu_mulai = "01:00";
         $jadwal_dosen->waktu_selesai = "02:00";
+         $jadwal_dosen->id_block = "1";
+        $jadwal_dosen->id_mata_kuliah = "1";
+        $jadwal_dosen->id_ruangan = "1";
         $jadwal_dosen->save();
 
 
@@ -37,6 +44,9 @@ class JadwalDosenSeeder extends Seeder
         $jadwal_dosen->tanggal = "2017-08-11";
         $jadwal_dosen->waktu_mulai = "01:00";
         $jadwal_dosen->waktu_selesai = "02:00";
+         $jadwal_dosen->id_block = "1";
+        $jadwal_dosen->id_mata_kuliah = "1";
+        $jadwal_dosen->id_ruangan = "1";
         $jadwal_dosen->save();
     }
 }
