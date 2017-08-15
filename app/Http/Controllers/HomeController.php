@@ -57,6 +57,7 @@ class HomeController extends Controller
                 break; 
              case 'pimpinan':
                 # code...
+                return view('home');
                 break;
             
             default:

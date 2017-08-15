@@ -9,6 +9,7 @@
 				<li><a href="{{ url('/admin/master_blocks') }}">Block   </a></li>
 				<li class="active">Kaitkan Mahasiswa ke {{ $block->nama_block}}</li>
 			</ul>
+			@role('admin')
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h2 class="panel-title">Kaitkan Mahasiswa ke Block {{ $block->nama_block}}</h2>
@@ -20,6 +21,7 @@
 					{!! Form::close() !!}
 				</div>
 			</div>
+			@endrole
 			<!-- panel form  -->
 			<div class="panel panel-default">
 				<div class="panel-heading">

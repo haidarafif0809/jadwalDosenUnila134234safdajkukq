@@ -33,7 +33,7 @@ Route::get('/jadwal-mahasiswa',[
 	'uses' => 'HomeController@proses_jadwal_mahasiswa'
 	]);
 Route::get('/lihat-jadwal-permodul/{id_modul}/{id_block}',[
-	'middleware' => ['auth','role:admin,pimpinan'],
+	'middleware' => ['auth','role:admin|pimpinan'],
 	'as' => 'modul.jadwal',
 	'uses' => 'MasterBlockController@lihat_jadwal_permodul'
 	]);
@@ -59,12 +59,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 	]);
 
 	Route::get('admin/penjadwalans/filter',[
-	'middleware' => ['auth','role:admin'],
+	'middleware' => ['auth','role:admin|pimpinan'],
 	'as' => 'penjadwalans.filter',
 	'uses' => 'PenjadwalanController@filter'
 	]);	
 
-Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function () {
+Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan']], function () {
 
 	Route::resource('master_ruangans', 'MasterRuanganController'); 
 	Route::resource('master_mata_kuliahs', 'MasterMataKuliahController'); 
@@ -102,12 +102,12 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin']], function
 	'uses' => 'MasterUserController@no_konfirmasi'
 	]);	
 	Route::get('master_blocks/modul/{id}',[
-	'middleware' => ['auth','role:admin'],
+	'middleware' => ['auth','role:admin|pimpinan'],
 	'as' => 'master_blocks.modul',
 	'uses' => 'MasterBlockController@createModul'
 	]);	
 	Route::get('master_blocks/mahasiswa/{id}',[
-	'middleware' => ['auth','role:admin'],
+	'middleware' => ['auth','role:admin|pimpinan'],
 	'as' => 'master_blocks.mahasiswa',
 	'uses' => 'MasterBlockController@createMahasiswa'
 	]);

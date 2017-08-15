@@ -1,3 +1,4 @@
+@role('admin') 
 @if($model->status_jadwal == 0)
 	{!! Form::model($model, ['url' => $terlaksana_url, 'method' => 'get', 'class' => 'form-inline js-confirm', 'data-confirm' => $terlaksana_message]) !!}  
 	{!! Form::submit('Terlaksana', ['class'=>'btn btn-info  btn-sm']) !!}
@@ -13,3 +14,4 @@
 	{!! Form::close()!!}
   
 @endif
+@endrole

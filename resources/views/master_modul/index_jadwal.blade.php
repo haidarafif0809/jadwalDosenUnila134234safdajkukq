@@ -16,7 +16,8 @@
 				</div>
 
 				<div class="panel-body">
-				<p><button data-toggle="collapse" data-target="#form_penjadwalan" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Tambah Jadwal</button>
+				@role('admin')
+				<p> <button data-toggle="collapse" data-target="#form_penjadwalan" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Tambah Jadwal</button>
 </p>
 				
 					<div id="form_penjadwalan" class="collapse">
@@ -24,7 +25,7 @@
 										@include('penjadwalans._form')
 										{!! Form::close() !!}
 					</div>
-				
+				@endrole
 
 					@include('mahasiswa.schedule_mahasiswa');
 				</div>

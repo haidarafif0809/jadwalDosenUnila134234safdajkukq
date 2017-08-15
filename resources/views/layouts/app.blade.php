@@ -64,7 +64,13 @@
                             <li><a href="{{ route('settingwaktu.index') }}">Setting Waktu</a></li>
                           </ul>
                         </li>
-                    @endrole   
+                    @endrole 
+
+
+                    @role('pimpinan')  
+                        <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li> 
+                        <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>      
+                    @endrole 
                     </ul>
 
                     <!-- Right Side Of Navbar -->

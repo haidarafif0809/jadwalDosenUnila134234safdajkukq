@@ -9,6 +9,7 @@
 				<li><a href="{{ url('/admin/master_blocks') }}">Block</a></li>
 				<li class="active">Kaitkan Modul ke Block</li>
 			</ul>
+			@role('admin')
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h2 class="panel-title">Kaitkan Modul ke Block</h2>
@@ -20,6 +21,7 @@
 					{!! Form::close() !!}
 				</div>
 			</div>
+			@endrole
 			<!-- panel form  -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
