@@ -13,6 +13,7 @@ use App\Jadwal_dosen;
 use App\Master_ruangan;
 use App\Master_block; 
 use App\Master_mata_kuliah;
+use App\SettingWaktu;
 use Session;
 
 class PenjadwalanController extends Controller
@@ -96,10 +97,7 @@ class PenjadwalanController extends Controller
 
 public function filter(Request $request, Builder $htmlBuilder)
     {
-        //
-
-
-
+        // 
         $this->validate($request, [
      
             'dari_tanggal'     => 'required',
@@ -163,12 +161,7 @@ public function filter(Request $request, Builder $htmlBuilder)
 
             } 
            
-    
-
-
-
-
-
+     
             return Datatables::of($penjadwalans)->addColumn('action', function($penjadwalan) use ($jenis_id_jadwal) {
                         
                         if ($jenis_id_jadwal == 1) {
@@ -223,11 +216,7 @@ public function filter(Request $request, Builder $htmlBuilder)
            $users->prepend('Semua Dosen', 'semua');
 
         return view('penjadwalans.index',['users'=> $users])->with(compact('html'));
-
-
-
-
-    
+  
     }
 
 
@@ -242,8 +231,8 @@ public function filter(Request $request, Builder $htmlBuilder)
         $users = DB::table('users')
             ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
             ->where('role_user.role_id',2)
-            ->pluck('name','id');
-
+            ->pluck('name','id'); 
+ 
         return view('penjadwalans.create',['users' => $users]);
     }
 
@@ -259,20 +248,22 @@ public function filter(Request $request, Builder $htmlBuilder)
 
         $this->validate($request, [
             'tanggal'   => 'required',
-            'waktu_mulai'     => 'required',
-            'waktu_selesai'     => 'required',
+            'data_waktu'     => 'required', 
             'id_block'    => 'required|exists:master_blocks,id',
             'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
             'id_ruangan'    => 'required|exists:master_ruangans,id',
             'id_user'    => 'required|exists:users,id'
         ]);   
 
-        $data_penjadwalan = Penjadwalan::statusRuangan($request)->count();
+        $data_setting_waktu = explode("-",$request->data_waktu);
 
+         
+
+        $data_penjadwalan = Penjadwalan::statusRuangan($request,$data_setting_waktu)->count(); 
         if ($data_penjadwalan == 0) { 
             $dosen_punya_jadwal = array();
                 foreach ($request->id_user as $user_dosen) {
-                 $jadwal_dosen = Jadwal_dosen::statusDosen($request,$user_dosen); 
+                 $jadwal_dosen = Jadwal_dosen::statusDosen($request,$user_dosen,$data_setting_waktu); 
                  $data_jadwal_dosen = $jadwal_dosen->first(); 
 
                 if ($jadwal_dosen->count() > 0) {
@@ -311,11 +302,11 @@ public function filter(Request $request, Builder $htmlBuilder)
                 ]);
             return redirect()->back()->withInput();
         } 
-
+  
         $penjadwalan = Penjadwalan::create([ 
             'tanggal' =>$request->tanggal,
-            'waktu_mulai'=>$request->waktu_mulai,
-            'waktu_selesai'=>$request->waktu_selesai,
+            'waktu_mulai'=>$data_setting_waktu[0],
+            'waktu_selesai'=>$data_setting_waktu[1],
             'id_block'=>$request->id_block,
             'id_mata_kuliah'=>$request->id_mata_kuliah,
             'id_ruangan'=>$request->id_ruangan]);
@@ -329,8 +320,8 @@ public function filter(Request $request, Builder $htmlBuilder)
                     'id_mata_kuliah'=>$request->id_mata_kuliah,
                     'id_ruangan'=>$request->id_ruangan,
                       'tanggal' =>$request->tanggal,
-            'waktu_mulai'=>$request->waktu_mulai,
-            'waktu_selesai'=>$request->waktu_selesai,
+            'waktu_mulai'=>$data_setting_waktu[0],
+            'waktu_selesai'=>$data_setting_waktu[1],
                     ]);                
             }
 

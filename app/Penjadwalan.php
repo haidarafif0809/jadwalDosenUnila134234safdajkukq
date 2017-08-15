@@ -25,23 +25,23 @@ class Penjadwalan extends Model
 		  } 
 
 
-		public function scopeStatusRuangan($query, $request)
+		public function scopeStatusRuangan($query, $request,$data_setting_waktu)
 		{
 
-			$query->where('id_ruangan',$request->id_ruangan)->where('tanggal',$request->tanggal)->where(function ($query) use ($request) {
-                  $query->where('waktu_mulai',$request->waktu_mulai)->orwhere( function ($query) use ($request) {
-                    $query->where(function ($query) use ($request) {
-                      $query->where('waktu_mulai','<',$request->waktu_mulai)->where('waktu_selesai','>',$request->waktu_mulai);
-                        })->orwhere(function($query) use ($request) {
-                         $query->where('waktu_mulai','<',$request->waktu_mulai)->where('waktu_selesai','>',$request->waktu_mulai);
+			$query->where('id_ruangan',$request->id_ruangan)->where('tanggal',$request->tanggal)->where(function ($query) use ($request,$data_setting_waktu) {
+                  $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($request,$data_setting_waktu) {
+                    $query->where(function ($query) use ($request,$data_setting_waktu) {
+                      $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
+                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                         $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
                           });
                         });
-                      })->where(function($query) use ($request) {
-                $query->where('waktu_selesai',$request->waktu_selesai)
-                      ->orwhere(function($query) use ($request){
-                        $query->where('waktu_selesai','>=',$request->waktu_selesai)->where('waktu_mulai','<=',$request->waktu_selesai);
-                        })->orwhere(function($query) use ($request) {
-                           $query->where('waktu_selesai','<',$request->waktu_selesai)->where('waktu_mulai','<=',$request->waktu_selesai);
+                      })->where(function($query) use ($request,$data_setting_waktu) {
+                $query->where('waktu_selesai',$data_setting_waktu[1])
+                      ->orwhere(function($query) use ($request,$data_setting_waktu){
+                        $query->where('waktu_selesai','>=',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
+                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                           $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
                           });
                             })->where('status_jadwal','<','2');
 

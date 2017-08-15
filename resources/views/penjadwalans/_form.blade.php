@@ -6,19 +6,11 @@
 	</div>
 </div>
 
-<div class="form-group{{ $errors->has('waktu_mulai') ? ' has-error' : '' }}">
-	{!! Form::label('waktu_mulai', 'Mulai', ['class'=>'col-md-2 control-label']) !!}
-	<div class="col-md-4">
-		{!! Form::text('waktu_mulai', null, ['class'=>'form-control clockpicker','required','autocomplete'=>'off']) !!}
-		{!! $errors->first('waktu_mulai', '<p class="help-block">:message</p>') !!}
-	</div>
-</div>
-
-<div class="form-group{{ $errors->has('waktu_selesai') ? ' has-error' : '' }}">
-	{!! Form::label('waktu_selesai', 'Selesai', ['class'=>'col-md-2 control-label']) !!}
-	<div class="col-md-4">
-		{!! Form::text('waktu_selesai', null, ['class'=>'form-control clockpicker','required','autocomplete'=>'off']) !!}
-		{!! $errors->first('waktu_selesai', '<p class="help-block">:message</p>') !!}
+<div class="form-group{{ $errors->has('data_waktu') ? ' has-error' : '' }}">
+	{!! Form::label('data_waktu', 'Waktu', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4"> 
+		{!! Form::select('data_waktu', []+App\SettingWaktu::select([DB::raw('CONCAT(waktu_mulai, " - ", waktu_selesai) AS waktu')])->pluck('waktu','waktu')->all(), null, ['class'=>'form-control js-selectize-reguler ', 'placeholder' => 'Pilih Dosen']) !!} 
+		{!! $errors->first('data_waktu', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
 
