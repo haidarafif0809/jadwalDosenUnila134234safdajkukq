@@ -338,7 +338,14 @@ public function filter(Request $request, Builder $htmlBuilder)
             "level"=>"success",
             "message"=>"Berhasil Menambah Penjadwalan"
             ]);
-        return redirect()->route('penjadwalans.index');
+        if (isset($request->asal_input)) {
+            # code...
+            return redirect()->back();
+        }
+        else {
+            return redirect()->route('penjadwalans.index'); 
+        }
+       
     }
 
 

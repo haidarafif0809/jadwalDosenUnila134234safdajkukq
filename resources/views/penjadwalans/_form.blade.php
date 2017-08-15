@@ -14,6 +14,11 @@
 	</div>
 </div>
 
+@if(isset($asal_input))
+
+	{!! Form::hidden('asal_input', $value = 1, ['class'=>'','required','autocomplete'=>'off']) !!}
+
+@endif
 <div class="form-group{{ $errors->has('waktu_selesai') ? ' has-error' : '' }}">
 	{!! Form::label('waktu_selesai', 'Selesai', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">

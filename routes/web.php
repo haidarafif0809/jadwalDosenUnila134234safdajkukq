@@ -32,6 +32,11 @@ Route::get('/jadwal-mahasiswa',[
 	'as' => 'jadwal.mahasiswa',
 	'uses' => 'HomeController@proses_jadwal_mahasiswa'
 	]);
+Route::get('/lihat-jadwal-permodul/{id_modul}/{id_block}',[
+	'middleware' => ['auth','role:admin,pimpinan'],
+	'as' => 'modul.jadwal',
+	'uses' => 'MasterBlockController@lihat_jadwal_permodul'
+	]);
 Route::get('/jadwal-dosen',[
 	'middleware' => ['auth','role:dosen'],
 	'as' => 'jadwal.dosen',

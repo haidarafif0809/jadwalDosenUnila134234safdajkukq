@@ -72,16 +72,87 @@ class MasterBlockController extends Controller
                 ]);
             })->addColumn('tanggal', function($modul){
                 return $modul->dari_tanggal." - > ". $modul->sampai_tanggal;
+            })->addColumn('lihat_jadwal', function($modul){
+                return "<a class='btn btn-default' href='". route('modul.jadwal',['id_modul' =>$modul->id_modul_blok,'id_block'=> $modul->id_blok]). "'>Jadwal</a>";
             })->make(true);
         }
 
         $html = $htmlBuilder
         ->addColumn(['data' => 'modul.nama_modul', 'name' => 'modul.nama_modul', 'title' => 'Mahasiswa', 'orderable' => false])
          ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Periode', 'orderable' => false])
-           ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
+         ->addColumn(['data' => 'lihat_jadwal', 'name' => 'lihat_jadwal', 'title' => 'Jadwal', 'orderable' => false, 'searchable' => false])
+           ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]) ;
 
         return view('master_blocks.create_modul',['id' =>$id])->with(compact('html'));
     }   
+
+    public function lihat_jadwal_permodul ($id_modul,$id_block){
+        
+
+
+        $modul = ModulBlok::with('modul','block')->where('id_blok',$id_block)->where('id_modul_blok',$id_modul)->first();
+
+
+
+        $penjadwalan = Penjadwalan::with(['mata_kuliah','block','ruangan'])->where('id_block',$id_block)->where('tanggal','>=',$modul->dari_tanggal)->where('tanggal','<=',$modul->sampai_tanggal)->get();
+
+        $jadwal_senin = array();
+        $jadwal_selasa = array();
+        $jadwal_rabu = array();
+        $jadwal_kamis = array();
+        $jadwal_jumat = array();
+
+
+        foreach ($penjadwalan as $penjadwalans) {
+            
+            $timestamp = strtotime($penjadwalans->tanggal);
+            $day = date('w', $timestamp);
+
+
+            switch ($day) {
+                case '1':
+                  
+
+                array_push($jadwal_senin, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                
+                    break; 
+                 case '2':
+                 
+
+                array_push($jadwal_selasa, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+
+                    break;    
+                 case '3':
+                  
+                array_push($jadwal_rabu, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+
+                    break;    
+                 case '4':
+                   
+                array_push($jadwal_kamis, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+
+                    break;    
+                 case '5':
+                  
+                array_push($jadwal_jumat, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+
+                    break;
+                
+                default:
+                    
+                    break;
+            }
+
+        }
+    //dosen 
+     $users = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',2)
+            ->pluck('name','id');
+        $asal_input = 1;
+        
+        return view('master_modul.index_jadwal',['jadwal_senin'=> $jadwal_senin,'jadwal_selasa' => $jadwal_selasa,'jadwal_rabu' => $jadwal_rabu,'jadwal_kamis' => $jadwal_kamis,'jadwal_jumat' => $jadwal_jumat,'modul' => $modul,'users' => $users,'asal_input' => $asal_input]);
+    }
 
   public function createMahasiswa(Request $request, Builder $htmlBuilder,$id)
     {

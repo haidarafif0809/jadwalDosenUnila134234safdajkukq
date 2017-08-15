@@ -21,9 +21,10 @@
 				</div>
 
 				<div class="panel-body">
-					<p> <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}">Tambah Penjadwalan </a>
-
-					 <button data-toggle="collapse" data-target="#filter" class="btn btn-primary"> <span class="glyphicon glyphicon-filter"></span> Filter</button> <a class="btn btn-primary" href="{{ route('penjadwalans.index') }}"> <span class="glyphicon glyphicon-remove"></span>  Hapus Filter</a>
+					<p> <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a>
+	
+					 <button data-toggle="collapse" data-target="#filter" class="btn btn-primary"> <span class="glyphicon glyphicon-filter"></span> Filter</button> <a class="btn btn-primary" href="{{ route('penjadwalans.index') }}"> <span class="glyphicon glyphicon-remove"></span>  Hapus Filter</a> <a class="btn btn-primary" href="{{ route('master_blocks.index'	) }}"><span class="glyphicon glyphicon-th-list"></span> Jadwal Per Block </a>
+					 
 
 
 					<div id="filter" class="collapse">

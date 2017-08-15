@@ -15,5 +15,9 @@ class ModulBlok extends Model
      	public function modul()
 		  {
 		  	return $this->hasOne('App\Modul','id','id_modul');
+		  }
+		 public function block()
+		  {
+		  	return $this->hasOne('App\Master_block','id','id_blok');
 		  } 
 }
