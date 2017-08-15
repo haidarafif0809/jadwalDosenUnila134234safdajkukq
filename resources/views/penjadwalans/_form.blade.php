@@ -9,7 +9,7 @@
 <div class="form-group{{ $errors->has('data_waktu') ? ' has-error' : '' }}">
 	{!! Form::label('data_waktu', 'Waktu', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4"> 
-		{!! Form::select('data_waktu', []+App\SettingWaktu::select([DB::raw('CONCAT(waktu_mulai, " - ", waktu_selesai) AS waktu')])->pluck('waktu','waktu')->all(), null, ['class'=>'form-control js-selectize-reguler ', 'placeholder' => 'Pilih Dosen']) !!} 
+		{!! Form::select('data_waktu', []+App\SettingWaktu::select([DB::raw('CONCAT(waktu_mulai, " - ", waktu_selesai) AS waktu')])->pluck('waktu','waktu')->all(), null, ['class'=>'form-control js-selectize-reguler ', 'placeholder' => 'Pilih Waktu']) !!} 
 		{!! $errors->first('data_waktu', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
