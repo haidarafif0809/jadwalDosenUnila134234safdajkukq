@@ -18,14 +18,7 @@
 
 	{!! Form::hidden('asal_input', $value = 1, ['class'=>'','required','autocomplete'=>'off']) !!}
 
-@endif
-<div class="form-group{{ $errors->has('waktu_selesai') ? ' has-error' : '' }}">
-	{!! Form::label('waktu_selesai', 'Selesai', ['class'=>'col-md-2 control-label']) !!}
-	<div class="col-md-4">
-		{!! Form::text('waktu_selesai', null, ['class'=>'form-control clockpicker','required','autocomplete'=>'off']) !!}
-		{!! $errors->first('waktu_selesai', '<p class="help-block">:message</p>') !!}
-	</div>
-</div>
+@endif 
 
 <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
 	{!! Form::label('id_block', 'Block', ['class'=>'col-md-2 control-label']) !!}
