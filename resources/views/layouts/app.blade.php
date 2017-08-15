@@ -45,7 +45,9 @@
                     <ul class="nav navbar-nav">
 
 
-
+                    @if (!Auth::guest())
+                        <li><a href="{{ route('home') }}">Beranda</a></li>
+                    @endif
                     @role('admin')
                         <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li>
                         <li class="dropdown">

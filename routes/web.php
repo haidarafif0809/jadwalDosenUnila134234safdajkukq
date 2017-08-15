@@ -11,12 +11,21 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'HomeController@index')->name('home');
 Route::get('/jadwal-kuliah', 'HomeController@jadwal_kuliah');
 
 Auth::routes();
+
+Route::post('/data-modul-per-block',[
+	'middleware' => ['auth'],
+	'as' => 'modul.data_modul_perblock',
+	'uses' => 'HomeController@data_modul_perblock'
+	]);
+Route::get('/jadwal-mahasiswa',[
+	'middleware' => ['auth','role:mahasiswa'],
+	'as' => 'jadwal.mahasiswa',
+	'uses' => 'HomeController@proses_jadwal_mahasiswa'
+	]);
 
 Route::get('/home', 'HomeController@index')->name('home'); 
 

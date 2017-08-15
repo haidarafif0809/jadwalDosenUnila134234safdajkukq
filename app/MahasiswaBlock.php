@@ -13,5 +13,10 @@ class MahasiswaBlock extends Model
 		public function mahasiswa()
 	  {
 		return $this->hasOne('App\User','id','id_mahasiswa');
+	  }	
+	  
+	  public function block()
+	  {
+		return $this->hasOne('App\Master_block','id','id_block');
 	  }
 }
