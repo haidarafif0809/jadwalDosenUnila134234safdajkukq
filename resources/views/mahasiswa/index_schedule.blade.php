@@ -74,6 +74,19 @@
 
 
 		});
+
+
+		$('.single-event').click(function(){
+			var id_jadwal = $(this).attr('data-id');
+			$.post('{{ route('jadwal.info')}}',{
+
+			 '_token': $('meta[name=csrf-token]').attr('content'),
+			 'id_jadwal' :id_jadwal
+			},function(data){
+				$('.isi-event').html(data);
+			});
+			
+		});
 	});
 </script>
 @endsection

@@ -22,6 +22,11 @@ Route::post('/data-modul-per-block',[
 	'as' => 'modul.data_modul_perblock',
 	'uses' => 'HomeController@data_modul_perblock'
 	]);
+Route::post('/data-info-jadwal',[
+	'middleware' => ['auth'],
+	'as' => 'jadwal.info',
+	'uses' => 'HomeController@info_jadwal'
+	]);
 Route::get('/jadwal-mahasiswa',[
 	'middleware' => ['auth','role:mahasiswa'],
 	'as' => 'jadwal.mahasiswa',
