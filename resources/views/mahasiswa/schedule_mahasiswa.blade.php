@@ -1,7 +1,8 @@
 
 <div class="container">
 
-<center><h1>{{ $modul->modul->nama_modul }}</h1></center>
+<center><h1>{{ $modul->modul->nama_modul }}</h1>
+        <h2>Periode : {{date('d-m-Y', strtotime($modul->dari_tanggal)) }} > {{date('d-m-Y', strtotime($modul->sampai_tanggal)) }}</h2></center>
     <div class="cd-schedule loading">
     <div class="timeline">
         <ul> 
@@ -36,7 +37,7 @@
     <div class="events">
         <ul>
             <li class="events-group">
-                <div class="top-info"><span>Senin</span></div>
+                <div class="top-info"><span>Senin ({{date('d-m-Y', strtotime($modul->dari_tanggal)) }} )  </span></div>
 
                 <ul>
                 @foreach($jadwal_senin as $data)
@@ -50,7 +51,7 @@
             </li>
 
             <li class="events-group">
-                <div class="top-info"><span>Selasa</span></div>
+                <div class="top-info"><span>Selasa ({{date('d-m-Y', strtotime($modul->dari_tanggal .' +1 day')) }} )</span></div>
 
                 <ul>
 
@@ -67,7 +68,7 @@
             </li>
 
             <li class="events-group">
-                <div class="top-info"><span>Rabu</span></div>
+                <div class="top-info"><span>Rabu ({{date('d-m-Y', strtotime($modul->dari_tanggal .' +2 day')) }} )</span></div>
 
                 <ul>
                 @foreach($jadwal_rabu as $data)
@@ -81,7 +82,7 @@
             </li>
 
             <li class="events-group">
-                <div class="top-info"><span>Kamis</span></div>
+                <div class="top-info"><span>Kamis ({{date('d-m-Y', strtotime($modul->dari_tanggal .' +3 day')) }} )</span></div>
 
                 <ul>
                 @foreach($jadwal_kamis as $data)
@@ -95,7 +96,7 @@
             </li>
 
             <li class="events-group">
-                <div class="top-info"><span>Jumat</span></div>
+                <div class="top-info"><span>Jumat ({{date('d-m-Y', strtotime($modul->dari_tanggal .' +4 day')) }} )</span></div>
 
                 <ul>
                 @foreach($jadwal_jumat as $data)
