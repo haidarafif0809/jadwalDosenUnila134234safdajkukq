@@ -31,6 +31,10 @@ class HomeController extends Controller
     public function index(Request $request,Builder $htmlBuilder)
     {
 
+       if (!Auth::check()) {
+        return redirect()->route('login');
+        }
+
         $user_otoritas = Auth::user()->roles->first()->name;
         switch ($user_otoritas) {
             case 'admin':
