@@ -15,7 +15,8 @@ class CreateSettingWaktusTable extends Migration
     {
         Schema::create('setting_waktus', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('waktu');
+            $table->string('waktu_mulai');
+            $table->string('waktu_selesai');
             $table->timestamps();
         });
     }

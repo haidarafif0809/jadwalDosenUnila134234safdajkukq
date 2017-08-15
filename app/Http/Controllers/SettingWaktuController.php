@@ -20,18 +20,19 @@ class SettingWaktuController extends Controller
     public function index(Request $request, Builder $htmlBuilder)
     {
         if ($request->ajax()) {
-            $settingwaktu = SettingWaktu::select(['id','waktu']);
+            $settingwaktu = SettingWaktu::select(['id','waktu_mulai','waktu_selesai']);
             return Datatables::of($settingwaktu)->addColumn('action', function($settingwaktu){
                 return view('datatable._action', [
                     'model'             => $settingwaktu,
                     'form_url'          => route('settingwaktu.destroy', $settingwaktu->id),
                     'edit_url'          => route('settingwaktu.edit', $settingwaktu->id),
-                    'confirm_message'   => 'Apakah Anda Yakin Ingin Menghapus Waktu ' .$settingwaktu->waktu. ' ?'
+                    'confirm_message'   => 'Apakah Anda Yakin Ingin Menghapus Waktu ' .$settingwaktu->waktu_mulai. ' - ' .$settingwaktu->waktu_selesai. ' ?'
                 ]);
             })->make(true);
         }
         $html = $htmlBuilder
-        ->addColumn(['data' => 'waktu', 'name' => 'waktu', 'title' => 'Waktu']) 
+        ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Waktu Mulai']) 
+        ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Waktu Selesai']) 
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
 
         return view('settingwaktu.index')->with(compact('html'));
@@ -58,16 +59,18 @@ class SettingWaktuController extends Controller
     {
         //
         $this->validate($request, [
-            'waktu' => 'required|unique:setting_waktus,waktu,'
+            'waktu_mulai' => 'required|unique:setting_waktus,waktu_mulai',
+            'waktu_selesai' => 'required|unique:setting_waktus,waktu_selesai'
         ]);
     
         $settingwaktu = SettingWaktu::create([
-            'waktu' => $request->waktu
+            'waktu_mulai' => $request->waktu_mulai,
+            'waktu_selesai' => $request->waktu_selesai
         ]);
 
         Session::flash("flash_notification", [
             "level"     => "success",
-            "message"   => "Berhasil Menambah Waktu $settingwaktu->waktu"
+            "message"   => "Berhasil Menambah Waktu Mulai $request->waktu_mulai Waktu Selesai $request->waktu_selesai"
         ]);
 
         return redirect()->route('settingwaktu.index');
@@ -108,15 +111,18 @@ class SettingWaktuController extends Controller
     {
         //
          $this->validate($request, [
-            'waktu'   => 'required|unique:setting_waktus,waktu,' .$id
+            'waktu_mulai'   => 'required|unique:setting_waktus,waktu_mulai,' .$id ,
+            'waktu_selesai'   => 'required|unique:setting_waktus,waktu_selesai,' .$id
             ]);
 
         SettingWaktu::where('id', $id)->update([ 
-            'waktu' =>$request->waktu]);
+            'waktu_mulai' =>$request->waktu_mulai,
+            'waktu_selesai' =>$request->waktu_selesai
+            ]);
 
         Session::flash("flash_notification", [
             "level"=>"success",
-            "message"=>"Berhasil Mengubah Waktu $request->waktu"
+            "message"=>"Berhasil Mengubah Waktu Mulai $request->waktu_mulai Waktu Selesai $request->waktu_selesai"
             ]);
 
         return redirect()->route('settingwaktu.index');
