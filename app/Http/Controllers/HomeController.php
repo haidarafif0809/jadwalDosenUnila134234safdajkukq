@@ -8,7 +8,9 @@ use App\ModulBlok;
 use App\Master_block;
 use Auth;
 use Illuminate\Support\Facades\DB;
-
+use Yajra\Datatables\Html\Builder;
+use App\Jadwal_dosen;
+use Yajra\Datatables\Datatables;
 class HomeController extends Controller
 {
     /**
@@ -26,7 +28,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request,Builder $htmlBuilder)
     {
 
         $user_otoritas = Auth::user()->roles->first()->name;
@@ -38,7 +40,7 @@ class HomeController extends Controller
 
                 break;  
             case 'dosen':
-                # code...
+                return HomeController::jadwal_kuliah_dosen($request,$htmlBuilder);
 
                 break; 
              case 'mahasiswa':
@@ -59,6 +61,63 @@ class HomeController extends Controller
         }
 
     }  
+
+    public function jadwal_kuliah_dosen(Request $request, Builder $htmlBuilder){
+
+           if ($request->ajax()) {
+            # code...
+
+
+        $dosen = Auth::user()->id;
+
+
+            if (isset($request->dari_tanggal)) {
+                       $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
+            }
+            else {
+                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$dosen)->groupBy('id_jadwal');
+            }
+     
+
+            return Datatables::of($penjadwalans)
+            ->addColumn('jadwal_dosen', function($jadwal){
+                $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id_jadwal)->get(); 
+                    return view('penjadwalans._action', [ 
+                        'model_user'     => $jadwal_dosens,
+                        'id_jadwal' => $jadwal->id
+                        ]);
+                })
+            ->addColumn('status',function($status_penjadwalan){
+                $status = "status_jadwal";
+                if ($status_penjadwalan->status_jadwal == 0 ) {
+                    # code...
+                    $status = "Belum Terlaksana";
+                }
+                elseif ($status_penjadwalan->status_jadwal == 1) {
+                    # code...
+                     $status = "Sudah Terlaksana";
+                }
+                elseif ($status_penjadwalan->status_jadwal == 2) {
+                    # code...
+                     $status = "Batal";
+                } 
+                return $status;
+                })->make(true);
+        }
+        $html = $htmlBuilder
+        ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
+        ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
+        ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
+        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
+        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
+        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
+        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])
+        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
+
+
+        return view('dosen.index')->with(compact('html'));
+
+    }
 
     public function jadwal_kuliah_mahasiswa(){
         $mahasiswa = Auth::user()->id;

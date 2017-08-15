@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'HomeController@index')->name('home');
+
 Route::get('/jadwal-kuliah', 'HomeController@jadwal_kuliah');
 
 Auth::routes();
@@ -25,6 +26,11 @@ Route::get('/jadwal-mahasiswa',[
 	'middleware' => ['auth','role:mahasiswa'],
 	'as' => 'jadwal.mahasiswa',
 	'uses' => 'HomeController@proses_jadwal_mahasiswa'
+	]);
+Route::get('/jadwal-dosen',[
+	'middleware' => ['auth','role:dosen'],
+	'as' => 'jadwal.dosen',
+	'uses' => 'HomeController@proses_jadwal_dosen'
 	]);
 
 Route::get('/home', 'HomeController@index')->name('home'); 
