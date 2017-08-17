@@ -36,10 +36,33 @@ class Jadwal_dosen extends Model
 
 
 
-		public function scopeStatusDosen($query, $request,$user_dosen,$data_setting_waktu)
+    public function scopeStatusDosen($query, $request,$user_dosen,$data_setting_waktu)
+    {
+
+      $query->where('id_dosen',$user_dosen)->where('tanggal',$request->tanggal)->where(function ($query) use ($request,$data_setting_waktu) {
+                  $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($request,$data_setting_waktu) {
+                    $query->where(function ($query) use ($request,$data_setting_waktu) {
+                      $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
+                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                         $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
+                          });
+                        });
+                      })->where(function($query) use ($request,$data_setting_waktu) {
+                $query->where('waktu_selesai',$data_setting_waktu[1])
+                      ->orwhere(function($query) use ($request,$data_setting_waktu){
+                        $query->where('waktu_selesai','>=',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
+                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                           $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
+                          });
+                            });
+
+              return $query;
+    
+    }   
+		public function scopeStatusDosenEdit($query, $request,$user_dosen,$data_setting_waktu,$id)
 		{
 
-			$query->where('id_dosen',$user_dosen)->where('tanggal',$request->tanggal)->where(function ($query) use ($request,$data_setting_waktu) {
+			$query->where('id_jadwal','!=',$id)->where('id_dosen',$user_dosen)->where('tanggal',$request->tanggal)->where(function ($query) use ($request,$data_setting_waktu) {
                   $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($request,$data_setting_waktu) {
                     $query->where(function ($query) use ($request,$data_setting_waktu) {
                       $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);

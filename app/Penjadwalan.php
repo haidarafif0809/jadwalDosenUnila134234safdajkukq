@@ -25,10 +25,33 @@ class Penjadwalan extends Model
 		  } 
 
 
-		public function scopeStatusRuangan($query, $request,$data_setting_waktu)
+    public function scopeStatusRuangan($query, $request,$data_setting_waktu)
+    {
+
+      $query->where('id_ruangan',$request->id_ruangan)->where('tanggal',$request->tanggal)->where(function ($query) use ($request,$data_setting_waktu) {
+                  $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($request,$data_setting_waktu) {
+                    $query->where(function ($query) use ($request,$data_setting_waktu) {
+                      $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
+                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                         $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
+                          });
+                        });
+                      })->where(function($query) use ($request,$data_setting_waktu) {
+                $query->where('waktu_selesai',$data_setting_waktu[1])
+                      ->orwhere(function($query) use ($request,$data_setting_waktu){
+                        $query->where('waktu_selesai','>=',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
+                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                           $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
+                          });
+                            })->where('status_jadwal','<','2');
+
+              return $query;
+    
+    }
+		public function scopeStatusRuanganEdit($query, $request,$data_setting_waktu,$id)
 		{
 
-			$query->where('id_ruangan',$request->id_ruangan)->where('tanggal',$request->tanggal)->where(function ($query) use ($request,$data_setting_waktu) {
+			$query->where('id','!=',$id)->where('id_ruangan',$request->id_ruangan)->where('tanggal',$request->tanggal)->where(function ($query) use ($request,$data_setting_waktu) {
                   $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($request,$data_setting_waktu) {
                     $query->where(function ($query) use ($request,$data_setting_waktu) {
                       $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);

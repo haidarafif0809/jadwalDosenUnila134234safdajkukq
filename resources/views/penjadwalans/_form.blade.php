@@ -7,6 +7,7 @@
 	</div>
 </div>
 @else
+
 <div class="form-group{{ $errors->has('tanggal') ? ' has-error' : '' }}">
 	{!! Form::label('tanggal', 'Tanggal', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
@@ -16,7 +17,15 @@
 </div>
 @endif
 
-
+@if(isset($data_waktu))
+<div class="form-group{{ $errors->has('data_waktu') ? ' has-error' : '' }}">
+	{!! Form::label('data_waktu', 'Waktu', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4"> 
+		{!! Form::select('data_waktu', []+App\SettingWaktu::select([DB::raw('CONCAT(waktu_mulai, " - ", waktu_selesai) AS waktu')])->pluck('waktu','waktu')->all(), $value = $data_waktu, ['class'=>'form-control js-selectize-reguler ', 'placeholder' => 'Pilih Waktu']) !!} 
+		{!! $errors->first('data_waktu', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
+@else
 <div class="form-group{{ $errors->has('data_waktu') ? ' has-error' : '' }}">
 	{!! Form::label('data_waktu', 'Waktu', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4"> 
@@ -24,6 +33,9 @@
 		{!! $errors->first('data_waktu', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
+
+@endif
+
 
 @if(isset($asal_input))
 
