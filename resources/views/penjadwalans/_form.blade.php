@@ -1,10 +1,21 @@
+@if(isset($asal_input))
 <div class="form-group{{ $errors->has('tanggal') ? ' has-error' : '' }}">
 	{!! Form::label('tanggal', 'Tanggal', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::text('tanggal', null, ['class'=>'form-control datepicker','required','autocomplete'=>'off']) !!}
+		{!! Form::text('tanggal', null, ['class'=>'form-control datepicker-modul-jadwal','required','autocomplete'=>'off','readonly' => '']) !!}
 		{!! $errors->first('tanggal', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
+@else
+<div class="form-group{{ $errors->has('tanggal') ? ' has-error' : '' }}">
+	{!! Form::label('tanggal', 'Tanggal', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4">
+		{!! Form::text('tanggal', null, ['class'=>'form-control datepicker','required','autocomplete'=>'off','readonly' => '']) !!}
+		{!! $errors->first('tanggal', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
+@endif
+
 
 <div class="form-group{{ $errors->has('data_waktu') ? ' has-error' : '' }}">
 	{!! Form::label('data_waktu', 'Waktu', ['class'=>'col-md-2 control-label']) !!}

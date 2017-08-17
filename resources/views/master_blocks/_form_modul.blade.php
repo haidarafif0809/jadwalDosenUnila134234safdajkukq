@@ -8,20 +8,14 @@
 
 
 <div class="form-group{{ $errors->has('dari_tanggal') ? ' has-error' : '' }}">
-	{!! Form::label('dari_tanggal', 'Dari Tanggal', ['class'=>'col-md-2 control-label']) !!}
+	{!! Form::label('dari_tanggal', 'Tanggal Mulai', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::text('dari_tanggal', null, ['class'=>'form-control datepicker','required','autocomplete'=>'off']) !!}
+		{!! Form::text('dari_tanggal', null, ['class'=>'form-control datepicker-modul','required','autocomplete'=>'off','readonly' => '']) !!}
 		{!! $errors->first('dari_tanggal', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
 
-<div class="form-group{{ $errors->has('sampai_tanggal') ? ' has-error' : '' }}">
-	{!! Form::label('sampai_tanggal', 'Sampai Tanggal', ['class'=>'col-md-2 control-label']) !!}
-	<div class="col-md-4">
-		{!! Form::text('sampai_tanggal', null, ['class'=>'form-control datepicker','required','autocomplete'=>'off']) !!}
-		{!! $errors->first('sampai_tanggal', '<p class="help-block">:message</p>') !!}
-	</div>
-</div>
+
 
 <div class="form-group">
 	<div class="col-md-4 col-md-offset-2">

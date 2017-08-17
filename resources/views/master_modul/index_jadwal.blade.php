@@ -55,6 +55,22 @@
 			});
 			
 		});
+
+		var date = new Date('{{$modul->dari_tanggal}}');
+		var end_date = new Date('{{$tanggal_akhir}}');
+		// use this to allow certain dates only
+
+
+		$('.datepicker-modul-jadwal').datepicker({
+		    format: 'yyyy-mm-dd',
+		    daysOfWeekDisabled: '0,6',
+		    startDate: date,
+		    autoclose: true,
+		    endDate : end_date
+		   
+		});
+
+
 	
 </script>
 @endsection

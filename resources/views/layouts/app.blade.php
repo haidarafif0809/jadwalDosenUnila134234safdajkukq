@@ -120,7 +120,7 @@
 <script src="{{ asset('js/bootstrap-clockpicker.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap-clockpicker.js') }}"></script>
 <script src="{{ asset('js/selectize.min.js') }}"></script> 
-<script src="{{ asset('js/custom.js') }}"></script>
+<script src="{{ asset('js/custom-v.1.0.1.js') }}"></script>
 <script src="{{ asset('js/main.js') }}"></script> 
 
 @yield('scripts')
