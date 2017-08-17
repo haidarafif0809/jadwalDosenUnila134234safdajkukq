@@ -19,6 +19,11 @@
 	{!! Form::hidden('asal_input', $value = 1, ['class'=>'','required','autocomplete'=>'off']) !!}
 
 @endif 
+@if(isset($asal_input))
+
+{!! Form::hidden('id_block', $value = $modul->id_blok, ['class'=>'','required','autocomplete'=>'off']) !!}
+
+@else 
 
 <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
 	{!! Form::label('id_block', 'Block', ['class'=>'col-md-2 control-label']) !!}
@@ -27,6 +32,9 @@
 		{!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
+
+@endif
+
 
 <div class="form-group{{ $errors->has('id_mata_kuliah') ? ' has-error' : '' }}">
 	{!! Form::label('id_mata_kuliah', 'Mata Kuliah', ['class'=>'col-md-2 control-label']) !!}
