@@ -14,6 +14,7 @@ use App\Master_ruangan;
 use App\Master_block; 
 use App\Master_mata_kuliah;
 use App\SettingWaktu;
+use App\ModulBlok;
 use Session;
 
 class PenjadwalanController extends Controller
@@ -28,7 +29,7 @@ class PenjadwalanController extends Controller
         //
         if ($request->ajax()) {
             # code...
-            $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan']);
+            $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul']);
             return Datatables::of($penjadwalans)->addColumn('action', function($penjadwalan){
                     return view('datatable._action', [
                         'model'     => $penjadwalan,
@@ -236,6 +237,18 @@ public function filter(Request $request, Builder $htmlBuilder)
         return view('penjadwalans.create',['users' => $users]);
     }
 
+    public function data_modul_perblock_penjadwalan (Request $request){
+        if ($request->ajax()) {
+            
+            $modul =  ModulBlok::with('modul')->where('id_blok',$request->id_block)->get();
+
+            foreach ($modul as $data) {
+                echo "<option value='".$data->id_modul."'>".$data->modul->nama_modul."</option>";
+            }
+
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -252,7 +265,8 @@ public function filter(Request $request, Builder $htmlBuilder)
             'id_block'    => 'required|exists:master_blocks,id',
             'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
             'id_ruangan'    => 'required|exists:master_ruangans,id',
-            'id_user'    => 'required|exists:users,id'
+            'id_user'    => 'required|exists:users,id',
+            'modul'    => 'required|exists:users,id',
         ]);   
 
         $data_setting_waktu = explode("-",$request->data_waktu);

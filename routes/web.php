@@ -22,6 +22,12 @@ Route::post('/data-modul-per-block',[
 	'as' => 'modul.data_modul_perblock',
 	'uses' => 'HomeController@data_modul_perblock'
 	]);
+
+Route::post('/data-modul-per-block-penjadwalan',[
+	'middleware' => ['auth'],
+	'as' => 'modul.data_modul_perblock_penjadwalan',
+	'uses' => 'PenjadwalanController@data_modul_perblock_penjadwalan'
+	]);
 Route::post('/data-info-jadwal',[
 	'middleware' => ['auth'],
 	'as' => 'jadwal.info',

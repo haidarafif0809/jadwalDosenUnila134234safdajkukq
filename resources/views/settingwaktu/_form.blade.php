@@ -19,3 +19,5 @@
 		{!! Form::submit('Simpan', ['class'=>'btn btn-primary']) !!}
 	</div>
 </div>
+
+<p style="color: red;">Contoh Pengisian Waktu : 10:20 </p>

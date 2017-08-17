@@ -1,3 +1,33 @@
+
+@if(isset($asal_input))
+
+	{!! Form::hidden('asal_input', $value = 1, ['class'=>'','required','autocomplete'=>'off']) !!}
+
+@endif 
+@if(isset($asal_input))
+
+{!! Form::hidden('id_block', $value = $modul->id_blok, ['class'=>'','required','autocomplete'=>'off']) !!}
+
+@else 
+
+<div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
+	{!! Form::label('id_block', 'Block', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4">
+		{!! Form::select('id_block', []+App\Master_block::pluck('nama_block','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Block']) !!}
+		{!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
+
+<div class="form-group{{ $errors->has('modul') ? ' has-error' : '' }}">
+	{!! Form::label('modul', 'Modul', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4">
+		{!! Form::select('modul', [], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Modul']) !!}
+		{!! $errors->first('modul', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
+
+@endif
+
 @if(isset($asal_input))
 <div class="form-group{{ $errors->has('tanggal') ? ' has-error' : '' }}">
 	{!! Form::label('tanggal', 'Tanggal', ['class'=>'col-md-2 control-label']) !!}
@@ -35,29 +65,6 @@
 </div>
 
 @endif
-
-
-@if(isset($asal_input))
-
-	{!! Form::hidden('asal_input', $value = 1, ['class'=>'','required','autocomplete'=>'off']) !!}
-
-@endif 
-@if(isset($asal_input))
-
-{!! Form::hidden('id_block', $value = $modul->id_blok, ['class'=>'','required','autocomplete'=>'off']) !!}
-
-@else 
-
-<div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
-	{!! Form::label('id_block', 'Block', ['class'=>'col-md-2 control-label']) !!}
-	<div class="col-md-4">
-		{!! Form::select('id_block', []+App\Master_block::pluck('nama_block','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Block']) !!}
-		{!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}
-	</div>
-</div>
-
-@endif
-
 
 <div class="form-group{{ $errors->has('id_mata_kuliah') ? ' has-error' : '' }}">
 	{!! Form::label('id_mata_kuliah', 'Mata Kuliah', ['class'=>'col-md-2 control-label']) !!}
