@@ -86,6 +86,7 @@ class UserSeeder extends Seeder
     $mahasiswa->password = bcrypt('rahasia'); 
     $mahasiswa->no_hp = '-';
     $mahasiswa->alamat = '-';
+    $mahasiswa->id_angkatan = 1;
     $mahasiswa->save();
     $mahasiswa->attachRole($mahasiswaRole);
 

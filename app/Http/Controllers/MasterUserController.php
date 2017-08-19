@@ -10,6 +10,7 @@ use App\User;
 use App\Role;
 use App\User_otoritas;
 use Auth;
+use App\Angkatan;
 use Session;
 
 class MasterUserController extends Controller
@@ -54,6 +55,15 @@ class MasterUserController extends Controller
             ->addColumn('role', function($user){
                 $role = Role::where('id',$user->role->role_id)->first();
                 return $role->display_name;
+                })
+            ->addColumn('angkatan',function($user){
+                if ($user->role->role_id == 3) {
+                    $angkatan = Angkatan::find($user->id_angkatan);
+                    return $angkatan->nama_angkatan;
+                }else{
+                    return "";
+                }
+
                 })->make(true);
         }
         $html = $htmlBuilder
@@ -62,6 +72,7 @@ class MasterUserController extends Controller
         ->addColumn(['data' => 'no_hp', 'name' => 'no_hp', 'title' => 'Nomor Hp'])
         ->addColumn(['data' => 'alamat', 'name' => 'alamat', 'title' => 'Alamat'])
         ->addColumn(['data' => 'role', 'name' => 'role', 'title' => 'Otoritas'])
+        ->addColumn(['data' => 'angkatan', 'name' => 'angkatan', 'title' => 'Angkatan'])
         ->addColumn(['data' => 'reset', 'name' => 'reset', 'title' => 'Reset Password'])
         ->addColumn(['data' => 'konfirmasi', 'name' => 'konfirmasi', 'title' => 'Konfirmasi', 'searchable'=>false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
@@ -150,7 +161,8 @@ class MasterUserController extends Controller
             'name' =>$request->name,
             'email'=>$request->email,
             'no_hp'=>$request->no_hp,
-            'alamat'=>$request->alamat
+            'alamat'=>$request->alamat,
+            'id_angkatan' => $request->id_angkatan
             ]);
 
         $role_lama = Role::where('id',$request->role_lama)->first();
