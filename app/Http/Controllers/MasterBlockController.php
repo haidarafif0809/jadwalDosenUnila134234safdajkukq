@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Master_block; //Modal
 use App\Penjadwalan; 
 use App\ModulBlok; 
+use App\Angkatan; 
 use App\MahasiswaBlock; 
 use Auth;
 use Session;
@@ -23,7 +24,7 @@ class MasterBlockController extends Controller
     public function index(Request $request, Builder $htmlBuilder)
     {
         if ($request->ajax()) {
-            $master_blocks = Master_block::select(['id', 'kode_block', 'nama_block']);
+            $master_blocks = Master_block::all();
             return Datatables::of($master_blocks)->addColumn('action', function($master_blocks){
                 return view('datatable._action', [
                     'model'             => $master_blocks,
@@ -33,15 +34,24 @@ class MasterBlockController extends Controller
                 ]);
             })->addColumn('modul', function($master_blocks){
                 return '<a class="btn btn-default" href="'.route('master_blocks.modul',$master_blocks->id).'">Lihat Modul</a>';
-            })->addColumn('mahasiswa', function($master_blocks){
-                return '<a class="btn btn-default" href="'.route('master_blocks.mahasiswa',$master_blocks->id).'">Lihat Mahasiswa</a>';
+            })->addColumn('angkatan', function($master_blocks){
+
+                if ($master_blocks->id_angkatan == NULL) {
+                    return "Belum di kaitkan";
+                }
+                else {
+                    $angkatan = Angkatan::find($master_blocks->id_angkatan);
+
+                    return $angkatan->nama_angkatan; 
+                }
+               
             })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'kode_block', 'name' => 'kode_block', 'title' => 'Kode Block'])
         ->addColumn(['data' => 'nama_block', 'name' => 'nama_block', 'title' => 'Nama Block'])
         ->addColumn(['data' => 'modul', 'name' => 'modul', 'title' => 'Modul','orderable' => false, 'searchable' => false]) 
-         ->addColumn(['data' => 'mahasiswa', 'name' => 'mahasiswa', 'title' => 'Mahasiswa','orderable' => false, 'searchable' => false])
+         ->addColumn(['data' => 'angkatan', 'name' => 'angkatan', 'title' => 'Angkatan','orderable' => false, 'searchable' => false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
 
         return view('master_blocks.index')->with(compact('html'));
@@ -272,7 +282,8 @@ class MasterBlockController extends Controller
     
         $master_blocks = Master_block::create([
             'kode_block' => $request->kode_block,
-            'nama_block' => $request->nama_block
+            'nama_block' => $request->nama_block,
+            'id_angkatan' => $request->id_angkatan
         ]);
 
         Session::flash("flash_notification", [
@@ -322,12 +333,13 @@ class MasterBlockController extends Controller
 
         Master_block::where('id', $id)->update([            
             'kode_block' => $request->kode_block,
-            'nama_block' => $request->nama_block
+            'nama_block' => $request->nama_block,
+            'id_angkatan' => $request->id_angkatan
         ]);
 
         Session::flash("flash_notification", [
             "level"     => "success",
-            "message"   => "Berhasil Mengubah Block $request->nama_block"
+            "message"   => "Berhasil Mengubah Block $request->id_angkatan"
         ]);
 
         return redirect()->route('master_blocks.index');

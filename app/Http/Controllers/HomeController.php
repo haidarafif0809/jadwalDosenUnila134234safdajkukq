@@ -125,12 +125,10 @@ class HomeController extends Controller
     }
 
     public function jadwal_kuliah_mahasiswa(){
-        $mahasiswa = Auth::user()->id;
+        $mahasiswa = Auth::user()->id_angkatan;
 
-       $block = DB::table('mahasiswa_block')
-            ->leftJoin('master_blocks', 'mahasiswa_block.id_block', '=', 'master_blocks.id')
-            ->where('mahasiswa_block.id_mahasiswa',$mahasiswa)
-            ->pluck('master_blocks.nama_block','master_blocks.id');
+       $block = Master_block::where('id_angkatan',$mahasiswa)
+            ->pluck('nama_block','id');
 
         return view('mahasiswa.index',['block' => $block]);
     }
