@@ -64,6 +64,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 	'uses' => 'PenjadwalanController@filter'
 	]);	
 
+	Route::get('penjadwalans/batal',[
+	'middleware' => ['auth','role:dosen'],
+	'as' => 'penjadwalans.batal_dosen',
+	'uses' => 'PenjadwalanController@status_batal_dosen'
+	]);
+
 Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan']], function () {
 
 	Route::resource('master_ruangans', 'MasterRuanganController'); 

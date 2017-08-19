@@ -77,7 +77,7 @@ class HomeController extends Controller
 
 
             if (isset($request->dari_tanggal)) {
-                       $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
+                       $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan','jadwal'])->where('id_dosen',$dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
             }
             else {
                  $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$dosen)->groupBy('id_jadwal');
@@ -92,17 +92,29 @@ class HomeController extends Controller
                         'id_jadwal' => $jadwal->id
                         ]);
                 })
-            ->addColumn('status',function($status_penjadwalan){
-                $status = "status_jadwal";
-                if ($status_penjadwalan->status_jadwal == 0 ) {
+            ->addColumn('tombol_status', function($data_status){  
+                    return view('penjadwalans._action_status', [ 
+                        'model'     => $data_status,
+                        'asal_input'     => 1,
+                        'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
+                        'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
+                        'batal_url' => route('penjadwalans.batal_dosen'),
+                        'terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Terlaksana ?',
+                        'belum_terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Belum Terlaksana?',
+                        'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
+                        ]);
+                })
+            ->addColumn('status_jadwal',function($status_penjadwalan){
+               
+                if ($status_penjadwalan->jadwal->status_jadwal == 0 ) {
                     # code...
                     $status = "Belum Terlaksana";
                 }
-                elseif ($status_penjadwalan->status_jadwal == 1) {
+                elseif ($status_penjadwalan->jadwal->status_jadwal == 1) {
                     # code...
                      $status = "Sudah Terlaksana";
                 }
-                elseif ($status_penjadwalan->status_jadwal == 2) {
+                elseif ($status_penjadwalan->jadwal->status_jadwal == 2) {
                     # code...
                      $status = "Batal";
                 } 
@@ -116,7 +128,8 @@ class HomeController extends Controller
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
         ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
-        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])
+        ->addColumn(['data' => 'status_jadwal', 'name' => 'status_jadwal', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])
+        ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
 
 
