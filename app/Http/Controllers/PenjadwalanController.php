@@ -322,6 +322,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             'waktu_mulai'=>$data_setting_waktu[0],
             'waktu_selesai'=>$data_setting_waktu[1],
             'id_block'=>$request->id_block,
+            'id_modul'=>$request->modul,
             'id_mata_kuliah'=>$request->id_mata_kuliah,
             'id_ruangan'=>$request->id_ruangan]);
 
@@ -455,7 +456,8 @@ public function filter(Request $request, Builder $htmlBuilder)
             'id_block'    => 'required|exists:master_blocks,id',
             'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
             'id_ruangan'    => 'required|exists:master_ruangans,id',
-            'id_user'    => 'required|exists:users,id'
+            'id_user'    => 'required|exists:users,id',
+            'modul'    => 'required|exists:moduls,id',
             ]); 
 
          $data_setting_waktu = explode("-",$request->data_waktu);
@@ -512,6 +514,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             'waktu_selesai'=>$data_setting_waktu[1] ,
             'id_block'=>$request->id_block,
             'id_mata_kuliah'=>$request->id_mata_kuliah,
+            'id_modul'=>$request->modul,
             'id_ruangan'=>$request->id_ruangan]);
 
         Jadwal_dosen::where('id_jadwal', $id)->delete();
