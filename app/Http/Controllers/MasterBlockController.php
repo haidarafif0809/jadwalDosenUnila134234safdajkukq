@@ -11,6 +11,7 @@ use App\Penjadwalan;
 use App\ModulBlok; 
 use App\Angkatan; 
 use App\MahasiswaBlock; 
+use App\UserPjDosen;
 use Auth;
 use Session;
 
@@ -24,7 +25,7 @@ class MasterBlockController extends Controller
     public function index(Request $request, Builder $htmlBuilder)
     {
         if ($request->ajax()) {
-            $master_blocks = Master_block::all();
+            $master_blocks = Master_block::with('user_pj_dosen');
             return Datatables::of($master_blocks)->addColumn('action', function($master_blocks){
                 return view('datatable._action', [
                     'model'             => $master_blocks,
@@ -32,7 +33,13 @@ class MasterBlockController extends Controller
                     'edit_url'          => route('master_blocks.edit', $master_blocks->id),
                     'confirm_message'   => 'Apakah Anda Yakin Ingin Menghapus Block ' .$master_blocks->nama_block. '?'
                 ]);
-            })->addColumn('modul', function($master_blocks){
+            })->addColumn('user_pj_dosen', function($pj_dosen){
+                $user_pj_dosen = UserPjDosen::with(['block','dosen'])->where('id_master_block',$pj_dosen->id)->get(); 
+                    return view('master_blocks._action', [ 
+                        'model_user'     => $user_pj_dosen,
+                        'id_master_block' => $pj_dosen->id
+                        ]);
+                })->addColumn('modul', function($master_blocks){
                 return '<a class="btn btn-default" href="'.route('master_blocks.modul',$master_blocks->id).'">Lihat Modul</a>';
             })->addColumn('angkatan', function($master_blocks){
 
@@ -50,6 +57,7 @@ class MasterBlockController extends Controller
         $html = $htmlBuilder
         ->addColumn(['data' => 'kode_block', 'name' => 'kode_block', 'title' => 'Kode Block'])
         ->addColumn(['data' => 'nama_block', 'name' => 'nama_block', 'title' => 'Nama Block'])
+        ->addColumn(['data' => 'user_pj_dosen', 'name' => 'user_pj_dosen', 'title' => 'Pj Dosen','orderable' => false, 'searchable' => false]) 
         ->addColumn(['data' => 'modul', 'name' => 'modul', 'title' => 'Modul','orderable' => false, 'searchable' => false]) 
          ->addColumn(['data' => 'angkatan', 'name' => 'angkatan', 'title' => 'Angkatan','orderable' => false, 'searchable' => false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
@@ -64,7 +72,12 @@ class MasterBlockController extends Controller
      */
     public function create()
     {
-        return view('master_blocks.create');
+        $users = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',5)
+            ->pluck('name','id'); 
+ 
+        return view('master_blocks.create',['users' => $users]); 
     }
 
      public function createModul(Request $request, Builder $htmlBuilder,$id)
@@ -277,14 +290,23 @@ class MasterBlockController extends Controller
     {
         $this->validate($request, [
             'kode_block' => 'required|unique:master_blocks,kode_block,',
-            'nama_block' => 'required|unique:master_blocks,nama_block'
+            'nama_block' => 'required|unique:master_blocks,nama_block',
+            'id_user' => 'required'
         ]);
     
+
         $master_blocks = Master_block::create([
             'kode_block' => $request->kode_block,
             'nama_block' => $request->nama_block,
             'id_angkatan' => $request->id_angkatan
         ]);
+
+            foreach ($request->id_user as $user_pj_dosen) { 
+                $user_pj_dosen = UserPjDosen::create([ 
+                    'id_master_block' =>$master_blocks->id,
+                    'id_pj_dosen'=>$user_pj_dosen
+                    ]);                
+            }
 
         Session::flash("flash_notification", [
             "level"     => "success",
@@ -314,7 +336,17 @@ class MasterBlockController extends Controller
     public function edit($id)
     {
         $master_blocks = Master_block::find($id);
-        return view('master_blocks.edit')->with(compact('master_blocks'));
+        $users = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',5)
+            ->pluck('name','id');
+        $dosen = UserPjDosen::with(['block','dosen'])->where('id_master_block',$id)->get(); 
+        $data_pj_dosen = '';
+
+            foreach ($dosen as $dosens) { 
+              $data_pj_dosen .= ( "'".$dosens->dosen->id ."'," ); //untuk menampilkan data user yang sesuai ketika tambah
+            }
+        return view('master_blocks.edit',['users' => $users])->with(compact('master_blocks','data_pj_dosen'));
     }
 
     /**
@@ -328,7 +360,8 @@ class MasterBlockController extends Controller
     {
         $this->validate($request, [
             'kode_block' => 'required|unique:master_blocks,kode_block,' .$id,
-            'nama_block' => 'required|unique:master_blocks,nama_block,' .$id
+            'nama_block' => 'required|unique:master_blocks,nama_block,' .$id,
+            'id_user'    => 'required|exists:users,id'
         ]);
 
         Master_block::where('id', $id)->update([            
@@ -337,9 +370,18 @@ class MasterBlockController extends Controller
             'id_angkatan' => $request->id_angkatan
         ]);
 
+        UserPjDosen::where('id_master_block', $id)->delete();
+            foreach ($request->id_user as $user_pj_dosen) { 
+                $user_pj_dosen = UserPjDosen::create([ 
+                    'id_master_block' =>$id,
+                    'id_pj_dosen'=>$user_pj_dosen
+                    ]);                
+            }
+
+
         Session::flash("flash_notification", [
             "level"     => "success",
-            "message"   => "Berhasil Mengubah Block $request->id_angkatan"
+            "message"   => "Berhasil Mengubah Block $request->nama_block"
         ]);
 
         return redirect()->route('master_blocks.index');
@@ -370,6 +412,7 @@ class MasterBlockController extends Controller
         else{
 
         Master_block::destroy($id);
+        UserPjDosen::where('id_master_block', $id)->delete();
             Session::flash("flash_notification", [
                 "level"     => "danger",
                 "message"   => "Master Data Block Berhasil Di Hapus"

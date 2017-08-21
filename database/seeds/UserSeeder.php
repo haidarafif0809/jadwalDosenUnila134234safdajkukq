@@ -38,10 +38,11 @@ class UserSeeder extends Seeder
     $pimpinanRole->display_name = "Pimpinan";
     $pimpinanRole->save();  
 
+    // Membuat sample pj dosen
     $pjDosenRole = new Role();
     $pjDosenRole->name = "pj_dosen";
     $pjDosenRole->display_name = "PJ Dosen";
-    $pjDosenRole->save();
+    $pjDosenRole->save(); 
 
     // Membuat sample admin
     $admin = new User();
@@ -54,9 +55,28 @@ class UserSeeder extends Seeder
     $admin->save();
     $admin->attachRole($adminRole);
 
+    // Membuat sample pj dosen
     $pj_dosen = new User();
-    $pj_dosen->name = "PJ Dosen";
-    $pj_dosen->email = 'pjdosen@gmail.com';
+    $pj_dosen->name = "PJ Dosen 1";
+    $pj_dosen->email = 'pjdosen1@gmail.com';
+    $pj_dosen->password = bcrypt('rahasia'); 
+    $pj_dosen->no_hp = '-';
+    $pj_dosen->alamat = '-';
+    $pj_dosen->save();
+    $pj_dosen->attachRole($pjDosenRole);
+
+    $pj_dosen = new User();
+    $pj_dosen->name = "PJ Dosen 2";
+    $pj_dosen->email = 'pjdosen2@gmail.com';
+    $pj_dosen->password = bcrypt('rahasia'); 
+    $pj_dosen->no_hp = '-';
+    $pj_dosen->alamat = '-';
+    $pj_dosen->save();
+    $pj_dosen->attachRole($pjDosenRole);
+
+    $pj_dosen = new User();
+    $pj_dosen->name = "PJ Dosen 3";
+    $pj_dosen->email = 'pjdosen3@gmail.com';
     $pj_dosen->password = bcrypt('rahasia'); 
     $pj_dosen->no_hp = '-';
     $pj_dosen->alamat = '-';
