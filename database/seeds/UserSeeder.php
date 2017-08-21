@@ -36,7 +36,12 @@ class UserSeeder extends Seeder
     $pimpinanRole = new Role();
     $pimpinanRole->name = "pimpinan";
     $pimpinanRole->display_name = "Pimpinan";
-    $pimpinanRole->save();
+    $pimpinanRole->save();  
+
+    $pjDosenRole = new Role();
+    $pjDosenRole->name = "pj_dosen";
+    $pjDosenRole->display_name = "PJ Dosen";
+    $pjDosenRole->save();
 
     // Membuat sample admin
     $admin = new User();
@@ -48,6 +53,15 @@ class UserSeeder extends Seeder
     $admin->status = '1';
     $admin->save();
     $admin->attachRole($adminRole);
+
+    $pj_dosen = new User();
+    $pj_dosen->name = "PJ Dosen";
+    $pj_dosen->email = 'pjdosen@gmail.com';
+    $pj_dosen->password = bcrypt('rahasia'); 
+    $pj_dosen->no_hp = '-';
+    $pj_dosen->alamat = '-';
+    $pj_dosen->save();
+    $pj_dosen->attachRole($pjDosenRole);
 
     // Membuat sample dosen
     $dosen = new User();
@@ -86,6 +100,7 @@ class UserSeeder extends Seeder
     $mahasiswa->password = bcrypt('rahasia'); 
     $mahasiswa->no_hp = '-';
     $mahasiswa->alamat = '-';
+    $mahasiswa->id_angkatan = 1;
     $mahasiswa->save();
     $mahasiswa->attachRole($mahasiswaRole);
 

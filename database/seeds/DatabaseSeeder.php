@@ -20,5 +20,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ModulSeeder::class);
         $this->call(ModulBlokSeeder::class);
         $this->call(SettingWaktuSeeder::class);
+        $this->call(AngkatanSeeder::class);
     }
 }

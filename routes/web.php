@@ -70,6 +70,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 	'uses' => 'PenjadwalanController@filter'
 	]);	
 
+	Route::get('penjadwalans/batal',[
+	'middleware' => ['auth','role:dosen'],
+	'as' => 'penjadwalans.batal_dosen',
+	'uses' => 'PenjadwalanController@status_batal_dosen'
+	]);
+
 Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan']], function () {
 
 	Route::resource('master_ruangans', 'MasterRuanganController'); 
@@ -80,6 +86,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan']],
 	Route::resource('penjadwalans', 'PenjadwalanController'); 
 	Route::resource('modul', 'ModulController'); 
 	Route::resource('settingwaktu', 'SettingWaktuController'); 
+	Route::resource('angkatan', 'AngkatanController'); 
 
 	//filter jadwal dosen dan ruangan 
 	Route::get('penjadwalans/belumterlaksana/{id}',[

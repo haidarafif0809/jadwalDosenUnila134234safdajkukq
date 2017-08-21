@@ -395,6 +395,23 @@ public function filter(Request $request, Builder $htmlBuilder)
         ]);
  
         return redirect()->route('penjadwalans.index');
+    }  
+     public function status_batal_dosen(Request $request){ 
+
+            $penjadwalan = Penjadwalan::find($request->id_jadwal);   
+            $penjadwalan->status_jadwal = 2;
+            $penjadwalan->save();  
+
+            print_r($penjadwalan);
+            exit;
+
+
+        Session::flash("flash_notification", [
+            "level"=>"danger",
+            "message"=>"Jadwal Berhasil Di Batalkan"
+        ]);
+ 
+        return redirect()->back();
     } 
 
 
