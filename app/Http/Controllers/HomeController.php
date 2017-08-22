@@ -59,6 +59,10 @@ class HomeController extends Controller
                 # code...
                 return view('home');
                 break;
+             case 'pj_dosen':
+                # code...
+                return HomeController::halaman_pj_dosen($request,$htmlBuilder);
+                break;
             
             default:
                 # code...
@@ -66,6 +70,76 @@ class HomeController extends Controller
         }
 
     }  
+
+    public function halaman_pj_dosen(Request $request, Builder $htmlBuilder){
+        if ($request->ajax()) {
+            # code...
+            $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul']);
+            return Datatables::of($penjadwalans)->addColumn('action', function($penjadwalan){
+                    return view('datatable._action', [
+                        'model'     => $penjadwalan,
+                        'form_url'  => route('penjadwalans.destroy', $penjadwalan->id),
+                        'edit_url'  => route('penjadwalans.edit', $penjadwalan->id),
+                        'confirm_message'   => 'Apakah Anda Yakin Mau Menghapus Penjadwalan ?'
+                        ]);
+                })
+            ->addColumn('jadwal_dosen', function($jadwal){
+                $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
+                    return view('penjadwalans._action', [ 
+                        'model_user'     => $jadwal_dosens,
+                        'id_jadwal' => $jadwal->id
+                        ]);
+                })
+            ->addColumn('tombol_status', function($data_status){  
+                    return view('penjadwalans._action_status', [ 
+                        'model'     => $data_status,
+                        'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
+                        'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
+                        'batal_url' => route('penjadwalans.batal', $data_status->id),
+                        'terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Terlaksana ?',
+                        'belum_terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Belum Terlaksana?',
+                        'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
+                        ]);
+                })
+            ->addColumn('status',function($status_penjadwalan){
+                $status = "status_jadwal";
+                if ($status_penjadwalan->status_jadwal == 0 ) {
+                    # code...
+                    $status = "Belum Terlaksana";
+                }
+                elseif ($status_penjadwalan->status_jadwal == 1) {
+                    # code...
+                     $status = "Sudah Terlaksana";
+                }
+                elseif ($status_penjadwalan->status_jadwal == 2) {
+                    # code...
+                     $status = "Batal";
+                } 
+                return $status;
+                })->make(true);
+        }
+        $html = $htmlBuilder
+        ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
+        ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
+        ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
+        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
+        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
+        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
+        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])    
+        ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
+        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
+        ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
+
+        $users = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',2)
+            ->pluck('name','id');
+
+           $users->prepend('Semua Dosen', 'semua');
+
+        return view('penjadwalans.index',['users'=> $users])->with(compact('html'));
+    }
+
 
     public function jadwal_kuliah_dosen(Request $request, Builder $htmlBuilder){
 

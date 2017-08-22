@@ -16,7 +16,7 @@ use App\Master_mata_kuliah;
 use App\SettingWaktu;
 use App\ModulBlok;
 use Session;
-
+use Auth;
 class PenjadwalanController extends Controller
 {
     /**
@@ -234,7 +234,13 @@ public function filter(Request $request, Builder $htmlBuilder)
             ->where('role_user.role_id',2)
             ->pluck('name','id'); 
  
-        return view('penjadwalans.create',['users' => $users]);
+        $pj_dosen = Auth::user()->id;
+        $data_block = DB::table('master_blocks')
+            ->leftJoin('user_pj_dosens', 'master_blocks.id', '=', 'user_pj_dosens.id_master_block')
+            ->where('user_pj_dosens.id_pj_dosen',$pj_dosen)
+            ->pluck('master_blocks.nama_block','master_blocks.id'); 
+ 
+        return view('penjadwalans.create',['users' => $users,'data_block' => $data_block]);
     }
 
     public function data_modul_perblock_penjadwalan (Request $request){
@@ -246,6 +252,14 @@ public function filter(Request $request, Builder $htmlBuilder)
                 echo "<option value='".$data->id_modul."'>".$data->modul->nama_modul."</option>";
             }
 
+        }
+    }
+
+    public function tanggal_modul_perblock_penjadwalan (Request $request){
+        if ($request->ajax()) {
+            
+            $modul =  ModulBlok::select('id_modul','dari_tanggal','sampai_tanggal')->where('id_modul',$request->id_modul)->first(); 
+           return $modul->dari_tanggal.','.$modul->sampai_tanggal;
         }
     }
 
@@ -425,6 +439,12 @@ public function filter(Request $request, Builder $htmlBuilder)
             ->where('role_user.role_id',2)
             ->pluck('name','id');
 
+        $pj_dosen = Auth::user()->id;
+        $data_block = DB::table('master_blocks')
+            ->leftJoin('user_pj_dosens', 'master_blocks.id', '=', 'user_pj_dosens.id_master_block')
+            ->where('user_pj_dosens.id_pj_dosen',$pj_dosen)
+            ->pluck('master_blocks.nama_block','master_blocks.id'); 
+
         $jadwal_dosen = DB::table('jadwal_dosens')
             ->leftJoin('users', 'users.id', '=', 'jadwal_dosens.id_dosen')
             ->where('jadwal_dosens.id_jadwal',$id)
@@ -437,7 +457,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             }    
         $data_waktu = substr($penjadwalans->waktu_mulai, 0, -3) ." - ".substr($penjadwalans->waktu_selesai, 0, -3);
       
-        return view('penjadwalans.edit',['users' => $users,'data_waktu' => $data_waktu])->with(compact('penjadwalans','data_dosen')); 
+        return view('penjadwalans.edit',['users' => $users,'data_waktu' => $data_waktu,'data_block'=>$data_block])->with(compact('penjadwalans','data_dosen')); 
     }
 
     /**

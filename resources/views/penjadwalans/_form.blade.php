@@ -10,6 +10,7 @@
 
 @else 
 
+@role('admin') 
 <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
 	{!! Form::label('id_block', 'Block', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
@@ -17,14 +18,25 @@
 		{!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
+@endrole 
+
+@role('pj_dosen') 
+<div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
+	{!! Form::label('id_block', 'Block', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4">
+		{!! Form::select('id_block', $data_block, null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Block']) !!}
+		{!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
+@endrole 
 
 <div class="form-group{{ $errors->has('modul') ? ' has-error' : '' }}">
 	{!! Form::label('modul', 'Modul', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::select('modul', [], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Modul']) !!}
+		{!! Form::select('modul', [], null, ['class'=>'form-control js-selectize-reguler', 'data-placeholder' => 'Pilih Modul']) !!}
 		{!! $errors->first('modul', '<p class="help-block">:message</p>') !!}
 	</div>
-</div>
+</div> 
 
 @endif
 
@@ -41,7 +53,7 @@
 <div class="form-group{{ $errors->has('tanggal') ? ' has-error' : '' }}">
 	{!! Form::label('tanggal', 'Tanggal', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::text('tanggal', null, ['class'=>'form-control datepicker','required','autocomplete'=>'off','readonly' => '']) !!}
+		{!! Form::text('tanggal', null, ['class'=>'form-control datepicker-modul-jadwal','required','autocomplete'=>'off','readonly' => '', 'placeholder' => 'Pilih Tanggal']) !!}
 		{!! $errors->first('tanggal', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
