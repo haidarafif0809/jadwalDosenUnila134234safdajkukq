@@ -175,12 +175,13 @@ class HomeController extends Controller
 
     public function table_terlaksana(Request $request){
 
-        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal)) {
+        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal) AND isset($request->id_block)) {
            
-                    // query untuk menghitung penjadwalan bulan ini
+       // query untuk menghitung penjadwalan dari tanggal ke tanggal
        $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
                         ->where('tanggal','>=',$request->dari_tanggal)
                         ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->where('id_block',$request->id_block)
                         ->where('status_jadwal',1); 
        
        
@@ -200,11 +201,13 @@ class HomeController extends Controller
 
       public function table_belum_terlaksana(Request $request){
 
-        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal)) {
-                                // query untuk menghitung penjadwalan bulan ini
+        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal) AND isset($request->id_block)) {
+
+       // query untuk menghitung penjadwalan dari tanggal ke tanggal
        $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
                         ->where('tanggal','>=',$request->dari_tanggal)
                         ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->where('id_block',$request->id_block)
                         ->where('status_jadwal',0); 
         }
         else{
@@ -222,13 +225,13 @@ class HomeController extends Controller
 
     public function table_batal(Request $request){
 
-        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal)) {
+        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal) AND isset($request->id_block)) {
 
-        $bulan_sekarang = date('m');// bulan sekarang
-                                // query untuk menghitung penjadwalan bulan ini
+       // query untuk menghitung penjadwalan bulan ini
        $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
                         ->where('tanggal','>=',$request->dari_tanggal)
                         ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->where('id_block',$request->id_block)
                         ->where('status_jadwal',2); 
         }
         else{
@@ -245,11 +248,19 @@ class HomeController extends Controller
 
         public function analisa_jadwal(Request $request){
         
+        $this->validate($request, [
+            'dari_tanggal'     => 'required',
+            'sampai_tanggal'     => 'required',
+            'id_block'     => 'required|exists:master_blocks,id' 
+
+        ]);  
+
         $agent = new Agent();
         // query untuk menghitung penjadwalan perperiode
         $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal'))
                         ->where('tanggal','>=',$request->dari_tanggal)
                         ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->where('id_block',$request->id_block)
                         ->groupBy('status_jadwal')
                         ->get();
 
