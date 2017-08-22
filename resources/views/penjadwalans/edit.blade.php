@@ -35,4 +35,51 @@
 	  items: [<?php echo  $data_dosen; ?>]
 	});
 </script>
-@endsection
+
+<script type="text/javascript">
+	$("#id_block").change(function(){
+
+		var $select = $("#modul").selectize();
+
+		var selectize = $select[0].selectize.destroy();
+
+
+		var id_block = $(this).val();
+
+		$.post('{{ route('modul.data_modul_perblock_penjadwalan')}}',{
+			 '_token': $('meta[name=csrf-token]').attr('content'),
+			id_block:id_block},
+			function(data){
+			$('#modul')
+			    .find('option')
+			    .remove();
+			$("#modul").append(data);
+			$("#modul").selectize();
+
+
+		});
+
+	});
+	$(document).ready(function(){
+		var $select = $("#modul").selectize();
+
+		var selectize = $select[0].selectize.destroy();
+
+
+		var id_block = $("#id_block").val();
+
+		$.post('{{ route('modul.data_modul_perblock_penjadwalan')}}',{
+			 '_token': $('meta[name=csrf-token]').attr('content'),
+			id_block:id_block},
+			function(data){
+			$('#modul')
+			    .find('option')
+			    .remove();
+			$("#modul").append(data);
+			$("#modul").selectize();
+
+
+		});
+	});
+</script>
+@endsection 

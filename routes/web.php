@@ -29,6 +29,12 @@ Route::post('/data-modul-per-block-penjadwalan',[
 	'as' => 'modul.data_modul_perblock_penjadwalan',
 	'uses' => 'PenjadwalanController@data_modul_perblock_penjadwalan'
 	]);
+
+Route::post('/tanggal-modul-per-block-penjadwalan',[
+	'middleware' => ['auth'],
+	'as' => 'modul.tanggal_modul_perblock_penjadwalan',
+	'uses' => 'PenjadwalanController@tanggal_modul_perblock_penjadwalan'
+	]);
 Route::post('/data-info-jadwal',[
 	'middleware' => ['auth'],
 	'as' => 'jadwal.info',
@@ -66,7 +72,7 @@ Route::get('/jadwal-dosen',[
 	]);
 
 	Route::get('admin/penjadwalans/filter',[
-	'middleware' => ['auth','role:admin|pimpinan'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
 	'as' => 'penjadwalans.filter',
 	'uses' => 'PenjadwalanController@filter'
 	]);	
@@ -105,7 +111,7 @@ Route::get('/jadwal-dosen',[
 
 
 
-Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan']], function () {
+Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_dosen']], function () {
 
 	Route::resource('master_ruangans', 'MasterRuanganController'); 
 	Route::resource('master_mata_kuliahs', 'MasterMataKuliahController'); 
@@ -123,7 +129,6 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan']],
 	'as' => 'penjadwalans.belumterlaksana',
 	'uses' => 'PenjadwalanController@status_belum_terlaksana'
 	]);
-
 
 
 	Route::get('penjadwalans/terlaksana/{id}',[
@@ -144,12 +149,12 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan']],
 	'uses' => 'MasterUserController@no_konfirmasi'
 	]);	
 	Route::get('master_blocks/modul/{id}',[
-	'middleware' => ['auth','role:admin|pimpinan'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
 	'as' => 'master_blocks.modul',
 	'uses' => 'MasterBlockController@createModul'
 	]);	
 	Route::get('master_blocks/mahasiswa/{id}',[
-	'middleware' => ['auth','role:admin|pimpinan'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
 	'as' => 'master_blocks.mahasiswa',
 	'uses' => 'MasterBlockController@createMahasiswa'
 	]);
