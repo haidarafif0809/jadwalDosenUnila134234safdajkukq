@@ -19,6 +19,14 @@ $('.datepicker').datepicker({
 });
 
 var date = new Date();
+
+$('.datepicker1').datepicker({
+    format: 'yyyy-mm-dd',
+    daysOfWeekDisabled: false,
+    autoclose: true,
+});
+
+var date = new Date();
 $('.datepicker-modul').datepicker({
     format: 'yyyy-mm-dd',
     daysOfWeekDisabled: '0,6',

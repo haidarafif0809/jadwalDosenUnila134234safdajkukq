@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Yajra\Datatables\Html\Builder;
 use App\Jadwal_dosen;
 use Yajra\Datatables\Datatables;
+use Jenssegers\Agent\Agent;
+
+
 class HomeController extends Controller
 {
     /**
@@ -30,7 +33,35 @@ class HomeController extends Controller
      */
     public function index(Request $request,Builder $htmlBuilder)
     {
+        $agent = new Agent();
+        $bulan_sekarang = date('m');// bulan sekarang
+                // query untuk menghitung penjadwalan perperiode
+        $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal'))
+                        ->whereMonth('tanggal',$bulan_sekarang)
+                        ->groupBy('status_jadwal')
+                        ->get();
 
+        $jadwal_terlaksana = 0;
+        $jadwal_belum_terlaksana = 0;
+        $jadwal_batal = 0;
+
+        foreach ($penjadwalans as $penjadwalan) {
+           
+                if ($penjadwalan->status_jadwal == 0 ) {
+                    
+                    $jadwal_belum_terlaksana = $jadwal_belum_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 1) {
+                    
+                    $jadwal_terlaksana = $jadwal_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 2) {
+   
+                    $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
+                } 
+
+        }
+     
        if (!Auth::check()) {
         return redirect()->route('login');
         }
@@ -40,7 +71,7 @@ class HomeController extends Controller
             case 'admin':
                 
               
-                return view('home');
+                return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'agent' => $agent]);
 
                 break;  
             case 'dosen':
@@ -57,7 +88,7 @@ class HomeController extends Controller
                 break; 
              case 'pimpinan':
                 # code...
-                return view('home');
+                return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'agent' => $agent]);
                 break;
             
             default:
@@ -66,6 +97,113 @@ class HomeController extends Controller
         }
 
     }  
+
+
+    public function table_terlaksana(Request $request){
+
+        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal)) {
+           
+                    // query untuk menghitung penjadwalan bulan ini
+       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->where('status_jadwal',1); 
+       
+       
+        }else{
+
+        $bulan_sekarang = date('m');// bulan sekarang
+                    // query untuk menghitung penjadwalan bulan ini
+        $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->whereMonth('tanggal',$bulan_sekarang)
+                        ->where('status_jadwal',1); 
+
+        }
+        return Datatables::of($penjadwalans)->make(true);
+
+    }  
+
+
+      public function table_belum_terlaksana(Request $request){
+
+        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal)) {
+                                // query untuk menghitung penjadwalan bulan ini
+       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->where('status_jadwal',0); 
+        }
+        else{
+        
+        $bulan_sekarang = date('m');// bulan sekarang
+                    // query untuk menghitung penjadwalan bulan ini
+        $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->whereMonth('tanggal',$bulan_sekarang)
+                        ->where('status_jadwal',0);
+        }
+
+        return Datatables::of($penjadwalans)->make(true);
+
+    }
+
+    public function table_batal(Request $request){
+
+        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal)) {
+
+        $bulan_sekarang = date('m');// bulan sekarang
+                                // query untuk menghitung penjadwalan bulan ini
+       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->where('status_jadwal',2); 
+        }
+        else{
+
+        $bulan_sekarang = date('m');// bulan sekarang
+                    // query untuk menghitung penjadwalan bulan ini
+       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->whereMonth('tanggal',$bulan_sekarang)
+                        ->where('status_jadwal',2);
+        }
+        return Datatables::of($penjadwalans)->make(true);
+
+    }
+
+        public function analisa_jadwal(Request $request){
+        
+        $agent = new Agent();
+        // query untuk menghitung penjadwalan perperiode
+        $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal'))
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->groupBy('status_jadwal')
+                        ->get();
+
+        $jadwal_terlaksana = 0;
+        $jadwal_belum_terlaksana = 0;
+        $jadwal_batal = 0;
+
+        foreach ($penjadwalans as $penjadwalan) {
+           
+                if ($penjadwalan->status_jadwal == 0 ) {
+                    
+                    $jadwal_belum_terlaksana = $jadwal_belum_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 1) {
+                    
+                    $jadwal_terlaksana = $jadwal_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 2) {
+   
+                    $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
+                } 
+
+        }
+                        # code...
+                return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent]);
+
+
+    }
 
     public function jadwal_kuliah_dosen(Request $request, Builder $htmlBuilder){
 

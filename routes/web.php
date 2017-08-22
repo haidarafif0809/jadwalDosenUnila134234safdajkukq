@@ -15,6 +15,7 @@ Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('/jadwal-kuliah', 'HomeController@jadwal_kuliah');
 
+
 Auth::routes();
 
 Route::post('/data-modul-per-block',[
@@ -49,7 +50,7 @@ Route::get('/jadwal-dosen',[
 	'uses' => 'HomeController@proses_jadwal_dosen'
 	]);
 
-Route::get('/home', 'HomeController@index')->name('home'); 
+	Route::get('/home', 'HomeController@index')->name('home'); 
 
 
 	Route::get('/ubah-password',[
@@ -75,6 +76,34 @@ Route::get('/home', 'HomeController@index')->name('home');
 	'as' => 'penjadwalans.batal_dosen',
 	'uses' => 'PenjadwalanController@status_batal_dosen'
 	]);
+
+	Route::post('home/analisa_jadwal',[
+	'middleware' => ['auth'],
+	'as' => 'analisa.jadwal',
+	'uses' => 'HomeController@analisa_jadwal'
+	]);
+
+	Route::get('home/analisa_jadwal', 'HomeController@index');
+
+	Route::post('home/table_terlaksana',[
+	'middleware' => ['auth'],
+	'as' => 'table.terlaksana',
+	'uses' => 'HomeController@table_terlaksana'
+	]);
+
+	Route::post('home/table_belum_terlaksana',[
+	'middleware' => ['auth'],
+	'as' => 'table.belum_terlaksana',
+	'uses' => 'HomeController@table_belum_terlaksana'
+	]);
+
+	Route::post('home/table_batal',[
+	'middleware' => ['auth'],
+	'as' => 'table.batal',
+	'uses' => 'HomeController@table_batal'
+	]);
+
+
 
 Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan']], function () {
 
@@ -158,4 +187,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan']],
 	'as' => 'master_users.reset',
 	'uses' => 'MasterUserController@reset'
 	]);
+
+
+
 });

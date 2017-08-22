@@ -13,12 +13,15 @@
     <!-- Styles --> 
     <link href="{{ asset('css/font-awesome.min.css') }}" rel='stylesheet' type='text/css'>
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
     <link href="{{ asset('css/dataTables.bootstrap.css') }}" rel="stylesheet"> 
     <link href="{{ asset('css/selectize.bootstrap3.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap-datepicker.min.css') }}" rel="stylesheet">  
     <link href="{{ asset('css/bootstrap-clockpicker.min.css') }}" rel="stylesheet">  
     <link rel="stylesheet" href="{{ asset('css/reset.css') }}"> <!-- CSS reset -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}"> <!-- Resource style -->
+
+
 </head>
 <body>
     <div id="app">
