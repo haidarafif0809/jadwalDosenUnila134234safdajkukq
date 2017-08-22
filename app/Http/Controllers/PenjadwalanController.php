@@ -280,7 +280,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
             'id_ruangan'    => 'required|exists:master_ruangans,id',
             'id_user'    => 'required|exists:users,id',
-            'modul'    => 'required|exists:users,id',
+            'modul'    => 'required',
         ]);   
 
         $data_setting_waktu = explode("-",$request->data_waktu);
