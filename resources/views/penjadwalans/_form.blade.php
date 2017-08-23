@@ -7,6 +7,7 @@
 @if(isset($asal_input))
 
 {!! Form::hidden('id_block', $value = $modul->id_blok, ['class'=>'','required','autocomplete'=>'off']) !!}
+{!! Form::hidden('modul', $value = $modul->id_modul_blok, ['class'=>'','required','autocomplete'=>'off']) !!}
 
 @else 
 

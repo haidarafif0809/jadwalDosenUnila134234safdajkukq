@@ -125,7 +125,7 @@
         <div class="body">
             <div class="event-info">
                <div class="container isi-event">
-                asdasd   
+           
                </div>
                 
             </div>

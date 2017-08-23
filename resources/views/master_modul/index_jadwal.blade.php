@@ -27,7 +27,7 @@
 					</div>
 				@endrole
 
-					@include('mahasiswa.schedule_mahasiswa');
+					@include('mahasiswa.schedule_mahasiswa')
 				</div>
 			</div>
 		</div>

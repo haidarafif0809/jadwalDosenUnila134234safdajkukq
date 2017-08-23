@@ -22,6 +22,13 @@
             
                 </div>
 
+                <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
+
+                 {!! Form::select('id_block', []+App\Master_block::pluck('nama_block','id')->all(), null, ['class'=>'form-control','id' => 'id_block','required', 'placeholder' => 'Pilih Block']) !!}
+                {!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}
+
+                </div>
+
                 <div class="form-group">
             
                 {!! Form::submit('Submit', ['class'=>'btn btn-primary']) !!}
@@ -254,6 +261,7 @@ $(function() {
                                 "data": function ( d ) {
                               d.dari_tanggal = $("#dari_tanggal").val();
                               d.sampai_tanggal = $("#sampai_tanggal").val();
+                              d.id_block = $("#id_block").val();
                               // d.custom = $('#myInput').val();
                               // etc
                           },
@@ -294,6 +302,7 @@ $(function() {
                         "data": function ( d ) {
                       d.dari_tanggal = $("#dari_tanggal").val();
                       d.sampai_tanggal = $("#sampai_tanggal").val();
+                      d.id_block = $("#id_block").val();
                       // d.custom = $('#myInput').val();
                       // etc
                   },
@@ -334,6 +343,7 @@ $(function() {
                         "data": function ( d ) {
                       d.dari_tanggal = $("#dari_tanggal").val();
                       d.sampai_tanggal = $("#sampai_tanggal").val();
+                      d.id_block = $("#id_block").val();
                       // d.custom = $('#myInput').val();
                       // etc
                   },
