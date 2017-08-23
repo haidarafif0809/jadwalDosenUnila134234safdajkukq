@@ -247,7 +247,7 @@ public function filter(Request $request, Builder $htmlBuilder)
         if ($request->ajax()) {
             
             $modul =  ModulBlok::with('modul')->where('id_blok',$request->id_block)->get();
-
+                echo "<option readonly='on'>Pilih Modul</option>";
             foreach ($modul as $data) {
                 echo "<option value='".$data->id_modul."'>".$data->modul->nama_modul."</option>";
             }
