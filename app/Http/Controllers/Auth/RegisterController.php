@@ -38,7 +38,7 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
-        $this->middleware('user-should-verified');
+        $this->middleware('user-should-verified-register');
     }
 
     /**
@@ -51,7 +51,7 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
+            'email' => 'required|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
             'no_hp' => 'required',
             'alamat' => 'required',
