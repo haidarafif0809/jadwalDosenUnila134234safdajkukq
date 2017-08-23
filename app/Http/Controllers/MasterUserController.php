@@ -58,8 +58,15 @@ class MasterUserController extends Controller
                 })
             ->addColumn('angkatan',function($user){
                 if ($user->role->role_id == 3) {
+                    if ($user->id_angkatan != null) {
+                        # code...
                     $angkatan = Angkatan::find($user->id_angkatan);
                     return $angkatan->nama_angkatan;
+                    }
+                    else{
+                    return "";
+                        
+                    }
                 }else{
                     return "";
                 }
