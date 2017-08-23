@@ -69,12 +69,12 @@ class MasterUserController extends Controller
         $html = $htmlBuilder
         ->addColumn(['data' => 'name', 'name' => 'name', 'title' => 'Nama'])
         ->addColumn(['data' => 'email', 'name' => 'email', 'title' => 'Username']) 
-        ->addColumn(['data' => 'no_hp', 'name' => 'no_hp', 'title' => 'Nomor Hp'])
-        ->addColumn(['data' => 'alamat', 'name' => 'alamat', 'title' => 'Alamat'])
-        ->addColumn(['data' => 'role', 'name' => 'role', 'title' => 'Otoritas'])
-        ->addColumn(['data' => 'angkatan', 'name' => 'angkatan', 'title' => 'Angkatan'])
-        ->addColumn(['data' => 'reset', 'name' => 'reset', 'title' => 'Reset Password'])
-        ->addColumn(['data' => 'konfirmasi', 'name' => 'konfirmasi', 'title' => 'Konfirmasi', 'searchable'=>false])
+        ->addColumn(['data' => 'no_hp', 'name' => 'no_hp', 'title' => 'Nomor Hp', 'orderable' => false])
+        ->addColumn(['data' => 'alamat', 'name' => 'alamat', 'title' => 'Alamat', 'orderable' => false])
+        ->addColumn(['data' => 'role', 'name' => 'role', 'title' => 'Otoritas', 'orderable' => false, 'searchable'=>false])
+        ->addColumn(['data' => 'angkatan', 'name' => 'angkatan', 'title' => 'Angkatan', 'orderable' => false, 'searchable'=>false])
+        ->addColumn(['data' => 'reset', 'name' => 'reset', 'title' => 'Reset Password', 'orderable' => false, 'searchable'=>false])
+        ->addColumn(['data' => 'konfirmasi', 'name' => 'konfirmasi', 'title' => 'Konfirmasi', 'orderable' => false, 'searchable'=>false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
 
         return view('master_users.index')->with(compact('html'));
