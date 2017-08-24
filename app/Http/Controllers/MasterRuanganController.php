@@ -23,7 +23,7 @@ class MasterRuanganController extends Controller
         //
         if ($request->ajax()) {
             # code...
-            $master_ruangans = Master_ruangan::select(['id','kode_ruangan','nama_ruangan','lokasi_ruangan']);
+            $master_ruangans = Master_ruangan::select(['id','kode_ruangan','nama_ruangan','lokasi_ruangan','longitude','latitude','batas_jarak_absen']);
             return Datatables::of($master_ruangans)->addColumn('action', function($master_ruangan){
                     return view('datatable._action', [
                         'model'     => $master_ruangan,
@@ -37,6 +37,9 @@ class MasterRuanganController extends Controller
         ->addColumn(['data' => 'kode_ruangan', 'name' => 'kode_ruangan', 'title' => 'Kode Ruangan'])
         ->addColumn(['data' => 'nama_ruangan', 'name' => 'nama_ruangan', 'title' => 'Nama Ruangan']) 
         ->addColumn(['data' => 'lokasi_ruangan', 'name' => 'lokasi_ruangan', 'title' => 'Lokasi Ruangan'])
+        ->addColumn(['data' => 'longitude', 'name' => 'longitude', 'title' => 'Longitude'])
+        ->addColumn(['data' => 'latitude', 'name' => 'latitude', 'title' => 'Latitude'])
+        ->addColumn(['data' => 'batas_jarak_absen', 'name' => 'batas_jarak_absen', 'title' => 'Batas Jarak Absen'])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
 
         return view('master_ruangans.index')->with(compact('html'));
@@ -66,13 +69,19 @@ class MasterRuanganController extends Controller
          $this->validate($request, [
             'kode_ruangan'   => 'required|unique:master_ruangans,kode_ruangan,',
             'nama_ruangan'     => 'required|unique:master_ruangans,nama_ruangan,',
-            'lokasi_ruangan'    => 'required'
+            'lokasi_ruangan'    => 'required',
+            'longitude'    => 'required',
+            'latitude'    => 'required',
+            'batas_jarak_absen'    => 'required',
             ]);
 
          $master_ruangans = Master_ruangan::create([ 
             'kode_ruangan' =>$request->kode_ruangan,
             'nama_ruangan'=>$request->nama_ruangan,
-            'lokasi_ruangan'=>$request->lokasi_ruangan]);
+            'lokasi_ruangan'=>$request->lokasi_ruangan,
+            'longitude'=>$request->longitude,
+            'latitude'=>$request->latitude,
+            'batas_jarak_absen'=>$request->batas_jarak_absen]);
 
         Session::flash("flash_notification", [
             "level"=>"success",
@@ -119,12 +128,18 @@ class MasterRuanganController extends Controller
             'kode_ruangan'   => 'required|unique:master_ruangans,kode_ruangan,' .$id,
             'nama_ruangan'     => 'required|unique:master_ruangans,nama_ruangan,' .$id,
             'lokasi_ruangan'    => 'required',
+            'longitude'    => 'required',
+            'latitude'    => 'required',
+            'batas_jarak_absen'    => 'required',
             ]);
 
         Master_ruangan::where('id', $id) ->update([ 
             'kode_ruangan' =>$request->kode_ruangan,
             'nama_ruangan'=>$request->nama_ruangan,
-            'lokasi_ruangan'=>$request->lokasi_ruangan]);
+            'lokasi_ruangan'=>$request->lokasi_ruangan,
+            'longitude'=>$request->longitude,
+            'latitude'=>$request->latitude,
+            'batas_jarak_absen'=>$request->batas_jarak_absen]);
 
         Session::flash("flash_notification", [
             "level"=>"success",
