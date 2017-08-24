@@ -289,8 +289,8 @@ public function filter(Request $request, Builder $htmlBuilder)
 
          
 
-        $data_penjadwalan = Penjadwalan::statusRuangan($request,$data_setting_waktu)->count(); 
-        if ($data_penjadwalan == 0) { 
+        $data_penjadwalan = Penjadwalan::statusRuangan($request,$data_setting_waktu);  
+        if ($data_penjadwalan->count() == 0) { 
             $dosen_punya_jadwal = array();
                 foreach ($request->id_user as $user_dosen) {
                  $jadwal_dosen = Jadwal_dosen::statusDosen($request,$user_dosen,$data_setting_waktu); 
@@ -324,7 +324,7 @@ public function filter(Request $request, Builder $htmlBuilder)
 
             $data_ruangan =  Master_ruangan::find($request->id_ruangan);
             $data_block = Master_block::find($request->id_block);
-            $data_mata_kuliah = Master_mata_kuliah::find($request->id_mata_kuliah);
+            $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah);
 
             Session::flash("flash_notification", [
                 "level"=>"danger",
@@ -485,8 +485,8 @@ public function filter(Request $request, Builder $htmlBuilder)
 
         $penjadwalans = Penjadwalan::find($id);
 
-            $data_penjadwalan = Penjadwalan::statusRuanganEdit($request,$data_setting_waktu,$id)->count();
-            if ($data_penjadwalan == 0) {
+            $data_penjadwalan = Penjadwalan::statusRuanganEdit($request,$data_setting_waktu,$id); 
+            if ($data_penjadwalan->count() == 0) {
                 $dosen_punya_jadwal = array();
                 foreach ($request->id_user as $user_dosen) {
                  $jadwal_dosen = Jadwal_dosen::statusDosenEdit($request,$user_dosen,$data_setting_waktu,$id); 
@@ -519,7 +519,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             else{
                 $data_ruangan =  Master_ruangan::find($request->id_ruangan);
                 $data_block = Master_block::find($request->id_block);
-                $data_mata_kuliah = Master_mata_kuliah::find($request->id_mata_kuliah);
+                $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah);
 
                 Session::flash("flash_notification", [
                     "level"=>"danger",
