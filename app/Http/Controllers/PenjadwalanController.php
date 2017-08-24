@@ -31,7 +31,7 @@ class PenjadwalanController extends Controller
             # code...
             $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul']);
             return Datatables::of($penjadwalans)->addColumn('action', function($penjadwalan){
-                    return view('datatable._action', [
+                    return view('penjadwalans._tombol', [
                         'model'     => $penjadwalan,
                         'form_url'  => route('penjadwalans.destroy', $penjadwalan->id),
                         'edit_url'  => route('penjadwalans.edit', $penjadwalan->id),
@@ -84,7 +84,7 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
-        ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
+        ->addColumn(['data' => 'action', 'name' => 'action', 'title' => 'Ubah & Hapus', 'orderable' => false, 'searchable'=>false]);
 
    $users = DB::table('users')
             ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
