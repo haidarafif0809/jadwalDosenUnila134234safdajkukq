@@ -415,10 +415,7 @@ public function filter(Request $request, Builder $htmlBuilder)
 
             $penjadwalan = Penjadwalan::find($request->id_jadwal);   
             $penjadwalan->status_jadwal = 2;
-            $penjadwalan->save();  
-
-            print_r($penjadwalan);
-            exit;
+            $penjadwalan->save();   
 
 
         Session::flash("flash_notification", [
