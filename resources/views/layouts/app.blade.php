@@ -55,7 +55,7 @@
                         <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li>
                         <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                   Master Data
+                                   Master Data <span class="caret"></span>
                                 </a>
                           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a href="{{ route('master_ruangans.index') }}">Ruangan</a></li>

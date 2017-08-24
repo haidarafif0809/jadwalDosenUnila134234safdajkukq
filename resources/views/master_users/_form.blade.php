@@ -37,10 +37,11 @@
 		{!! $errors->first('role_id', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
-<div class="form-group{{ $errors->has('id_angkatan') ? ' has-error' : '' }}">
+
+<div class="form-group{{ $errors->has('id_angkatan') ? ' has-error' : '' }}" style="display: none;" id="data_angkatan">
 	{!! Form::label('id_angkatan', 'Angkatan', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::select('id_angkatan', []+App\Angkatan::pluck('nama_angkatan','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Angkatan']) !!}
+		{!! Form::select('id_angkatan', []+App\Angkatan::pluck('nama_angkatan','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Angkatan','id'=>'id_angkatan']) !!}
 		{!! $errors->first('id_angkatan', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>

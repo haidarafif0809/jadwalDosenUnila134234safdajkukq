@@ -87,6 +87,7 @@ class MasterUserController extends Controller
         return view('master_users.index')->with(compact('html'));
     }
 
+ 
 
     public function konfirmasi($id){ 
 

@@ -175,40 +175,83 @@ class HomeController extends Controller
 
     public function table_terlaksana(Request $request){
 
-        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal) AND isset($request->id_block)) {
-           
-       // query untuk menghitung penjadwalan dari tanggal ke tanggal
-       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
-                        ->where('tanggal','>=',$request->dari_tanggal)
-                        ->where('tanggal','<=',$request->sampai_tanggal)
-                        ->where('id_block',$request->id_block)
-                        ->where('status_jadwal',1); 
        
-       
-        }else{
+       if ($request->id_block == 'Semua' AND $request->tipe_jadwal != 'Semua') {
+            # code...
 
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
+                        ->where('tipe_jadwal',$request->tipe_jadwal)
+                        ->where('status_jadwal',1)
+                        ->get();
+
+        }elseif ($request->tipe_jadwal == 'Semua' AND $request->id_block != 'Semua') {
+            # code...
+
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
+                        ->where('id_block',$request->id_block)
+                        ->where('status_jadwal',1)
+                        ->get();
+        }elseif ($request->id_block == 'Semua' AND $request->tipe_jadwal == 'Semua') {
+            # code...
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal)  
+                        ->where('status_jadwal',1)
+                        ->get();
+        }
+        else{
+        
         $bulan_sekarang = date('m');// bulan sekarang
                     // query untuk menghitung penjadwalan bulan ini
         $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
                         ->whereMonth('tanggal',$bulan_sekarang)
-                        ->where('status_jadwal',1); 
+                        ->where('status_jadwal',1);
+        } 
 
-        }
-        return Datatables::of($penjadwalans)->make(true);
+        return Datatables::of($penjadwalans)->addColumn('jadwal_dosen', function($jadwal){
+                $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
+                    return view('penjadwalans._action', [ 
+                        'model_user'     => $jadwal_dosens,
+                        'id_jadwal' => $jadwal->id
+                        ]);
+                })->make(true);
 
     }  
 
 
       public function table_belum_terlaksana(Request $request){
 
-        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal) AND isset($request->id_block)) {
+        
+       if ($request->id_block == 'Semua' AND $request->tipe_jadwal != 'Semua') {
+            # code...
 
-       // query untuk menghitung penjadwalan dari tanggal ke tanggal
-       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
                         ->where('tanggal','>=',$request->dari_tanggal)
-                        ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
+                        ->where('tipe_jadwal',$request->tipe_jadwal)
+                        ->where('status_jadwal',0)
+                        ->get();
+
+        }elseif ($request->tipe_jadwal == 'Semua' AND $request->id_block != 'Semua') {
+            # code...
+
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
                         ->where('id_block',$request->id_block)
-                        ->where('status_jadwal',0); 
+                        ->where('status_jadwal',0)
+                        ->get();
+        }elseif ($request->id_block == 'Semua' AND $request->tipe_jadwal == 'Semua') {
+            # code...
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal)  
+                        ->where('status_jadwal',0)
+                        ->get();
         }
         else{
         
@@ -219,30 +262,61 @@ class HomeController extends Controller
                         ->where('status_jadwal',0);
         }
 
-        return Datatables::of($penjadwalans)->make(true);
+        return Datatables::of($penjadwalans)->addColumn('jadwal_dosen', function($jadwal){
+                $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
+                    return view('penjadwalans._action', [ 
+                        'model_user'     => $jadwal_dosens,
+                        'id_jadwal' => $jadwal->id
+                        ]);
+                })->make(true);
 
     }
 
     public function table_batal(Request $request){
 
-        if (isset($request->dari_tanggal) AND isset($request->sampai_tanggal) AND isset($request->id_block)) {
+        
+       if ($request->id_block == 'Semua' AND $request->tipe_jadwal != 'Semua') {
+            # code...
 
-       // query untuk menghitung penjadwalan bulan ini
-       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
                         ->where('tanggal','>=',$request->dari_tanggal)
-                        ->where('tanggal','<=',$request->sampai_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
+                        ->where('tipe_jadwal',$request->tipe_jadwal)
+                        ->where('status_jadwal',2)
+                        ->get();
+
+        }elseif ($request->tipe_jadwal == 'Semua' AND $request->id_block != 'Semua') {
+            # code...
+
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
                         ->where('id_block',$request->id_block)
-                        ->where('status_jadwal',2); 
+                        ->where('status_jadwal',2)
+                        ->get();
+        }elseif ($request->id_block == 'Semua' AND $request->tipe_jadwal == 'Semua') {
+            # code...
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal)  
+                        ->where('status_jadwal',2)
+                        ->get();
         }
         else{
-
+        
         $bulan_sekarang = date('m');// bulan sekarang
                     // query untuk menghitung penjadwalan bulan ini
-       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+        $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
                         ->whereMonth('tanggal',$bulan_sekarang)
                         ->where('status_jadwal',2);
         }
-        return Datatables::of($penjadwalans)->make(true);
+        return Datatables::of($penjadwalans)->addColumn('jadwal_dosen', function($jadwal){
+                $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
+                    return view('penjadwalans._action', [ 
+                        'model_user'     => $jadwal_dosens,
+                        'id_jadwal' => $jadwal->id
+                        ]);
+                })->make(true);
 
     }
 
@@ -251,22 +325,57 @@ class HomeController extends Controller
         $this->validate($request, [
             'dari_tanggal'     => 'required',
             'sampai_tanggal'     => 'required',
-            'id_block'     => 'required|exists:master_blocks,id' 
+            'id_block'     => 'required' ,
+            'tipe_jadwal'     => 'required' 
 
         ]);  
 
         $agent = new Agent();
         // query untuk menghitung penjadwalan perperiode
+        if ($request->id_block == 'Semua' AND $request->tipe_jadwal != 'Semua') {
+            # code...
+
+        $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal'))
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
+                        ->where('tipe_jadwal',$request->tipe_jadwal)
+                        ->groupBy('status_jadwal')
+                        ->get(); 
+ 
+        }
+        elseif ($request->tipe_jadwal == 'Semua' AND $request->id_block != 'Semua') {
+            # code...
+
+        $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal'))
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
+                        ->where('id_block',$request->id_block)
+                        ->groupBy('status_jadwal')
+                        ->get();
+        }elseif ($request->id_block == 'Semua' AND $request->tipe_jadwal == 'Semua') {
+            # code...
+        $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal'))
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal)  
+                        ->groupBy('status_jadwal')
+                        ->get();
+        }
+        else{
+
         $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal'))
                         ->where('tanggal','>=',$request->dari_tanggal)
                         ->where('tanggal','<=',$request->sampai_tanggal)
                         ->where('id_block',$request->id_block)
+                        ->where('tipe_jadwal',$request->tipe_jadwal)
                         ->groupBy('status_jadwal')
                         ->get();
 
+        }
+
         $jadwal_terlaksana = 0;
         $jadwal_belum_terlaksana = 0;
-        $jadwal_batal = 0;
+        $jadwal_batal = 0; 
+        $bulan_sekarang = date('m');// bulan sekarang
 
         foreach ($penjadwalans as $penjadwalan) {
            
@@ -285,7 +394,7 @@ class HomeController extends Controller
 
         }
                         # code...
-                return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent]);
+                return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent,'bulan_sekarang'=>$bulan_sekarang]);
 
 
     }
@@ -361,10 +470,15 @@ class HomeController extends Controller
     }
 
     public function jadwal_kuliah_mahasiswa(){
-        $mahasiswa = Auth::user()->id_angkatan;
 
-       $block = Master_block::where('id_angkatan',$mahasiswa)
-            ->pluck('nama_block','id');
+        $mahasiswa = Auth::user()->id_angkatan;
+        $id_mahasiswa = Auth::user()->id;
+        
+        $block = DB::table('mahasiswa_block') 
+                    ->leftJoin('master_blocks', 'mahasiswa_block.id_block', '=', 'master_blocks.id') 
+                    ->where('mahasiswa_block.id_mahasiswa',$id_mahasiswa) 
+                    ->orWhere('master_blocks.id_angkatan',$mahasiswa)
+                    ->pluck('master_blocks.nama_block','master_blocks.id'); 
 
         return view('mahasiswa.index',['block' => $block]);
     }

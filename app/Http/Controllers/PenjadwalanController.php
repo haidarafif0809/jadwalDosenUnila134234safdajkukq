@@ -77,6 +77,7 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
         ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
+        ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
         ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
@@ -281,6 +282,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             'id_ruangan'    => 'required|exists:master_ruangans,id',
             'id_user'    => 'required|exists:users,id',
             'modul'    => 'required',
+            'tipe_jadwal'    => 'required',
         ]);   
 
         $data_setting_waktu = explode("-",$request->data_waktu);
@@ -337,6 +339,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             'waktu_selesai'=>$data_setting_waktu[1],
             'id_block'=>$request->id_block,
             'id_modul'=>$request->modul,
+            'tipe_jadwal'=>$request->tipe_jadwal,
             'id_mata_kuliah'=>$request->id_mata_kuliah,
             'id_ruangan'=>$request->id_ruangan]);
 
@@ -475,6 +478,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             'id_ruangan'    => 'required|exists:master_ruangans,id',
             'id_user'    => 'required|exists:users,id',
             'modul'    => 'required|exists:moduls,id',
+            'tipe_jadwal'    => 'required',
             ]); 
 
          $data_setting_waktu = explode("-",$request->data_waktu);
@@ -532,6 +536,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             'id_block'=>$request->id_block,
             'id_mata_kuliah'=>$request->id_mata_kuliah,
             'id_modul'=>$request->modul,
+            'tipe_jadwal'=>$request->tipe_jadwal,
             'id_ruangan'=>$request->id_ruangan]);
 
         Jadwal_dosen::where('id_jadwal', $id)->delete();

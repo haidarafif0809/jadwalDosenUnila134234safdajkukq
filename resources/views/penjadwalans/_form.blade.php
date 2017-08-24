@@ -95,6 +95,14 @@
 	</div>
 </div>
 
+<div class="form-group{{ $errors->has('tipe_jadwal') ? ' has-error' : '' }}">
+	{!! Form::label('tipe_jadwal', 'Tipe Jadwal', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4">
+		{!! Form::select('tipe_jadwal', ['KULIAH'=>'KULIAH','CSL'=>'CSL','PLENO'=>'PLENO','TUTORIAL'=>'TUTORIAL'], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Tipe Jadwal']) !!}
+		{!! $errors->first('tipe_jadwal', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
+
 <div class="form-group{{ $errors->has('id_user[]') ? ' has-error' : '' }}">
 	{!! Form::label('id_user[]', 'Dosen', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">

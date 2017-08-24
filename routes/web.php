@@ -83,7 +83,7 @@ Route::get('/jadwal-dosen',[
 	'uses' => 'PenjadwalanController@status_batal_dosen'
 	]);
 
-	Route::post('home/analisa_jadwal',[
+	Route::get('home/analisa_jadwal/data/',[
 	'middleware' => ['auth'],
 	'as' => 'analisa.jadwal',
 	'uses' => 'HomeController@analisa_jadwal'
@@ -91,19 +91,19 @@ Route::get('/jadwal-dosen',[
 
 	Route::get('home/analisa_jadwal', 'HomeController@index');
 
-	Route::post('home/table_terlaksana',[
+	Route::get('home/table_terlaksana',[
 	'middleware' => ['auth'],
 	'as' => 'table.terlaksana',
 	'uses' => 'HomeController@table_terlaksana'
 	]);
 
-	Route::post('home/table_belum_terlaksana',[
+	Route::get('home/table_belum_terlaksana',[
 	'middleware' => ['auth'],
 	'as' => 'table.belum_terlaksana',
 	'uses' => 'HomeController@table_belum_terlaksana'
 	]);
 
-	Route::post('home/table_batal',[
+	Route::get('home/table_batal',[
 	'middleware' => ['auth'],
 	'as' => 'table.batal',
 	'uses' => 'HomeController@table_batal'

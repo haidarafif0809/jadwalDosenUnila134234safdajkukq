@@ -26,3 +26,18 @@
 	</div>
 @endsection
 	
+@section('scripts') 
+<script type="text/javascript"> 
+	$("#role_id").change(function(){ 
+
+		var role_id = $(this).val();
+
+		if (role_id == 3) {
+			$("#data_angkatan").show();
+		}
+		else {
+			$("#data_angkatan").hide();
+		}
+	});
+</script>
+@endsection
