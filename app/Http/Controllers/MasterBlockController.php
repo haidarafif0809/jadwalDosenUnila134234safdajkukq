@@ -41,6 +41,8 @@ class MasterBlockController extends Controller
                         ]);
                 })->addColumn('modul', function($master_blocks){
                 return '<a class="btn btn-default" href="'.route('master_blocks.modul',$master_blocks->id).'">Lihat Modul</a>';
+            })->addColumn('mahasiswa', function($master_blocks){ 
+                return '<a class="btn btn-default" href="'.route('master_blocks.mahasiswa',$master_blocks->id).'">Lihat Mahasiswa</a>'; 
             })->addColumn('angkatan', function($master_blocks){
 
                 if ($master_blocks->id_angkatan == NULL) {
@@ -60,6 +62,7 @@ class MasterBlockController extends Controller
         ->addColumn(['data' => 'user_pj_dosen', 'name' => 'user_pj_dosen', 'title' => 'Pj Dosen','orderable' => false, 'searchable' => false]) 
         ->addColumn(['data' => 'modul', 'name' => 'modul', 'title' => 'Modul','orderable' => false, 'searchable' => false]) 
          ->addColumn(['data' => 'angkatan', 'name' => 'angkatan', 'title' => 'Angkatan','orderable' => false, 'searchable' => false])
+         ->addColumn(['data' => 'mahasiswa', 'name' => 'mahasiswa', 'title' => 'Mahasiswa','orderable' => false, 'searchable' => false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
 
         return view('master_blocks.index')->with(compact('html'));

@@ -5,8 +5,7 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
 
-            {!! Form::open(['url' => route('analisa.jadwal'),'method' => 'post', 'class'=>'form-inline']) !!}
-           
+            {!! Form::open(['url' => 'home/analisa_jadwal/data/','method' => 'get', 'class'=>'form-inline']) !!}
 
                 <div class="form-group{{ $errors->has('dari_tanggal') ? ' has-error' : '' }}">
             
@@ -24,10 +23,17 @@
 
                 <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
 
-                 {!! Form::select('id_block', []+App\Master_block::pluck('nama_block','id')->all(), null, ['class'=>'form-control','id' => 'id_block','required', 'placeholder' => 'Pilih Block']) !!}
+                 {!! Form::select('id_block', ['Semua'=>'Semua']+App\Master_block::pluck('nama_block','id')->all(), null, ['class'=>'form-control','id' => 'id_block','required', 'placeholder' => 'Pilih Block']) !!}
                 {!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}
 
                 </div>
+
+                <div class="form-group{{ $errors->has('tipe_jadwal') ? ' has-error' : '' }}">
+
+                 {!! Form::select('tipe_jadwal',  ['Semua'=>'Semua','KULIAH'=>'KULIAH','CSL'=>'CSL','PLENO'=>'PLENO','TUTORIAL'=>'TUTORIAL'], null, ['class'=>'form-control','id' => 'tipe_jadwal','required', 'placeholder' => 'Pilih Tipe Jadwal']) !!}
+                {!! $errors->first('tipe_jadwal', '<p class="help-block">:message</p>') !!}
+
+                </div> 
 
                 <div class="form-group">
             
@@ -115,6 +121,7 @@
 
         @else 
            <!-- /.row -->
+
             <div class="row">
                 <div class="col-lg-4 col-xs-4 col-md-6">
                     <div class="panel panel-primary">
@@ -196,9 +203,11 @@
                                             <th>Tanggal</th>
                                             <th>Mulai</th>
                                             <th>Selesai</th>
+                                            <th>Tipe Jadwal</th>
                                             <th>BLock</th>
                                             <th>Mata Kuliah</th>
                                             <th>Ruangan</th>
+                                            <th>Dosen</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -212,9 +221,11 @@
                                             <th>Tanggal</th>
                                             <th>Mulai</th>
                                             <th>Selesai</th>
+                                            <th>Tipe Jadwal</th>
                                             <th>BLock</th>
                                             <th>Mata Kuliah</th>
                                             <th>Ruangan</th>
+                                            <th>Dosen</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -227,9 +238,11 @@
                                             <th>Tanggal</th>
                                             <th>Mulai</th>
                                             <th>Selesai</th>
+                                            <th>Tipe Jadwal</th>
                                             <th>BLock</th>
                                             <th>Mata Kuliah</th>
                                             <th>Ruangan</th>
+                                            <th>Dosen</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -261,11 +274,12 @@ $(function() {
                                 "data": function ( d ) {
                               d.dari_tanggal = $("#dari_tanggal").val();
                               d.sampai_tanggal = $("#sampai_tanggal").val();
+                              d.tipe_jadwal = $("#tipe_jadwal").val();
                               d.id_block = $("#id_block").val();
                               // d.custom = $('#myInput').val();
                               // etc
                           },
-                    type:'POST',
+                    type:'GET',
                       'headers': {
                           'X-CSRF-TOKEN': '{{ csrf_token() }}'
                       },
@@ -274,9 +288,11 @@ $(function() {
                     { data: 'tanggal', name: 'tanggal' },
                     { data: 'waktu_mulai', mulai: 'waktu_mulai' },
                     { data: 'waktu_selesai', name: 'waktu_selesai' },
+                    { data: 'tipe_jadwal', name: 'tipe_jadwal' },
                     { data: 'block.nama_block', name: 'block.nama_block' },
                     { data: 'mata_kuliah.nama_mata_kuliah', name: 'mata_kuliah.nama_mata_kuliah' },
-                    { data: 'ruangan.nama_ruangan', name: 'ruangan.nama_ruangan' }
+                    { data: 'ruangan.nama_ruangan', name: 'ruangan.nama_ruangan' },
+                    { data: 'jadwal_dosen', name: 'jadwal_dosen' }
                 ]
         });
     });
@@ -302,11 +318,12 @@ $(function() {
                         "data": function ( d ) {
                       d.dari_tanggal = $("#dari_tanggal").val();
                       d.sampai_tanggal = $("#sampai_tanggal").val();
+                      d.tipe_jadwal = $("#tipe_jadwal").val();
                       d.id_block = $("#id_block").val();
                       // d.custom = $('#myInput').val();
                       // etc
                   },
-            type:'POST',
+            type:'GET',
               'headers': {
                   'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
@@ -315,9 +332,11 @@ $(function() {
             { data: 'tanggal', name: 'tanggal' },
             { data: 'waktu_mulai', mulai: 'waktu_mulai' },
             { data: 'waktu_selesai', name: 'waktu_selesai' },
+            { data: 'tipe_jadwal', name: 'tipe_jadwal' },
             { data: 'block.nama_block', name: 'block.nama_block' },
             { data: 'mata_kuliah.nama_mata_kuliah', name: 'mata_kuliah.nama_mata_kuliah' },
-            { data: 'ruangan.nama_ruangan', name: 'ruangan.nama_ruangan' }
+            { data: 'ruangan.nama_ruangan', name: 'ruangan.nama_ruangan' },
+            { data: 'jadwal_dosen', name: 'jadwal_dosen' }
         ]
     });
     });
@@ -343,11 +362,12 @@ $(function() {
                         "data": function ( d ) {
                       d.dari_tanggal = $("#dari_tanggal").val();
                       d.sampai_tanggal = $("#sampai_tanggal").val();
+                      d.tipe_jadwal = $("#tipe_jadwal").val();
                       d.id_block = $("#id_block").val();
                       // d.custom = $('#myInput').val();
                       // etc
                   },
-            type:'POST',
+            type:'GET',
               'headers': {
                   'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
@@ -356,9 +376,11 @@ $(function() {
             { data: 'tanggal', name: 'tanggal' },
             { data: 'waktu_mulai', mulai: 'waktu_mulai' },
             { data: 'waktu_selesai', name: 'waktu_selesai' },
+            { data: 'tipe_jadwal', name: 'tipe_jadwal' },
             { data: 'block.nama_block', name: 'block.nama_block' },
             { data: 'mata_kuliah.nama_mata_kuliah', name: 'mata_kuliah.nama_mata_kuliah' },
-            { data: 'ruangan.nama_ruangan', name: 'ruangan.nama_ruangan' }
+            { data: 'ruangan.nama_ruangan', name: 'ruangan.nama_ruangan' },
+            { data: 'jadwal_dosen', name: 'jadwal_dosen' }
         ]
      });    
     });

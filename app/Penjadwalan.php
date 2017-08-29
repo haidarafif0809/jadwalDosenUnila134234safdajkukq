@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Penjadwalan extends Model
 {
     //
-     protected $fillable = ['id_block','id_mata_kuliah','id_ruangan','tanggal','waktu_mulai','waktu_selesai','status_jadwal','id_modul'];
+     protected $fillable = ['id_block','id_mata_kuliah','id_ruangan','tanggal','waktu_mulai','waktu_selesai','status_jadwal','id_modul','tipe_jadwal'];
 
     	public function block()
 		  {
