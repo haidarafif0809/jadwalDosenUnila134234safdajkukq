@@ -26,6 +26,41 @@ class AndroidController extends Controller
         }
     }
 
+    public function login_dosen_android(Request $request){
+
+
+        if (Auth::attempt(['email' => $request->username, 'password' => $request->password])) {
+            // Authentication passed...
+
+            $user_otoritas = Auth::user()->roles->first()->name;
+
+                  if ($user_otoritas == 'dosen') {
+
+                                $response["value"] = 1;
+                                $response["message"] = "Login Berhasil";
+                                return  json_encode($response);
+
+                  }else{
+
+                                $response["value"] = 2;
+                                $response["message"] = "Login Gagal, anda bukan dosen!!";
+                                return  json_encode($response);
+                  }
+
+
+            }
+
+            else {
+
+                $response["value"] = 3;
+                $response["message"] = "Login Gagal";
+                return  json_encode($response);
+
+            }
+
+
+    }
+
     public function tambah_ruangan (Request $request){
 
         $this->validate($request, [

@@ -200,8 +200,10 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 // route android 
 
 Route::post('/login_android', "AndroidController@authenticate");
+Route::post('/login_dosen_android', "AndroidController@login_dosen_android");
 Route::post('/tambah_ruangan', "AndroidController@tambah_ruangan");
 Route::post('/list_ruangan', "AndroidController@list_ruangan");
+
 
 
 
