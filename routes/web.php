@@ -77,6 +77,13 @@ Route::get('/jadwal-dosen',[
 	'uses' => 'PenjadwalanController@filter'
 	]);	
 
+  	Route::get('admin/penjadwalans/export', [
+  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+    'as'   => 'penjadwalans.export',
+    'uses' => 'PenjadwalanController@exportPost'
+  	]);
+
+
 	Route::get('penjadwalans/batal',[
 	'middleware' => ['auth','role:dosen'],
 	'as' => 'penjadwalans.batal_dosen',
@@ -129,6 +136,8 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'as' => 'penjadwalans.belumterlaksana',
 	'uses' => 'PenjadwalanController@status_belum_terlaksana'
 	]);
+
+
 
 
 	Route::get('penjadwalans/terlaksana/{id}',[

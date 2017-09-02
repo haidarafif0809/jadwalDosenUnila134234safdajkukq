@@ -17,6 +17,8 @@ use App\SettingWaktu;
 use App\ModulBlok;
 use Session;
 use Auth;
+use Excel;
+
 class PenjadwalanController extends Controller
 {
     /**
@@ -96,6 +98,142 @@ class PenjadwalanController extends Controller
         return view('penjadwalans.index',['users'=> $users])->with(compact('html'));
     }
 
+public function exportPost(Request $request, Builder $htmlBuilder) { 
+      // validasi
+
+        $this->validate($request, [
+     
+            'dari_tanggal'     => 'required',
+            'sampai_tanggal'     => 'required',
+            'id_ruangan'    => 'required',
+            'id_dosen'    => 'required'
+            ]);   
+
+            if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
+                
+                $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->get();
+
+                $jenis_id_jadwal = 1;
+      
+
+            }
+             elseif ($request->id_ruangan != 'semua' && $request->id_dosen != 'semua' && $request->id_block != 'semua') {
+
+                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_ruangan',$request->id_ruangan)->where('id_dosen',$request->id_dosen)->where('id_block',$request->id_block)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal')->get();
+                 
+                 $jenis_id_jadwal = 0;
+                
+            }
+
+            elseif ($request->id_ruangan == 'semua' && $request->id_dosen != 'semua' && $request->id_block == 'semua' ) {
+
+                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$request->id_dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->get();
+
+                 $jenis_id_jadwal = 0;      
+
+            }
+            elseif ($request->id_ruangan != 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
+
+                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_ruangan',$request->id_ruangan)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal')->get();
+                 $jenis_id_jadwal = 0;
+
+            } 
+             elseif ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block != 'semua') {
+
+                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_block',$request->id_block)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal')->get();
+                 $jenis_id_jadwal = 0;
+
+            } 
+            elseif ($request->id_ruangan == 'semua' && $request->id_dosen != 'semua' && $request->id_block != 'semua') {
+
+                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$request->id_dosen)->where('id_block',$request->id_block)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal')->get();
+                 $jenis_id_jadwal = 0;
+
+            } elseif ($request->id_ruangan != 'semua' && $request->id_dosen == 'semua' && $request->id_block != 'semua') {
+
+                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_ruangan',$request->id_ruangan)->where('id_block',$request->id_block)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal')->get();
+                 $jenis_id_jadwal = 0;
+
+            } elseif ($request->id_ruangan != 'semua' && $request->id_dosen != 'semua' && $request->id_block == 'semua') {
+
+                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_ruangan',$request->id_ruangan)->where('id_dosen',$request->id_dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal')->get();
+                 $jenis_id_jadwal = 0;
+
+            }
+
+
+    Excel::create('Data Penjadwalan', function($excel) use ($penjadwalans , $jenis_id_jadwal) {
+      // Set property        
+      $excel->sheet('Data Penjadwalan', function($sheet) use ($penjadwalans,$jenis_id_jadwal) {
+        $row = 1;
+        $sheet->row($row, [
+
+          'Tanggal',
+          'Mulai',
+          'Selesai',
+          'Block',
+          'Mata Kuliah',
+          'Ruangan',
+          'Dosen'
+
+        ]);
+
+             
+        foreach ($penjadwalans as $penjadwalan) {
+
+               if ($jenis_id_jadwal == 1) {
+                   $id_jadwal = $penjadwalan->id;
+                }
+                else {
+                     $id_jadwal = $penjadwalan->id_jadwal;
+                }
+
+                 $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_jadwal',$id_jadwal)->get(); 
+
+                 $dosen_list = "";
+
+                 $no_urut = 0;
+                foreach ($jadwal_dosens as $jadwal_dosen) {
+                    $no_urut++;
+                    if ($no_urut == 1){
+                    $dosen_list.= $jadwal_dosen->dosen->name;
+                    }
+                    else{
+                    $dosen_list.= ",".$jadwal_dosen->dosen->name;
+                    }
+                }
+
+
+             $sheet->row(++$row, [
+            $penjadwalan->tanggal,
+            $penjadwalan->waktu_mulai,
+            $penjadwalan->waktu_selesai,
+            $penjadwalan->block->nama_block,
+            $penjadwalan->mata_kuliah->nama_mata_kuliah,
+            $penjadwalan->ruangan->nama_ruangan,
+            $dosen_list,
+            ]); 
+
+
+      }
+      
+      });
+
+    })->export('xls');
+
+
+
+            $users = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',2)
+            ->pluck('name','id');
+
+           $users->prepend('Semua Dosen', 'semua');
+
+        return view('penjadwalans.index',['users'=> $users])->with(compact('html'));
+
+    
+}
 
 public function filter(Request $request, Builder $htmlBuilder)
     {
@@ -210,7 +348,7 @@ public function filter(Request $request, Builder $htmlBuilder)
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen'])     
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
 
-   $users = DB::table('users')
+            $users = DB::table('users')
             ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
             ->where('role_user.role_id',2)
             ->pluck('name','id');
@@ -585,4 +723,7 @@ public function filter(Request $request, Builder $htmlBuilder)
         return redirect()->route('penjadwalans.index');
             }
     }
+
+
+    
 }

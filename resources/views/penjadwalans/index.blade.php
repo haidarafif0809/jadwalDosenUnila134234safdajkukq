@@ -25,17 +25,26 @@
 					@role('admin') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
 					@role('pj_dosen') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
 	
-					 <button data-toggle="collapse" data-target="#filter" class="btn btn-primary"> <span class="glyphicon glyphicon-filter"></span> Filter</button> <a class="btn btn-primary" href="{{ route('penjadwalans.index') }}"> <span class="glyphicon glyphicon-remove"></span>  Hapus Filter</a> <a class="btn btn-primary" href="{{ route('master_blocks.index'	) }}"><span class="glyphicon glyphicon-th-list"></span> Jadwal Per Block </a>
+					 <button data-toggle="collapse" data-target="#filter" id="button_filter" class="btn btn-primary"> <span class="glyphicon glyphicon-filter"></span> Filter</button> 
+					 <a class="btn btn-primary" href="{{ route('penjadwalans.index') }}"> <span class="glyphicon glyphicon-remove"></span>  Hapus Filter</a> 
+					 <a class="btn btn-primary" href="{{ route('master_blocks.index'	) }}"><span class="glyphicon glyphicon-th-list"></span> Jadwal Per Block </a>
+					  <button data-toggle="collapse" data-target="#export" id="button_export" class="btn btn-primary"> <span class="glyphicon glyphicon-export"></span> Export Excel</button> 
 					 
 
 
-					<div id="filter" class="collapse">
+					<div id="filter" style="display:none;">
 					
 					{!! Form::open(['url' => route('penjadwalans.filter'),'method' => 'get', 'class'=>'form-inline']) !!}
 					@include('penjadwalans._form_filter')
 					{!! Form::close() !!}
 					</div>
 
+
+					<div id="export" style="display:none;">
+					{!! Form::open(['url' => route('penjadwalans.export'),'method' => 'get', 'class'=>'form-inline']) !!}
+					@include('penjadwalans._form_export')
+					{!! Form::close() !!}
+					</div>
 
 
 
@@ -63,5 +72,24 @@
 		var c = confirm(text);
 		return c;
 	}); 
+</script>
+
+
+<script type="text/javascript">
+$('.datepicker_filter').datepicker({
+    format: 'yyyy-mm-dd',
+    autoclose: true,
+});
+</script>
+
+<script type="text/javascript">
+$(document.body).on('click', '#button_filter', function () {
+	$("#filter").show();
+	$("#export").hide();
+	});
+$(document.body).on('click', '#button_export', function () {
+	$("#export").show();
+	$("#filter").hide();
+	});  
 </script>
 @endsection
