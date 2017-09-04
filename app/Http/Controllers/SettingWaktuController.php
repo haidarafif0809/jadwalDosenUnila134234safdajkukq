@@ -8,6 +8,8 @@ use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\SettingWaktu; //Modal  
 use Session;
+use App\Jadwal_dosen;
+use App\Penjadwalan;
 
 
 class SettingWaktuController extends Controller
@@ -115,7 +117,18 @@ class SettingWaktuController extends Controller
             'waktu_selesai'   => 'required|unique:setting_waktus,waktu_selesai,' .$id
             ]);
 
-        SettingWaktu::where('id', $id)->update([ 
+         
+
+        $settingwaktu_lama = SettingWaktu::where('id', $id);
+        
+        $data_setting_waktu = $settingwaktu_lama->first();
+
+        //update data waktu yang sudah ada di jadwal
+        $penjadwalan = Penjadwalan::where("waktu_mulai",$data_setting_waktu->waktu_mulai)->where("waktu_selesai",$data_setting_waktu->waktu_selesai)->where("status_jadwal",0)->update(["waktu_mulai" => $request->waktu_mulai,"waktu_selesai" => $request->waktu_selesai]);
+
+        $jadwal_dosen = Jadwal_dosen::where("waktu_mulai",$data_setting_waktu->waktu_mulai)->where("waktu_selesai",$data_setting_waktu->waktu_selesai)->where("status_jadwal",0)->update(["waktu_mulai" => $request->waktu_mulai,"waktu_selesai" => $request->waktu_selesai]);
+
+        $settingwaktu_lama->update([ 
             'waktu_mulai' =>$request->waktu_mulai,
             'waktu_selesai' =>$request->waktu_selesai
             ]);

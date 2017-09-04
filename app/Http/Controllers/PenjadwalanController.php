@@ -516,6 +516,8 @@ public function filter(Request $request, Builder $htmlBuilder)
             $penjadwalan->status_jadwal = 1;
             $penjadwalan->save();  
 
+            $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$id)->update(["status_jadwal" => 1]);
+
         Session::flash("flash_notification", [
             "level"=>"info",
             "message"=>"Penjadwalan Berhasil Terlaksana"
@@ -531,6 +533,8 @@ public function filter(Request $request, Builder $htmlBuilder)
             $penjadwalan->status_jadwal = 0;
             $penjadwalan->save();  
 
+            $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$id)->update(["status_jadwal" => 0]);
+
         Session::flash("flash_notification", [
             "level"=>"primary",
             "message"=>"Penjadwalan Berhasil Belum Terlaksana"
@@ -545,6 +549,8 @@ public function filter(Request $request, Builder $htmlBuilder)
             $penjadwalan->status_jadwal = 2;
             $penjadwalan->save();  
 
+            $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$id)->update(["status_jadwal" => 2]);
+
         Session::flash("flash_notification", [
             "level"=>"danger",
             "message"=>"Penjadwalan Berhasil Di Batalkan"
@@ -557,6 +563,8 @@ public function filter(Request $request, Builder $htmlBuilder)
             $penjadwalan = Penjadwalan::find($request->id_jadwal);   
             $penjadwalan->status_jadwal = 2;
             $penjadwalan->save();   
+
+            $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$request->id_jadwal)->update(["status_jadwal" => 2]);
 
 
         Session::flash("flash_notification", [
