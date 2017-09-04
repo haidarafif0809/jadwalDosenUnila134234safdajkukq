@@ -474,8 +474,8 @@ class HomeController extends Controller
         $mahasiswa = Auth::user()->id_angkatan;
         $id_mahasiswa = Auth::user()->id;
         
-        $block = DB::table('mahasiswa_block') 
-                    ->leftJoin('master_blocks', 'mahasiswa_block.id_block', '=', 'master_blocks.id') 
+        $block = DB::table('master_blocks') 
+                    ->leftJoin('mahasiswa_block', 'mahasiswa_block.id_block', '=', 'master_blocks.id') 
                     ->where('mahasiswa_block.id_mahasiswa',$id_mahasiswa) 
                     ->orWhere('master_blocks.id_angkatan',$mahasiswa)
                     ->pluck('master_blocks.nama_block','master_blocks.id'); 
