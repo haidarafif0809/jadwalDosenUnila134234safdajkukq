@@ -113,8 +113,8 @@ class SettingWaktuController extends Controller
     {
         //
          $this->validate($request, [
-            'waktu_mulai'   => 'required|unique:setting_waktus,waktu_mulai,' .$id ,
-            'waktu_selesai'   => 'required|unique:setting_waktus,waktu_selesai,' .$id
+            'waktu_mulai'   => 'required' ,
+            'waktu_selesai'   => 'required'
             ]);
 
          
