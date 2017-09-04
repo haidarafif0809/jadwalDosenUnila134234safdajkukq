@@ -106,7 +106,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
             'dari_tanggal'     => 'required',
             'sampai_tanggal'     => 'required',
             'id_ruangan'    => 'required',
-            'id_dosen'    => 'required'
+            'id_dosen[]'    => 'required'
             ]);   
 
             if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {

@@ -34,7 +34,7 @@
 <div class="form-group{{ $errors->has('modul') ? ' has-error' : '' }}">
 	{!! Form::label('modul', 'Modul', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::select('modul', [], null, ['class'=>'form-control js-selectize-reguler', 'data-placeholder' => 'Pilih Modul']) !!}
+		{!! Form::select('modul', [], null, ['class'=>'form-control js-selectize-reguler', 'data-placeholder' => 'Pilih Modul','required' => 'true']) !!}
 		{!! $errors->first('modul', '<p class="help-block">:message</p>') !!}
 	</div>
 </div> 
@@ -107,9 +107,9 @@
 	{!! Form::label('id_user[]', 'Dosen', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
 	@if (isset($penjadwalans) && $penjadwalans)  
-		{!! Form::select('id_user[]', $users, null, ['class'=>'form-control js-selectize-multi-edit ', 'placeholder' => 'Pilih Dosen']) !!}
+		{!! Form::select('id_user[]', $users, null, ['class'=>'form-control js-selectize-multi-edit ', 'placeholder' => 'Pilih Dosen' ,'required' => 'true']) !!}
 	@else
-		{!! Form::select('id_user[]', $users, null, ['class'=>'form-control js-selectize-multi ', 'placeholder' => 'Pilih Dosen']) !!}
+		{!! Form::select('id_user[]', $users, null, ['class'=>'form-control js-selectize-multi ', 'placeholder' => 'Pilih Dosen','required' => 'true']) !!}
 	@endif
 		{!! $errors->first('id_user[]', '<p class="help-block">:message</p>') !!}
 	</div>
