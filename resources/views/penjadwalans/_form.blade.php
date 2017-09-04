@@ -31,10 +31,17 @@
 </div>
 @endrole 
 
+
 <div class="form-group{{ $errors->has('modul') ? ' has-error' : '' }}">
 	{!! Form::label('modul', 'Modul', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
+	@if(isset($modul))
+	{!! Form::select('modul', $modul, null, ['class'=>'form-control js-selectize-reguler', 'data-placeholder' => 'Pilih Modul','required' => 'true']) !!}
+	@else 
 		{!! Form::select('modul', [], null, ['class'=>'form-control js-selectize-reguler', 'data-placeholder' => 'Pilih Modul','required' => 'true']) !!}
+
+	@endif
+	
 		{!! $errors->first('modul', '<p class="help-block">:message</p>') !!}
 	</div>
 </div> 
