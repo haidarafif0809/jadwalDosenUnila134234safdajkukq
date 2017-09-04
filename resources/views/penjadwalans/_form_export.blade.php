@@ -1,4 +1,4 @@
-
+<br>
 <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
 		{!! Form::select('id_block', ['semua' => 'Semua Block'	]+App\Master_block::pluck('nama_block','id')->all(), $value = 'semua', ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Block']) !!}
 		{!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}
@@ -38,6 +38,6 @@
 
 <div class="form-group">
 	
-		{!! Form::submit('Terapkan Filter', ['class'=>'btn btn-primary']) !!}
+		{!! Form::submit('Download Excel', ['class'=>'btn btn-primary']) !!}
 	
 </div>
