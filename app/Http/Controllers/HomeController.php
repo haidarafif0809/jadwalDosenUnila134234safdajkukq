@@ -577,11 +577,14 @@ class HomeController extends Controller
         }
 
        $mahasiswa = Auth::user()->id;
+        $id_mahasiswa = Auth::user()->id;
+        
+        $block = DB::table('master_blocks') 
+                    ->leftJoin('mahasiswa_block', 'mahasiswa_block.id_block', '=', 'master_blocks.id') 
+                    ->where('mahasiswa_block.id_mahasiswa',$id_mahasiswa) 
+                    ->orWhere('master_blocks.id_angkatan',Auth::user()->id_angkatan)
+                    ->pluck('master_blocks.nama_block','master_blocks.id'); 
 
-       $block = DB::table('mahasiswa_block')
-            ->leftJoin('master_blocks', 'mahasiswa_block.id_block', '=', 'master_blocks.id')
-            ->where('mahasiswa_block.id_mahasiswa',$mahasiswa)
-            ->pluck('master_blocks.nama_block','master_blocks.id');
         return view('mahasiswa.index_schedule',['jadwal_senin'=> $jadwal_senin,'jadwal_selasa' => $jadwal_selasa,'jadwal_rabu' => $jadwal_rabu,'jadwal_kamis' => $jadwal_kamis,'jadwal_jumat' => $jadwal_jumat,'modul' => $modul,'mahasiswa' => $mahasiswa,'block' =>$block]);
 
     }
