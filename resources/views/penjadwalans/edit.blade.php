@@ -60,26 +60,66 @@
 		});
 
 	});
+	
 	$(document).ready(function(){
-		var $select = $("#modul").selectize();
+		var id_modul = $(this).val();
 
-		var selectize = $select[0].selectize.destroy();
-
-
-		var id_block = $("#id_block").val();
-
-		$.post('{{ route('modul.data_modul_perblock_penjadwalan')}}',{
+		$.post('{{ route('modul.tanggal_modul_perblock_penjadwalan')}}',{
 			 '_token': $('meta[name=csrf-token]').attr('content'),
-			id_block:id_block},
+			id_modul:id_modul},
 			function(data){
-			$('#modul')
-			    .find('option')
-			    .remove();
-			$("#modul").append(data);
-			$("#modul").selectize();
+		var res = data.split(","); 
+
+		var date = new Date(res[0]);
+		var end_date = new Date(res[1]);
+		// use this to allow certain dates only
 
 
+
+		$('.datepicker-modul-jadwal').datepicker('remove');
+
+		$('.datepicker-modul-jadwal').datepicker({
+		    format: 'yyyy-mm-dd',
+		    daysOfWeekDisabled: '0,6',
+		    startDate: date,
+		    autoclose: true,
+		    endDate : end_date
+		   
+		});
+		
 		});
 	});
+
+	$("#modul").change(function(){
+ 
+
+		var id_modul = $(this).val();
+
+		$.post('{{ route('modul.tanggal_modul_perblock_penjadwalan')}}',{
+			 '_token': $('meta[name=csrf-token]').attr('content'),
+			id_modul:id_modul},
+			function(data){
+		var res = data.split(","); 
+
+		var date = new Date(res[0]);
+		var end_date = new Date(res[1]);
+		// use this to allow certain dates only
+
+
+
+		$('.datepicker-modul-jadwal').datepicker('remove');
+
+		$('.datepicker-modul-jadwal').datepicker({
+		    format: 'yyyy-mm-dd',
+		    daysOfWeekDisabled: '0,6',
+		    startDate: date,
+		    autoclose: true,
+		    endDate : end_date
+		   
+		});
+		
+		});
+
+	}); 
 </script>
 @endsection 
