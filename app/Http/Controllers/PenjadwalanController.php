@@ -388,7 +388,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             $modul =  ModulBlok::with('modul')->where('id_blok',$request->id_block)->get();
                 echo "<option readonly='on'>Pilih Modul</option>";
             foreach ($modul as $data) {
-                echo "<option value='".$data->id_modul."'>".$data->modul->nama_modul."</option>";
+                echo "<option value='".$data->id_modul_blok."'>".$data->modul->nama_modul."</option>";
             }
 
         }
@@ -397,7 +397,7 @@ public function filter(Request $request, Builder $htmlBuilder)
     public function tanggal_modul_perblock_penjadwalan (Request $request){
         if ($request->ajax()) {
             
-            $modul =  ModulBlok::select('id_modul','dari_tanggal','sampai_tanggal')->where('id_modul',$request->id_modul)->first(); 
+            $modul =  ModulBlok::select('id_modul','dari_tanggal','sampai_tanggal')->where('id_modul_blok',$request->id_modul)->first(); 
            return $modul->dari_tanggal.','.$modul->sampai_tanggal;
         }
     }
