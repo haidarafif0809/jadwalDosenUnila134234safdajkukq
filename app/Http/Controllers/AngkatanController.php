@@ -140,21 +140,21 @@ class AngkatanController extends Controller
     {
         //
 
-        //   //menghapus data dengan pengecekan alert /peringatan
-        // $user = User::where('id_angkatan',$id); 
+         //menghapus data dengan pengecekan alert /peringatan
+         $user = User::where('id_angkatan',$id); 
  
-        // if ($user->count() > 0) {
-        // // menyiapkan pesan error
-        // $html = 'Angkatan tidak bisa dihapus karena sudah di pakai Mahasiswa'; 
+         if ($user->count() > 0) {
+        // menyiapkan pesan error
+        $html = 'Angkatan tidak bisa dihapus karena sudah di pakai Mahasiswa'; 
         
-        // Session::flash("flash_notification", [
-        //   "level"=>"danger",
-        //   "message"=>$html
-        // ]); 
+        Session::flash("flash_notification", [
+          "level"=>"danger",
+          "message"=>$html
+        ]); 
 
-        // return redirect()->route('angkatan.index');      
-        // }
-        // else{
+        return redirect()->route('angkatan.index');      
+        }
+        else{
 
         Angkatan::destroy($id);
 
@@ -163,6 +163,6 @@ class AngkatanController extends Controller
             "message"=>"Angkatan Berhasil Di Hapus"
             ]);
         return redirect()->route('angkatan.index');
-        // } 
+        } 
     }
 }

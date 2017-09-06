@@ -36,7 +36,7 @@
 	{!! Form::label('modul', 'Modul', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
 	@if(isset($modul))
-	{!! Form::select('modul', $modul, null, ['class'=>'form-control js-selectize-reguler', 'data-placeholder' => 'Pilih Modul','required' => 'true']) !!}
+	{!! Form::select('modul', $modul, $penjadwalans->id_modul, ['class'=>'form-control js-selectize-reguler', 'data-placeholder' => 'Pilih Modul','required' => 'true']) !!}
 	@else 
 		{!! Form::select('modul', [], null, ['class'=>'form-control js-selectize-reguler', 'data-placeholder' => 'Pilih Modul','required' => 'true']) !!}
 
