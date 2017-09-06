@@ -62,7 +62,7 @@
 	});
 	
 	$(document).ready(function(){
-		var id_modul = $(this).val();
+		var id_modul = '{{ $penjadwalans->id_modul }}';
 
 		$.post('{{ route('modul.tanggal_modul_perblock_penjadwalan')}}',{
 			 '_token': $('meta[name=csrf-token]').attr('content'),
