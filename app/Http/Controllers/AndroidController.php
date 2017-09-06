@@ -106,10 +106,10 @@ class AndroidController extends Controller
 
         $dosen = $request->username;// DOSEN YANG LOGIN
         $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
-
+        $value = 0;
         $result = array();// ARRAY RESULT
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
@@ -117,33 +117,35 @@ class AndroidController extends Controller
                         // LEFT JOIN MASTER RUANGAN
                         ->where('jadwal_dosens.id_dosen',$id_dosen->id)
                         //WHERE ID DOSEN = ID DOSEN LOGIN
-                        ->where('jadwal_dosens.tanggal','>=',date("Y-m-d"))
+                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)'),'>=',date("Y-m-d H:i:s"))
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
                         ->where('jadwal_dosens.status_jadwal',0)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
                         ->orderBy(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)', 'ASC'))
                         // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->groupBy('jadwal_dosens.id_jadwal')
+                        ->groupBy('jadwal_dosens.id_jadwal')// GROUP BY ID JADWAL
                         ->get();
 
 
       foreach ($penjadwalans as $list_jadwal_dosen) {// FOREACH
-
+        $value = $value + 1;
         //ARRAY PUSH
         array_push($result, 
                   array('tanggal' => AndroidController::tanggal_terbalik($list_jadwal_dosen['tanggal']),
                           // TANGGAL DI FORMAT=> Y/M/D
                         'waktu' => $list_jadwal_dosen['waktu_mulai'] ." - " . $list_jadwal_dosen['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
                         'mata_kuliah' => $list_jadwal_dosen['nama_mata_kuliah'],// MATA KULIAH
-                        'nama_ruangan' => $list_jadwal_dosen['ruangan'] // NAMA RUANGAN
+                        'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
+                        'id_jadwal' => $list_jadwal_dosen['id_jadwal'] // ID JADWAL
+
+
                         )// ARRAY
-                  );
+                  );// ARRAY PUSH
 
       }// END FOREACH
 
-      // DATA YANG DIKIRIM BERUPA JSON
-      return json_encode(array('value' => '1' , 'result'=>$result));
-
+     // DATA YANG DIKIRIM BERUPA JSON
+      return json_encode(array('value' => $value , 'result'=>$result));
 
     }
 
@@ -156,7 +158,7 @@ class AndroidController extends Controller
 
         $result = array();// ARRAY RESULT
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
@@ -164,21 +166,21 @@ class AndroidController extends Controller
                         // LEFT JOIN MASTER RUANGAN
                         ->where('jadwal_dosens.id_dosen',$id_dosen->id)
                         //WHERE ID DOSEN = ID DOSEN LOGIN
-                        ->where('jadwal_dosens.tanggal','>=',date("Y-m-d"))
+                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)'),'>=',date("Y-m-d H:i:s"))
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
                         ->where('jadwal_dosens.status_jadwal',0)                        
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA  
                         ->where(function($query) use ($search){// search
-                            $query->orWhere('jadwal_dosens.tanggal','LIKE',$search.'%')// OR
-                                  ->orWhere(DB::raw('DATE_FORMAT(jadwal_dosens.tanggal, "%d/%m/%Y")'),'LIKE',$search.'%')// OR FORMAT TANGGAL d/m/y
-                                  ->orWhere(DB::raw('DATE_FORMAT(jadwal_dosens.tanggal, "%d-%m-%Y")'),'LIKE',$search.'%')// OR FORMAT TANGGAL d-m-y
-                                  ->orWhere('jadwal_dosens.waktu_mulai','LIKE',$search.'%')// OR
-                                  ->orWhere('master_mata_kuliahs.nama_mata_kuliah','LIKE',$search.'%')// OR
-                                  ->orWhere('master_ruangans.nama_ruangan','LIKE',$search.'%');  
+                            $query->orWhere('jadwal_dosens.tanggal','LIKE',$search.'%')// OR LIKE TANGGAL
+                                  ->orWhere(DB::raw('DATE_FORMAT(jadwal_dosens.tanggal, "%d/%m/%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d/m/y
+                                  ->orWhere(DB::raw('DATE_FORMAT(jadwal_dosens.tanggal, "%d-%m-%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d-m-y
+                                  ->orWhere('jadwal_dosens.waktu_mulai','LIKE',$search.'%')// OR LIKE WAKTU MULAI
+                                  ->orWhere('master_mata_kuliahs.nama_mata_kuliah','LIKE',$search.'%')// OR LIKE NAMA MATA KULIAH
+                                  ->orWhere('master_ruangans.nama_ruangan','LIKE',$search.'%');  //OR LIKE NAMA RUANGAN
                         })    // search  
                         ->orderBy(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)', 'ASC'))
                         // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->groupBy('jadwal_dosens.id_jadwal')
+                        ->groupBy('jadwal_dosens.id_jadwal')// GROUP BY ID JADWAL
                         ->get();
 
 
@@ -190,15 +192,30 @@ class AndroidController extends Controller
                           // TANGGAL DI FORMAT=> Y/M/D
                         'waktu' => $list_jadwal_dosen['waktu_mulai'] ." - " . $list_jadwal_dosen['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
                         'mata_kuliah' => $list_jadwal_dosen['nama_mata_kuliah'],// MATA KULIAH
-                        'nama_ruangan' => $list_jadwal_dosen['ruangan'] // NAMA RUANGAN
+                        'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
+                        'id_jadwal' => $list_jadwal_dosen['id_jadwal'] // ID JADWAL
                         )// ARRAY
-                  );
+                  );// ARRAY PUSH
 
       }// END FOREACH
 
       // DATA YANG DIKIRIM BERUPA JSON
       return json_encode(array('value' => '1' , 'result'=>$result));
 
+
+    }
+
+    public function batal_jadwal_dosen(Request $request)
+    {
+            $id_jadwal = $request->id_jadwal;
+            $penjadwalan = Penjadwalan::find($id_jadwal);   
+            $penjadwalan->status_jadwal = 2;
+            $penjadwalan->save();  
+
+            $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$id_jadwal)->update(["status_jadwal" => 2]);
+
+                  // DATA YANG DIKIRIM BERUPA JSON
+            return json_encode(array('value' => '1' , 'message'=>'Jadwal Berhasil Di Batalkan'));
 
     }
 
