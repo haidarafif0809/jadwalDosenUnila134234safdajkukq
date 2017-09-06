@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TambahColumIsVerifiedUser extends Migration
+class TambahColumRolesDiUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class TambahColumIsVerifiedUser extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-        $table->integer('status')->nullable()->default(0);
+        $table->integer('id_role')->nullable();
         });
     }
 
@@ -28,7 +28,6 @@ class TambahColumIsVerifiedUser extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->dropColumn('status');
+            $table->dropColumn('id_role');
         });
-    }
-}
+    }}

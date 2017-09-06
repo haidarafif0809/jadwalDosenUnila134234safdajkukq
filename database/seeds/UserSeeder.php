@@ -52,6 +52,7 @@ class UserSeeder extends Seeder
     $admin->no_hp = '-';
     $admin->alamat = '-';
     $admin->status = '1';
+    $admin->id_role = '1';
     $admin->save();
     $admin->attachRole($adminRole);
 
@@ -62,6 +63,7 @@ class UserSeeder extends Seeder
     $pj_dosen->password = bcrypt('rahasia'); 
     $pj_dosen->no_hp = '-';
     $pj_dosen->alamat = '-';
+    $pj_dosen->id_role = '5';
     $pj_dosen->save();
     $pj_dosen->attachRole($pjDosenRole);
 
@@ -71,6 +73,7 @@ class UserSeeder extends Seeder
     $pj_dosen->password = bcrypt('rahasia'); 
     $pj_dosen->no_hp = '-';
     $pj_dosen->alamat = '-';
+    $pj_dosen->id_role = '5';
     $pj_dosen->save();
     $pj_dosen->attachRole($pjDosenRole);
 
@@ -80,6 +83,7 @@ class UserSeeder extends Seeder
     $pj_dosen->password = bcrypt('rahasia'); 
     $pj_dosen->no_hp = '-';
     $pj_dosen->alamat = '-';
+    $pj_dosen->id_role = '5';
     $pj_dosen->save();
     $pj_dosen->attachRole($pjDosenRole);
 
@@ -90,6 +94,7 @@ class UserSeeder extends Seeder
     $dosen->password = bcrypt('rahasia'); 
     $dosen->no_hp = '-';
     $dosen->alamat = '-';
+    $dosen->id_role = '2';
     $dosen->save();
     $dosen->attachRole($dosenRole);
 
@@ -100,6 +105,7 @@ class UserSeeder extends Seeder
     $dosen->password = bcrypt('rahasia'); 
     $dosen->no_hp = '-';
     $dosen->alamat = '-';
+    $dosen->id_role = '2';
     $dosen->save();
     $dosen->attachRole($dosenRole);
 
@@ -110,6 +116,7 @@ class UserSeeder extends Seeder
     $dosen->password = bcrypt('rahasia'); 
     $dosen->no_hp = '-';
     $dosen->alamat = '-';
+    $dosen->id_role = '2';
     $dosen->save();
     $dosen->attachRole($dosenRole);
 
@@ -121,6 +128,7 @@ class UserSeeder extends Seeder
     $mahasiswa->no_hp = '-';
     $mahasiswa->alamat = '-';
     $mahasiswa->id_angkatan = 1;
+    $mahasiswa->id_role = '3';
     $mahasiswa->save();
     $mahasiswa->attachRole($mahasiswaRole);
 
@@ -131,6 +139,7 @@ class UserSeeder extends Seeder
     $pimpinan->password = bcrypt('rahasia'); 
     $pimpinan->no_hp = '-';
     $pimpinan->alamat = '-';
+    $pimpinan->id_role = '4';
     $pimpinan->save();
     $pimpinan->attachRole($pimpinanRole);
     }

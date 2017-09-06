@@ -26,7 +26,7 @@ class Penjadwalan extends Model
 
       public function modul()
       {
-        return $this->hasOne('App\Modul','id','id_modul');
+        return $this->hasOne('App\ModulBlok','id_modul_blok','id_modul');
       } 
 
 

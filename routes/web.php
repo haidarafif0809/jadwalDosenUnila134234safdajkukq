@@ -130,16 +130,31 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('settingwaktu', 'SettingWaktuController'); 
 	Route::resource('angkatan', 'AngkatanController'); 
 
+	Route::get('master_users/filterkonfirmasi/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'master_users.filter_konfirmasi',
+	'uses' => 'MasterUserController@filter_konfirmasi'
+	]);
+
+	Route::get('master_users/filterangkatan/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'master_users.filter_angkatan',
+	'uses' => 'MasterUserController@filter_angkatan'
+	]);
+
+	Route::get('master_users/filterotoritas/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'master_users.filter_otoritas',
+	'uses' => 'MasterUserController@filter_otoritas'
+	]);
+
 	//filter jadwal dosen dan ruangan 
 	Route::get('penjadwalans/belumterlaksana/{id}',[
 	'middleware' => ['auth'],
 	'as' => 'penjadwalans.belumterlaksana',
 	'uses' => 'PenjadwalanController@status_belum_terlaksana'
 	]);
-
-
-
-
+ 
 	Route::get('penjadwalans/terlaksana/{id}',[
 	'middleware' => ['auth'],
 	'as' => 'penjadwalans.terlaksana',
