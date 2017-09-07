@@ -37,18 +37,20 @@ class AndroidController extends Controller
             // Authentication passed...
 
             $user_otoritas = Auth::user()->roles->first()->name;
+            // cek otoritas
 
                   if ($user_otoritas == 'dosen') {
+                    // jika otoritas nya dosen maka login akan berhasil
 
-                                $response["value"] = 1;
-                                $response["message"] = "Login Berhasil";
-                                return  json_encode($response);
+                                $response["value"] = 1;// value = 1
+                                $response["message"] = "Login Berhasil"; // login berhasil
+                                return  json_encode($response);// data yang dikembalikan berupa json
 
                   }else{
 
-                                $response["value"] = 2;
-                                $response["message"] = "Login Gagal, anda bukan dosen!!";
-                                return  json_encode($response);
+                                $response["value"] = 2;// value = 2
+                                $response["message"] = "Login Gagal, anda bukan dosen!!";// login gagal, kerena user bukan dosen
+                                return  json_encode($response);// data yang dikembalikan berupa json
                   }
 
 
@@ -56,9 +58,9 @@ class AndroidController extends Controller
 
             else {
 
-                $response["value"] = 3;
-                $response["message"] = "Login Gagal";
-                return  json_encode($response);
+                $response["value"] = 3;// value = 3
+                $response["message"] = "Login Gagal";// login gagal
+                return  json_encode($response);// data yang dikembalikan berupa json
 
             }
 
@@ -95,6 +97,7 @@ class AndroidController extends Controller
         echo json_encode(array("value"=>1,"result"=>$result));
     }
 
+// function tanggal terbalik
     function tanggal_terbalik($tanggal){
     
     $date= date_create($tanggal);
@@ -102,6 +105,7 @@ class AndroidController extends Controller
     return $date_terbalik;
     }
 
+// list jadwal dosen
     public function list_jadwal_dosen(Request $request){
 
         $dosen = $request->username;// DOSEN YANG LOGIN
@@ -147,9 +151,9 @@ class AndroidController extends Controller
      // DATA YANG DIKIRIM BERUPA JSON
       return json_encode(array('value' => $value , 'result'=>$result));
 
-    }
+    }// end function list jadwal dosen
 
-
+// search jadwal dosen
     public function search_jadwal_dosen(Request $request){
 
         $search = $request->search;// REQUEST SEARCH
@@ -203,21 +207,28 @@ class AndroidController extends Controller
       return json_encode(array('value' => '1' , 'result'=>$result));
 
 
-    }
+    }// end search jadawal dosen
 
+// function batal jadwal dosen 
     public function batal_jadwal_dosen(Request $request)
     {
-            $id_jadwal = $request->id_jadwal;
-            $penjadwalan = Penjadwalan::find($id_jadwal);   
-            $penjadwalan->status_jadwal = 2;
-            $penjadwalan->save();  
+            $id_jadwal = $request->id_jadwal;// id jadwal
+            $penjadwalan = Penjadwalan::find($id_jadwal); // cari id jadwal di table panjadawalan
+            $penjadwalan->status_jadwal = 2;// update status jadawal = 2
+            $penjadwalan->save();  // save
 
             $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$id_jadwal)->update(["status_jadwal" => 2]);
+            // update jadwal dosen (status jadwal di set = 2 atau "Batal") where id_jadwal dosen = $id jadwal dosen
 
                   // DATA YANG DIKIRIM BERUPA JSON
             return json_encode(array('value' => '1' , 'message'=>'Jadwal Berhasil Di Batalkan'));
 
     }
+
+    public function presensi_dosen(Request $request){
+
+
+   }
 
 
     
