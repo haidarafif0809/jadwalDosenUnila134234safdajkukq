@@ -603,7 +603,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             }    
         $data_waktu = substr($penjadwalans->waktu_mulai, 0, -3) ." - ".substr($penjadwalans->waktu_selesai, 0, -3);
 
-        $modul = ModulBlok::leftJoin('moduls','moduls.id','=','modul_bloks.id_modul')->where('id_blok',$penjadwalans->id_block)->pluck('moduls.nama_modul','modul_bloks.id_modul');
+        $modul = ModulBlok::leftJoin('moduls','moduls.id','=','modul_bloks.id_modul')->where('id_blok',$penjadwalans->id_block)->pluck('moduls.nama_modul','modul_bloks.id_modul_blok');
       
         return view('penjadwalans.edit',['users' => $users,'data_waktu' => $data_waktu,'data_block'=>$data_block])->with(compact('penjadwalans','data_dosen','modul')); 
     }

@@ -498,13 +498,24 @@ class HomeController extends Controller
     public function info_jadwal(Request $request){
         if ($request->ajax()) {
             $penjadwalans = Penjadwalan::with('mata_kuliah','ruangan','block')->where('id',$request->id_jadwal)->first();
+            $user = Auth::user();
+            $link =  url('admin/penjadwalans/'.$penjadwalans->id.'/edit');
                   $isi_event = "
-                <p>
-                Waktu : ".$penjadwalans->tanggal." ". $penjadwalans->waktu_mulai ."-". $penjadwalans->waktu_selesai ." <br>
+                <p>";
+                if($user->hasRole(['admin', 'pj_dosen']))
+                {
+                    $isi_event .= "Apabila Ingin Mengubah Penjadwalan Klik <a class='btn btn-sm btn-success' href=".$link." target='_blank'>Ubah</a> <br>";
+                }else{
+                   $isi_event .=  "";
+                }
+                    
+
+               $isi_event .=  "Waktu : ".$penjadwalans->tanggal." ". $penjadwalans->waktu_mulai ."-". $penjadwalans->waktu_selesai ." <br>
                 Block : ".$penjadwalans->block->nama_block ."<br>
                 Ruangan :". $penjadwalans->ruangan->nama_ruangan ."<br>
                 Mata Kuliah : ".$penjadwalans->mata_kuliah->nama_mata_kuliah . "<br>
                 Dosen: <br>
+
                 <ulstyle=list-style-type:circle'>";
                 $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_jadwal',$request->id_jadwal)->get(); 
                 foreach ($jadwal_dosens as $data) {

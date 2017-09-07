@@ -12,6 +12,9 @@
 */
 
 Route::get('/', 'HomeController@index')->name('home');
+Route::get('/', 'WelcomeController@index')->name('welcome');
+Route::get('/besok', 'WelcomeController@besok');
+Route::get('/lusa', 'WelcomeController@lusa');
 
 Route::get('/jadwal-kuliah', 'HomeController@jadwal_kuliah');
 
