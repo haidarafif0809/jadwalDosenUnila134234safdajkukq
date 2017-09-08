@@ -22,38 +22,49 @@
 
 				<div class="panel-body">
 					<p>
+
+				<!-- APABILA ADMIN DAN PJ DOSEN YANG LOGIN MAKA MUNCUL TOMBOL DI BAWAH-->
 					@role('admin') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
 					@role('pj_dosen') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
-	
+				<!-- //APABILA ADMIN DAN PJ DOSEN YANG LOGIN MAKA MUNCUL TOMBOL DI BAWAH-->
+
+				<!-- MEMBUAT FILTER PENJADWALAN -->
 					 <button data-toggle="collapse" data-target="#filter" id="button_filter" class="btn btn-primary"> <span class="glyphicon glyphicon-filter"></span> Filter</button> 
 					 <a class="btn btn-primary" href="{{ route('penjadwalans.index') }}"> <span class="glyphicon glyphicon-remove"></span>  Hapus Filter</a> 
+				<!-- //MEMBUAT FILTER PENJADWALAN -->
+
+				<!-- MEMBUAT TOMBOL JADWAL PER BLOCK-->
 					 <a class="btn btn-primary" href="{{ route('master_blocks.index'	) }}"><span class="glyphicon glyphicon-th-list"></span> Jadwal Per Block </a>
+				<!-- //MEMBUAT TOMBOL JADWAL PER BLOCK-->
+
+				<!-- MEMBUAT TOMBOL EXPORT EXCEL -->
 					  <button data-toggle="collapse" data-target="#export" id="button_export" class="btn btn-primary"> <span class="glyphicon glyphicon-export"></span> Export Excel</button> 
-					 
-
-
-					<div id="filter" style="display:none;">
-					
+				<!-- //MEMBUAT TOMBOL EXPORT EXCEL -->
+					  
+				<!-- MEMBUAT TOMBOL FILTER PENJADWALAN -->
+					<div id="filter" style="display:none;"> 
 					{!! Form::open(['url' => route('penjadwalans.filter'),'method' => 'get', 'class'=>'form-inline']) !!}
 					@include('penjadwalans._form_filter')
 					{!! Form::close() !!}
 					</div>
-
-
+				<!-- //MEMBUAT TOMBOL FILTER PENJADWALAN -->
+  
+				<!-- MEMBUAT FILTER EXPORT PENJADWALAN -->
 					<div id="export" style="display:none;">
 					{!! Form::open(['url' => route('penjadwalans.export'),'method' => 'get', 'class'=>'form-inline']) !!}
 					@include('penjadwalans._form_export')
 					{!! Form::close() !!}
-					</div>
-
-
-
+					</div> 
+				<!-- //MEMBUAT FILTER EXPORT PENJADWALAN -->
 
 					 </p>
 					<br>
+
+				<!-- MENAMPILKAN DATA PENJADWALAN -->
 					<div class="table-responsive">
 					{!! $html->table(['class'=>'table-striped table']) !!}
 					</div>
+				<!-- //MENAMPILKAN DATA PENJADWALAN -->
 				</div>
 			</div>
 		</div>

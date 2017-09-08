@@ -16,9 +16,11 @@
 					</div>
 
 					<div class="panel-body">    
+					<!-- MENAMPILKAN DATA PENJDWALAN SESUAI ID YANG DI KIRIM -->
 						{!! Form::model($penjadwalans, ['url' => route('penjadwalans.update', $penjadwalans->id), 'method' => 'put', 'files'=>'true','class'=>'form-horizontal']) !!}
 						@include('penjadwalans._form')
 						{!! Form::close() !!}
+					<!-- //MENAMPILKAN DATA PENJDWALAN SESUAI ID YANG DI KIRIM -->
 					</div>
 				</div>
 			</div>
@@ -37,15 +39,13 @@
 </script>
 
 <script type="text/javascript">
+//MENGAMBIL ID BLOK UNTUK MENAMPILKAN MODUL YANG ADA DI BLOK YANG DI PILIH
 	$("#id_block").change(function(){
 
-		var $select = $("#modul").selectize();
-
-		var selectize = $select[0].selectize.destroy();
-
-
+		var $select = $("#modul").selectize(); 
+		var selectize = $select[0].selectize.destroy(); 
 		var id_block = $(this).val();
-
+		//POST ID BLOCK KE CONTROLLER
 		$.post('{{ route('modul.data_modul_perblock_penjadwalan')}}',{
 			 '_token': $('meta[name=csrf-token]').attr('content'),
 			id_block:id_block},
@@ -62,64 +62,51 @@
 	});
 	
 	$(document).ready(function(){
+		//MENAMPILKAN MODUL SESUAI DATA PENJADWALAN
 		var id_modul = '{{ $penjadwalans->id_modul }}';
-
+		//POST ID MODUL KE CONTROLLER UNTUK MENAMPILKAN PERIODE YANG ADA DI MODUL
 		$.post('{{ route('modul.tanggal_modul_perblock_penjadwalan')}}',{
-			 '_token': $('meta[name=csrf-token]').attr('content'),
-			id_modul:id_modul},
-			function(data){
-		var res = data.split(","); 
+				 '_token': $('meta[name=csrf-token]').attr('content'),
+				id_modul:id_modul},
+				function(data){
+			var res = data.split(",");  
+			var date = new Date(res[0]);
+			var end_date = new Date(res[1]); 
 
-		var date = new Date(res[0]);
-		var end_date = new Date(res[1]);
-		// use this to allow certain dates only
-
-
-
-		$('.datepicker-modul-jadwal').datepicker('remove');
-
-		$('.datepicker-modul-jadwal').datepicker({
-		    format: 'yyyy-mm-dd',
-		    daysOfWeekDisabled: '0,6',
-		    startDate: date,
-		    autoclose: true,
-		    endDate : end_date
-		   
-		});
-		
+	//MENAMPILKAN TANGGAL SESUAI PERIODE MODUL YANG DI PILIH 	
+			$('.datepicker-modul-jadwal').datepicker('remove'); 
+			$('.datepicker-modul-jadwal').datepicker({
+			    format: 'yyyy-mm-dd',
+			    daysOfWeekDisabled: '0,6',
+			    startDate: date,
+			    autoclose: true,
+			    endDate : end_date
+			   
+			}); 
 		});
 	});
 
 	$("#modul").change(function(){
- 
-
-		var id_modul = $(this).val();
-
-		$.post('{{ route('modul.tanggal_modul_perblock_penjadwalan')}}',{
-			 '_token': $('meta[name=csrf-token]').attr('content'),
-			id_modul:id_modul},
+  //MENGIRIMKAN ID MODUL KE CONTROLLER
+		var id_modul = $(this).val(); 
+			$.post('{{ route('modul.tanggal_modul_perblock_penjadwalan')}}',{
+				 '_token': $('meta[name=csrf-token]').attr('content'),
+				id_modul:id_modul},
 			function(data){
-		var res = data.split(","); 
-
+		var res = data.split(",");  
 		var date = new Date(res[0]);
-		var end_date = new Date(res[1]);
-		// use this to allow certain dates only
-
-
-
-		$('.datepicker-modul-jadwal').datepicker('remove');
-
+		var end_date = new Date(res[1]); 
+ 	//MENAMPILKAN TANGGAL SESUAI PERIODE MODUL YANG DI PILIH
+		$('.datepicker-modul-jadwal').datepicker('remove'); 
 		$('.datepicker-modul-jadwal').datepicker({
-		    format: 'yyyy-mm-dd',
-		    daysOfWeekDisabled: '0,6',
-		    startDate: date,
-		    autoclose: true,
-		    endDate : end_date
-		   
-		});
-		
-		});
-
+			    format: 'yyyy-mm-dd',
+			    daysOfWeekDisabled: '0,6',
+			    startDate: date,
+			    autoclose: true,
+			    endDate : end_date
+			   
+			}); 
+		}); 
 	}); 
 </script>
 @endsection 
