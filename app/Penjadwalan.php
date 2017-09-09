@@ -29,7 +29,7 @@ class Penjadwalan extends Model
         return $this->hasOne('App\ModulBlok','id_modul_blok','id_modul');
       } 
 
-
+    //MENGECEK TAMBAH PENDAJWALAN, RUANGAN YANG SAMA DAN DI JADWAL YANG BERSMAAN
     public function scopeStatusRuangan($query, $request,$data_setting_waktu)
     {
 
@@ -53,6 +53,8 @@ class Penjadwalan extends Model
               return $query;
     
     }
+
+    //MENGECEK UPDATE PENDAJWALAN, RUANGAN YANG SAMA DAN DI JADWAL YANG BERSMAAN
 		public function scopeStatusRuanganEdit($query, $request,$data_setting_waktu,$id)
 		{
 

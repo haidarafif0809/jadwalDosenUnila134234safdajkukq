@@ -16,7 +16,7 @@ class CreatePresensiDosen extends Migration
         Schema::create('presensi', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('id_user');
-            $table->integer('id_ruangan');
+            $table->integer('id_ruangan')->nullable();
             $table->integer('id_jadwal');
             $table->string('longitude');
             $table->string('latitude');

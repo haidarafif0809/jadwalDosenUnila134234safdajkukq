@@ -1,16 +1,12 @@
-
-@if(isset($asal_input))
-
-	{!! Form::hidden('asal_input', $value = 1, ['class'=>'','required','autocomplete'=>'off']) !!}
-
+@if(isset($asal_input)) 
+	{!! Form::hidden('asal_input', $value = 1, ['class'=>'','required','autocomplete'=>'off']) !!} 
 @endif 
-@if(isset($asal_input))
-
-{!! Form::hidden('id_block', $value = $modul->id_blok, ['class'=>'','required','autocomplete'=>'off']) !!}
-{!! Form::hidden('modul', $value = $modul->id_modul_blok, ['class'=>'','required','autocomplete'=>'off']) !!}
-
+@if(isset($asal_input)) 
+	{!! Form::hidden('id_block', $value = $modul->id_blok, ['class'=>'','required','autocomplete'=>'off']) !!}
+	{!! Form::hidden('modul', $value = $modul->id_modul_blok, ['class'=>'','required','autocomplete'=>'off']) !!} 
 @else 
 
+<!-- APABILA ADMIN YANG LOGIN MAKA INPUT DI BAWAH MUNCUL -->
 @role('admin') 
 <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
 	{!! Form::label('id_block', 'Block', ['class'=>'col-md-2 control-label']) !!}
@@ -20,7 +16,9 @@
 	</div>
 </div>
 @endrole 
+<!-- //APABILA ADMIN YANG LOGIN MAKA INPUT DI BAWAH MUNCUL -->
 
+<!-- APABILA PJ DOSEN YANG LOGIN MAKA INPUT DI BAWAH MUNCUL -->
 @role('pj_dosen') 
 <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
 	{!! Form::label('id_block', 'Block', ['class'=>'col-md-2 control-label']) !!}
@@ -30,6 +28,7 @@
 	</div>
 </div>
 @endrole 
+<!-- //APABILA PJ DOSEN YANG LOGIN MAKA INPUT DI BAWAH MUNCUL -->
 
 
 <div class="form-group{{ $errors->has('modul') ? ' has-error' : '' }}">
@@ -40,8 +39,7 @@
 	@else 
 		{!! Form::select('modul', [], null, ['class'=>'form-control js-selectize-reguler', 'data-placeholder' => 'Pilih Modul','required' => 'true']) !!}
 
-	@endif
-	
+	@endif 
 		{!! $errors->first('modul', '<p class="help-block">:message</p>') !!}
 	</div>
 </div> 
