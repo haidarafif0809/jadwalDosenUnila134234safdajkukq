@@ -67,6 +67,7 @@ class AndroidController extends Controller
 
     }
 
+//PROSES TAMBAH RUANGAN
     public function tambah_ruangan (Request $request){
 
         $this->validate($request, [
@@ -86,16 +87,50 @@ class AndroidController extends Controller
           return  json_encode($response);
     }
 
-    public function list_ruangan(Request $request){
-        
-       $ruangan =  Master_ruangan::all();
-        $result = array();
-      foreach ($ruangan as $row ) {
-       
-        array_push($result, array('kode_ruangan'=>$row['kode_ruangan'], 'nama_ruangan'=>$row['nama_ruangan'], 'nama' => $row['nama'],'foto_masuk' => $row['gambar']));
-      }
-        echo json_encode(array("value"=>1,"result"=>$result));
+//PROSES MEAMPILKAN RUANGAN
+    public function list_ruangan(Request $request){        
+      $ruangan =  Master_ruangan::all();
+      $result = array();
+
+        foreach ($ruangan as $row ) {       
+          array_push($result, array('id'=>$row['id'], 'kode_ruangan'=>$row['kode_ruangan'], 'nama_ruangan'=>$row['nama_ruangan'], 'lokasi_ruangan' => $row['lokasi_ruangan'], 'latitude' => $row['latitude'], 'longitude' => $row['longitude'], 'batas_jarak_absen' => $row['batas_jarak_absen']));
+        }
+
+      echo json_encode(array("value"=>1,"result"=>$result));
+
     }
+
+//PROSES UPDATE RUANGAN
+
+    public function update_ruangan(Request $request) {
+
+        Master_ruangan::where('id', $request->id) ->update([ 
+            'kode_ruangan' =>$request->kode_ruangan,
+            'nama_ruangan'=>$request->nama_ruangan,
+            'lokasi_ruangan'=>$request->gedung,
+            'longitude'=>$request->longitude,
+            'latitude'=>$request->latitude,
+            'batas_jarak_absen'=>$request->batas_jarak]);
+
+        $response["value"] = 1;
+        $response["message"] = "Ruangan Berhasil Diubah";
+        
+        return  json_encode($response);
+    }
+
+
+//PROSES HAPUS RUANGAN
+
+    public function hapus_ruangan(Request $request)   {
+
+        Master_ruangan::destroy($request->id);
+        
+        $response["value"] = 1;
+        $response["message"] = "Ruangan Berhasil Dihapus";
+        
+        return  json_encode($response);
+    }
+
 
 // function tanggal terbalik
     function tanggal_terbalik($tanggal){
