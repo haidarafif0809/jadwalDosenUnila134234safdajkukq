@@ -8,7 +8,10 @@ use App\Master_ruangan;
 use App\Penjadwalan;
 use App\User;
 use App\Jadwal_dosen;
+use App\Presensi;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
 
 class AndroidController extends Controller
 {
@@ -113,7 +116,7 @@ class AndroidController extends Controller
         $value = 0;
         $result = array();// ARRAY RESULT
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
@@ -135,12 +138,13 @@ class AndroidController extends Controller
         $value = $value + 1;
         //ARRAY PUSH
         array_push($result, 
-                  array('tanggal' => AndroidController::tanggal_terbalik($list_jadwal_dosen['tanggal']),
+                  array('tanggal' => $this->tanggal_terbalik($list_jadwal_dosen['tanggal']),
                           // TANGGAL DI FORMAT=> Y/M/D
                         'waktu' => $list_jadwal_dosen['waktu_mulai'] ." - " . $list_jadwal_dosen['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
                         'mata_kuliah' => $list_jadwal_dosen['nama_mata_kuliah'],// MATA KULIAH
                         'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
-                        'id_jadwal' => $list_jadwal_dosen['id_jadwal'] // ID JADWAL
+                        'id_jadwal' => $list_jadwal_dosen['id_jadwal'], // ID JADWAL
+                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'] // ID RUANGAN
 
 
                         )// ARRAY
@@ -162,7 +166,7 @@ class AndroidController extends Controller
 
         $result = array();// ARRAY RESULT
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
@@ -192,18 +196,19 @@ class AndroidController extends Controller
 
         //ARRAY PUSH
         array_push($result, 
-                  array('tanggal' => AndroidController::tanggal_terbalik($list_jadwal_dosen['tanggal']),
+                  array('tanggal' => $this->tanggal_terbalik($list_jadwal_dosen['tanggal']),
                           // TANGGAL DI FORMAT=> Y/M/D
                         'waktu' => $list_jadwal_dosen['waktu_mulai'] ." - " . $list_jadwal_dosen['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
                         'mata_kuliah' => $list_jadwal_dosen['nama_mata_kuliah'],// MATA KULIAH
                         'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
-                        'id_jadwal' => $list_jadwal_dosen['id_jadwal'] // ID JADWAL
+                        'id_jadwal' => $list_jadwal_dosen['id_jadwal'], // ID JADWAL
+                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'] // ID RUANGAN
                         )// ARRAY
                   );// ARRAY PUSH
 
       }// END FOREACH
 
-      // DATA YANG DIKIRIM BERUPA JSON
+      // DATA YANG DIKEMBALIKAN  BERUPA JSON
       return json_encode(array('value' => '1' , 'result'=>$result));
 
 
@@ -213,23 +218,103 @@ class AndroidController extends Controller
     public function batal_jadwal_dosen(Request $request)
     {
             $id_jadwal = $request->id_jadwal;// id jadwal
-            $penjadwalan = Penjadwalan::find($id_jadwal); // cari id jadwal di table panjadawalan
-            $penjadwalan->status_jadwal = 2;// update status jadawal = 2
-            $penjadwalan->save();  // save
+
+            $penjadwalan = Penjadwalan::where("id",$id_jadwal)->update(["status_jadwal" => 2]);
+             // update Penjadwalan (status jadwal di set = 2 atau "Batal") where id_jadwal dosen = $id jadwal dosen
 
             $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$id_jadwal)->update(["status_jadwal" => 2]);
             // update jadwal dosen (status jadwal di set = 2 atau "Batal") where id_jadwal dosen = $id jadwal dosen
 
-                  // DATA YANG DIKIRIM BERUPA JSON
+            // jika query berhasil di eksekusi
+            if ($penjadwalan ==  true AND $jadwal_dosen == true) {
+              
+            // DATA YANG DIKEMBALIKAN  BERUPA JSON
             return json_encode(array('value' => '1' , 'message'=>'Jadwal Berhasil Di Batalkan'));
+
+            }else{
+
+             // DATA YANG DIKEMBALIKAN  BERUPA JSON
+            return json_encode(array('value' => '0' , 'message'=>'Jadwal Gagal Di Batalkan'));
+
+            }
+
+
 
     }
 
+// presendi dosen
     public function presensi_dosen(Request $request){
 
+      $dosen = $request->username;// DOSEN YANG LOGIN
+      $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+      $id_jadwal = $request->id_jadwal;// ID JADWAL
+      $id_ruangan = $request->id_ruangan; // ID RUANGAN
+      $longitude = "-";// LONGITUDE
+      $latitude = "-";// LATITUDE
+      $image = $request->image; // FOTO ABSEN
 
-   }
+      // CEK APAKAH DOSEN INI SUDAH ABSEN BELUM UNTUK JADWAL INI
+      $query_cek_presensi = Presensi::where('id_jadwal',$id_jadwal) // WHERE ID JADWAL
+                          ->where('id_user',$id_dosen->id)// AND ID DOSEN
+                          ->count();
+
+          // JIKA 0, ARTINYA BELUM ABSEN
+          if ($query_cek_presensi == 0) {
+
+              // INSERT KE TABLE PRESENSI
+                $presensi = Presensi::create([
+                'id_user' => $id_dosen->id,// ID USER DOSEN
+                'id_jadwal' => $id_jadwal,// ID JADWAL
+                'id_ruangan' => $id_ruangan,// ID JADWAL
+                'longitude' => $longitude,// LONGITUDE
+                'latitude' => $latitude// LATITUDE
+                ]);
+
+                // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 
+                $filename = 'image' . DIRECTORY_SEPARATOR . str_random(40) . '.png';
+
+                // UPLOAD FOTO
+                file_put_contents($filename,base64_decode($image));
+                 
+                // INSERT FOTO KE TABLE PRSENSI   
+                $presensi->foto = $filename;     
+                $presensi->save();  
+
+                // CEK ADA BERAPA DOSEN UNTUK JADWAL INI 
+                $count_jadwal_dosen = Jadwal_dosen::where('id_jadwal',$id_jadwal)->count();
+                
+                // CEK ADA BERAPA DOSEN YANG SUDAH HADIR UNTUK JADWAL INI       
+                $count_presensi = Presensi::where('id_jadwal',$id_jadwal)->count(); 
+
+                  // JIKA SAMA
+                  if ($count_jadwal_dosen == $count_presensi) {                  
+
+                    // MAKA JADWAL AKAN DIUPDATE STATUSNYA MENJADI TERLAKSANA
+
+                    $penjadwalan_terlaksana = Penjadwalan::where("id",$id_jadwal)->update(["status_jadwal" => 1]);
+                     // update Penjadwalan (status jadwal di set = 1 atau "TERLAKSANA") where id_jadwal dosen = $id jadwal dosen
+
+                    $jadwal_dosen_terlaksana = Jadwal_dosen::where("id_jadwal",$id_jadwal)->update(["status_jadwal" => 1]);
+                    // update jadwal dosen (status jadwal di set = 1 atau "TERLAKSANA") where id_jadwal dosen = $id jadwal dosen
+
+                  }
+
+                $response["value"] = 1;// RESPONSE VALUE 1
+                $response["message"] = "Berhasil Absen";// RESPONSE BERHASIL ABSEN
+                // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                return  json_encode($response);
+
+            
+          }else{// JIKA TIDAK NOL, MAKA DOSEN SUDAH ABSEN
 
 
+                $response["value"] = 0;// RESPONSE VALUE 0
+                $response["message"] = "Gagal Absen";// RESPONSE Gagal ABSEN
+                // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                return  json_encode($response);
+
+          }// END          
     
+    }// PRESENSI
+
 }
