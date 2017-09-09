@@ -36,6 +36,7 @@ class Jadwal_dosen extends Model
 
 
 
+    //MENGECEK DOSEN KETIKA TAMBAH DI PENJADWALAN
     public function scopeStatusDosen($query, $request,$user_dosen,$data_setting_waktu)
     {
 
@@ -58,7 +59,10 @@ class Jadwal_dosen extends Model
 
               return $query;
     
-    }   
+    }  
+
+    
+    //MENGECEK DOSEN KETIKA TAMBAH DI PENJADWALAN 
 		public function scopeStatusDosenEdit($query, $request,$user_dosen,$data_setting_waktu,$id)
 		{
 
