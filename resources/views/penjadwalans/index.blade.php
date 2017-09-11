@@ -51,7 +51,7 @@
   
 				<!-- MEMBUAT FILTER EXPORT PENJADWALAN -->
 					<div id="export" style="display:none;">
-					{!! Form::open(['url' => route('penjadwalans.export'),'method' => 'get', 'class'=>'form-inline']) !!}
+					{!! Form::open(['url' => route('penjadwalans.export'),'method' => 'post', 'class'=>'form-inline']) !!}
 					@include('penjadwalans._form_export')
 					{!! Form::close() !!}
 					</div> 
