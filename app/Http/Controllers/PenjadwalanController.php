@@ -337,6 +337,23 @@ public function filter(Request $request, Builder $htmlBuilder)
                         'model_user'     => $jadwal_dosens,
                         'id_jadwal' => $id_jadwal
                     ]);
+                })
+             //MENAMPILKAN STATUS PENJADWALAN
+            ->addColumn('status',function($status_penjadwalan){
+                $status = "status_jadwal";
+                if ($status_penjadwalan->status_jadwal == 0 ) {
+                    # code...
+                    $status = "Belum Terlaksana";
+                }
+                elseif ($status_penjadwalan->status_jadwal == 1) {
+                    # code...
+                     $status = "Sudah Terlaksana";
+                }
+                elseif ($status_penjadwalan->status_jadwal == 2) {
+                    # code...
+                     $status = "Batal";
+                } 
+                return $status;
                 })->make(true);
         }
         $html = $htmlBuilder
@@ -347,6 +364,7 @@ public function filter(Request $request, Builder $htmlBuilder)
         ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah'])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan'])     
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen'])     
+         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false]) 
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
 
             $users = DB::table('users')
