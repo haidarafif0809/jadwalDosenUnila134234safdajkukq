@@ -151,7 +151,7 @@ class AndroidController extends Controller
         $value = 0;
         $result = array();// ARRAY RESULT
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
@@ -179,7 +179,10 @@ class AndroidController extends Controller
                         'mata_kuliah' => $list_jadwal_dosen['nama_mata_kuliah'],// MATA KULIAH
                         'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
                         'id_jadwal' => $list_jadwal_dosen['id_jadwal'], // ID JADWAL
-                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'] // ID RUANGAN
+                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_dosen['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_dosen['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_dosen['batas_jarak_absen'] // LONGITUDE
 
 
                         )// ARRAY
@@ -201,7 +204,7 @@ class AndroidController extends Controller
 
         $result = array();// ARRAY RESULT
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
@@ -237,7 +240,10 @@ class AndroidController extends Controller
                         'mata_kuliah' => $list_jadwal_dosen['nama_mata_kuliah'],// MATA KULIAH
                         'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
                         'id_jadwal' => $list_jadwal_dosen['id_jadwal'], // ID JADWAL
-                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'] // ID RUANGAN
+                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_dosen['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_dosen['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_dosen['batas_jarak_absen'] // 
                         )// ARRAY
                   );// ARRAY PUSH
 
