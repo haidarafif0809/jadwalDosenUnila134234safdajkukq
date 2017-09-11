@@ -383,7 +383,7 @@ public function filter(Request $request, Builder $htmlBuilder)
     public function data_modul_perblock_penjadwalan (Request $request){
         if ($request->ajax()) {
             
-            $modul =  ModulBlok::with('modul')->where('id_blok',$request->id_block)->get();
+            $modul =  ModulBlok::with('modul')->where('id_blok',$request->id_block)->orderBy('dari_tanggal','DESC')->get();
                 echo "<option readonly='on'>Pilih Modul</option>";
             foreach ($modul as $data) {
                 echo "<option value='".$data->id_modul_blok."'>".$data->modul->nama_modul."</option>";
