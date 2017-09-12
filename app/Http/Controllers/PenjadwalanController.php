@@ -107,7 +107,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
             'dari_tanggal'     => 'required',
             'sampai_tanggal'     => 'required',
             'id_ruangan'    => 'required',
-            'id_dosen[]'    => 'required'
+            'id_dosen'    => 'required'
             ]);   
 
             if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
@@ -163,6 +163,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
             }
 
 
+
     Excel::create('Data Penjadwalan', function($excel) use ($penjadwalans , $jenis_id_jadwal) {
       // Set property        
       $excel->sheet('Data Penjadwalan', function($sheet) use ($penjadwalans,$jenis_id_jadwal) {
@@ -175,7 +176,8 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
           'Block',
           'Mata Kuliah',
           'Ruangan',
-          'Dosen'
+          'Dosen',
+          'Status Jadwal'
 
         ]);
 
@@ -188,6 +190,19 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                 else {
                      $id_jadwal = $penjadwalan->id_jadwal;
                 }
+
+                if ($penjadwalan->status_jadwal == 0 ) {
+                    # code...
+                    $status = "Belum Terlaksana";
+                }
+                elseif ($penjadwalan->status_jadwal == 1) {
+                    # code...
+                     $status = "Sudah Terlaksana";
+                }
+                elseif ($penjadwalan->status_jadwal == 2) {
+                    # code...
+                     $status = "Batal";
+                } 
 
                  $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_jadwal',$id_jadwal)->get(); 
 
@@ -213,6 +228,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
             $penjadwalan->mata_kuliah->nama_mata_kuliah,
             $penjadwalan->ruangan->nama_ruangan,
             $dosen_list,
+            $status,
             ]); 
 
 
