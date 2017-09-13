@@ -13,6 +13,6 @@ class VerifyCsrfToken extends BaseVerifier
      */
     protected $except = [
         //
-    	'/login_android','/login_dosen_android','/list_jadwal_dosen','/search_jadwal_dosen','/batal_jadwal_dosen','/presensi_dosen','/tambah_ruangan','/list_ruangan','/update_ruangan','/hapus_ruangan'
+    	'/login_android','/login_dosen_android','/list_jadwal_dosen','/search_jadwal_dosen','/batal_jadwal_dosen','/presensi_dosen','/tambah_ruangan','/list_ruangan','/update_ruangan','/hapus_ruangan','/cari_ruangan'
     ];
 }
