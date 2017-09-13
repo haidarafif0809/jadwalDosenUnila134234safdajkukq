@@ -1,6 +1,6 @@
                        <!-- KOLOM slide  1-->
                         <div class="form-group{{ $errors->has('slide') ? ' has-error' : '' }}">
-                            {!! Form::label('slide', 'Slide', ['class' => 'col-md-2 control-label']) !!}
+                            {!! Form::label('slide', 'Foto Slide', ['class' => 'col-md-2 control-label']) !!}
                             <div class="col-md-2">
                                 {!! Form::file('slide') !!}
                                     @if (isset($setting_slide) && $setting_slide->slide)
