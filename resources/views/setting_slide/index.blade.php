@@ -15,6 +15,7 @@
 				</div>
 
 				<div class="panel-body"> 
+					<p><a class="btn btn-primary" href="{{ route('setting_slide.create') }}">Tambah Slide</a></p><br>
 					<div class="table-responsive">
 					{!! $html->table(['class'=>'table-striped table']) !!}
 					</div>

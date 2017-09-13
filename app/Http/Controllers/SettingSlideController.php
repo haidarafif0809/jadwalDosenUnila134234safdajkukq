@@ -22,173 +22,156 @@ class SettingSlideController extends Controller
         //
          if ($request->ajax()) {
 
-            $setting_slide = SettingSlide::select('id','slide_1','slide_2','slide_3','judul_slide_1','judul_slide_2','judul_slide_3');
-
+            $setting_slide = SettingSlide::select('id','slide','judul_slide'); 
             return Datatables::of($setting_slide)
             ->addColumn('action', function($setting_slide){
-                    return view('setting_slide._action', [ 
-                    'edit_url'=> route('setting_slide.edit', $setting_slide->id) 
-                    ]);
+                    return view('datatable._action', [
+                        'model'     => $setting_slide,
+                        'form_url'  => route('setting_slide.destroy', $setting_slide->id),
+                        'edit_url'  => route('setting_slide.edit', $setting_slide->id),
+                        'confirm_message'   => 'Yakin Mau Menghapus Slide ' . $setting_slide->judul_slide. '?'
+                        ]);
                 })
-            ->addColumn('slide_1',function($slide_1){
-                return view('setting_slide.slide_1', [
-                        'slide_1'=> $slide_1
-                         ]);
-                })
-            ->addColumn('slide_2',function($slide_2){
-                return view('setting_slide.slide_2', [
-                        'slide_2'=> $slide_2
-                         ]);
-                })
-            ->addColumn('slide_3',function($slide_3){
-                return view('setting_slide.slide_3', [
-                        'slide_3'=> $slide_3
+            //UNTUK MENAMPILKAN FOTO SLIDE DI DATATABLE
+            ->addColumn('slide',function($slide){
+                return view('setting_slide._slide', [
+                        'slide'=> $slide
                          ]);
                 })->make(true);
             }
 
             $html = $htmlBuilder
-            ->addColumn(['data' => 'slide_1', 'name'=>'slide_1', 'title'=>'Slide Pertama'])
-            ->addColumn(['data' => 'judul_slide_1', 'name'=>'judul_slide_1', 'title'=>'Judul Slide Pertama'])
-            ->addColumn(['data' => 'slide_2', 'name'=>'slide_2', 'title'=>'Slide Kedua'])
-            ->addColumn(['data' => 'judul_slide_2', 'name'=>'judul_slide_2', 'title'=>'Judul Slide Kedua'])
-            ->addColumn(['data' => 'slide_3', 'name'=>'slide_3', 'title'=>'Slide Ketiga'])
-            ->addColumn(['data' => 'judul_slide_3', 'name'=>'judul_slide_3', 'title'=>'Judul Slide Ketiga'])
+            ->addColumn(['data' => 'slide', 'name'=>'slide', 'title'=>'Slide'])
+            ->addColumn(['data' => 'judul_slide', 'name'=>'judul_slide', 'title'=>'Judul Slide']) 
             ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'', 'orderable'=>false, 'searchable'=>false]);
 
             return view('setting_slide.index')->with(compact('html'));
     }
 
  
-    public function edit($id)
+    public function create()
     {
-        //
+         return view('setting_slide.create');
+
+    }
+ 
+    public function store(Request $request)
+    {
+           $this->validate($request, [ 
+                'slide' => 'image|max:2048', 
+                'judul_slide' => 'max:191',    
+                ]); 
+        //PROSES MEMBUAT DATA SLIDE   
+        $setting_slide =  SettingSlide::create();
+        //MENAMBAHKAN NAMA JUDUL SLIDE
+        $setting_slide->judul_slide = $request->judul_slide; 
+        //PROSES MENG UPLOAD FOTO SLIDE
+         // isi field cover jika ada cover yang diupload
+        if ($request->hasFile('slide')) {
+            // Mengambil file yang diupload
+            $uploaded_slide = $request->file('slide');
+            // mengambil extension file
+            $extension = $uploaded_slide->getClientOriginalExtension();
+            // membuat nama file random berikut extension
+            $filename = md5(microtime()) . '.' . $extension;
+            // menyimpan cover ke folder public/img
+            $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img';
+            $uploaded_slide->move($destinationPath, $filename);
+            // mengisi field cover di book dengan filename yang baru dibuat
+            $setting_slide->slide = $filename;
+            $setting_slide->save();
+        }
+
+        Session::flash("flash_notification", [
+        "level"=>"success",
+        "message"=>"Berhasil Menambah Slide"
+        ]);
+ 
+        return redirect()->route('setting_slide.index'); 
+    }
+
+    public function edit($id)
+    { 
         $setting_slide = SettingSlide::find($id);
          return view('setting_slide.edit')->with(compact('setting_slide'));
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+ 
     public function update(Request $request, $id)
-    {
-        //
+    { 
            $this->validate($request, [ 
-                'slide_1' => 'image|max:2048',
-                'slide_2' => 'image|max:2048',
-                'slide_3' => 'image|max:2048',
-                'judul_slide_1' => 'max:191',   
-                'judul_slide_2' => 'max:191',
-                'judul_slide_3' => 'max:191',    
+                'slide' => 'image|max:2048', 
+                'judul_slide' => 'max:191',    
                 ]); 
-
-             SettingSlide::where('id', $id) ->update([ 
-            'judul_slide_1' =>$request->judul_slide_1,
-            'judul_slide_2' =>$request->judul_slide_2, 
-            'judul_slide_3' =>$request->judul_slide_3,  
-            ]);
-
+           //PROSES UPDATE SETTING SLIDE  
             $setting_slide = SettingSlide::find($id);
+            //PROSES MENGUBAH NAMA JUDUL SLIDE
+            $setting_slide->judul_slide = $request->judul_slide; 
             $setting_slide->update();
-
-        if ($request->hasFile('slide_1')) {
+            //PROSES MENG UPDATE FOTO SLIDE
+        if ($request->hasFile('slide')) {
             $filename = null;
             // Mengambil file yang diupload
-            $uploaded_slide_1 = $request->file('slide_1');
+            $uploaded_slide = $request->file('slide');
             // mengambil extension file
-            $extension = $uploaded_slide_1->getClientOriginalExtension();
+            $extension = $uploaded_slide->getClientOriginalExtension();
             // membuat nama file random berikut extension
             $filename = md5(microtime()) . '.' . $extension;
             // menyimpan cover ke folder public/img
             $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img';
-            $uploaded_slide_1->move($destinationPath, $filename);
+            $uploaded_slide->move($destinationPath, $filename);
 
-
+            //PROSES MENGHAPUS FOTO SLIDE APA BILA SLIDE DI UBAH
             // hapus cover lama, jika ada
-            if ($setting_slide->slide_1) {
-            $old_slide_1 = $setting_slide->slide_1;
-            $filepath = public_path() . DIRECTORY_SEPARATOR . 'img'
-            . DIRECTORY_SEPARATOR . $setting_slide->slide_1;
-            try {
-            File::delete($filepath);
-            } catch (FileNotFoundException $e) {
-            // File sudah dihapus/tidak ada
-            }
+            if ($setting_slide->slide) {
+                $old_slide = $setting_slide->slide;
+                $filepath = public_path() . DIRECTORY_SEPARATOR . 'img'
+                . DIRECTORY_SEPARATOR . $setting_slide->slide;
+                try {
+                File::delete($filepath);
+                } catch (FileNotFoundException $e) {
+                // File sudah dihapus/tidak ada
+                }
             }
             // mengisi field cover di book dengan filename yang baru dibuat
-            $setting_slide->slide_1 = $filename;
+            $setting_slide->slide = $filename;
             $setting_slide->save();
         }
-
-        if ($request->hasFile('slide_2')) {
-            $filename = null;
-            // Mengambil file yang diupload
-            $uploaded_slide_2 = $request->file('slide_2');
-            // mengambil extension file
-            $extension = $uploaded_slide_2->getClientOriginalExtension();
-            // membuat nama file random berikut extension
-            $filename = md5(microtime()) . '.' . $extension;
-            // menyimpan cover ke folder public/img
-            $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img';
-            $uploaded_slide_2->move($destinationPath, $filename);
-
-
-            // hapus cover lama, jika ada
-            if ($setting_slide->slide_2) {
-            $old_slide_2 = $setting_slide->slide_2;
-            $filepath = public_path() . DIRECTORY_SEPARATOR . 'img'
-            . DIRECTORY_SEPARATOR . $setting_slide->slide_2;
-            try {
-            File::delete($filepath);
-            } catch (FileNotFoundException $e) {
-            // File sudah dihapus/tidak ada
-            }
-            }
-            // mengisi field cover di book dengan filename yang baru dibuat
-            $setting_slide->slide_2 = $filename;
-            $setting_slide->save();
-        }
-
-        if ($request->hasFile('slide_3')) {
-             $filename = null;
-            // Mengambil file yang diupload
-            $uploaded_slide_3 = $request->file('slide_3');
-            // mengambil extension file
-            $extension = $uploaded_slide_3->getClientOriginalExtension();
-            // membuat nama file random berikut extension
-            $filename = md5(microtime()) . '.' . $extension;
-            // menyimpan cover ke folder public/img
-            $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img';
-            $uploaded_slide_3->move($destinationPath, $filename);
-
-
-            // hapus cover lama, jika ada
-            if ($setting_slide->slide_3) {
-            $old_slide_3 = $setting_slide->slide_3;
-            $filepath = public_path() . DIRECTORY_SEPARATOR . 'img'
-            . DIRECTORY_SEPARATOR . $setting_slide->slide_3;
-            try {
-            File::delete($filepath);
-            } catch (FileNotFoundException $e) {
-            // File sudah dihapus/tidak ada
-            }
-            }
-            // mengisi field cover di book dengan filename yang baru dibuat
-            $setting_slide->slide_3 = $filename;
-            $setting_slide->save();
-        }
+ 
 
           Session::flash("flash_notification", [
         "level"=>"success",
-        "message"=>"Berhasil Mengubah Setting Slide Home"
+        "message"=>"Berhasil Mengubah Slide"
         ]);
 
 
         return redirect()->route('setting_slide.index');
     }
  
+    public function destroy($id)
+    {       
+        //MENGAMBIL DATA SETTING SLIDE SESUAI ID YANG DI PANGGIL
+            $setting_slide = SettingSlide::find($id);
+            //PROSES HAPUS FOTO SLIDE
+            if ($setting_slide->slide) {
+
+            $old_slide = $setting_slide->slide;
+            $filepath = public_path() . DIRECTORY_SEPARATOR . 'img'
+            . DIRECTORY_SEPARATOR . $setting_slide->slide;
+            
+                try {
+                File::delete($filepath);
+                } catch (FileNotFoundException $e) {
+                // File sudah dihapus/tidak ada
+                }
+
+            }
+            //PROSES HAPUS SLIDE
+            $setting_slide->delete();
+
+            Session::flash("flash_notification", [
+                "level"     => "danger",
+                "message"   => "Slide Berhasil Di Hapus"
+            ]);
+        return redirect()->route('setting_slide.index'); 
+    }
 }
