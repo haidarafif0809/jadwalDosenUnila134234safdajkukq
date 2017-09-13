@@ -8,6 +8,7 @@ use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\Penjadwalan; 
 use App\Jadwal_dosen; 
+use App\SettingSlide;
 
 class WelcomeController extends Controller
 {
@@ -56,7 +57,8 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
   
-        return view('welcome')->with(compact('html'));
+        $setting_slide = SettingSlide::find(1);
+        return view('welcome',['setting_slide'=>$setting_slide])->with(compact('html'));
     }
 
     public function besok(Request $request, Builder $htmlBuilder)
@@ -103,7 +105,8 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
   
-        return view('welcome')->with(compact('html'));
+        $setting_slide = SettingSlide::find(1);
+        return view('welcome',['setting_slide'=>$setting_slide])->with(compact('html'));
     }
 
     public function lusa(Request $request, Builder $htmlBuilder)
@@ -150,6 +153,7 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
   
-        return view('welcome')->with(compact('html'));
+        $setting_slide = SettingSlide::find(1);
+        return view('welcome',['setting_slide'=>$setting_slide])->with(compact('html'));
     }
 }

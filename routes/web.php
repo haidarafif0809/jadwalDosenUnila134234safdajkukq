@@ -132,6 +132,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('modul', 'ModulController'); 
 	Route::resource('settingwaktu', 'SettingWaktuController'); 
 	Route::resource('angkatan', 'AngkatanController'); 
+	Route::resource('setting_slide', 'SettingSlideController'); 
 
 	Route::get('master_users/filterkonfirmasi/{id}',[
 	'middleware' => ['auth'],

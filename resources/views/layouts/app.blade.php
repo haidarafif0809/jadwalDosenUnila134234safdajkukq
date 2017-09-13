@@ -62,13 +62,19 @@
                             <li><a href="{{ route('master_users.index') }}">User</a></li><li><a href="{{ route('angkatan.index') }}">Angkatan</a></li>
                             <li><a href="{{ route('master_mata_kuliahs.index') }}">Mata Kuliah</a></li> 
                             <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>   
-                            <li><a href="{{ route('modul.index') }}">Modul</a></li> 
-                          
-                            <li><a href="{{ route('settingwaktu.index') }}">Setting Waktu</a></li>
+                            <li><a href="{{ route('modul.index') }}">Modul</a></li>  
                           </ul>
                         </li>
-                    @endrole 
-
+                        <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                   Setting <span class="caret"></span>
+                                </a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">                           
+                            <li><a href="{{ route('settingwaktu.index') }}">Setting Waktu</a></li>             
+                            <li><a href="{{ route('setting_slide.index') }}">Setting Slide</a></li>
+                          </ul>
+                        </li>
+                    @endrole  
 
                     @role('pimpinan')  
                         <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li> 
@@ -116,7 +122,7 @@
     <script src="{{ asset('js/modernizr.js') }}"></script>
      <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
 <script src="{{ asset('js/tether.min.js') }}"></script>
-<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="{{ asset('js/jquery.dataTables.js') }}"></script>
 <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
 <script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script>
