@@ -41,7 +41,7 @@ class SettingSlideController extends Controller
             }
 
             $html = $htmlBuilder
-            ->addColumn(['data' => 'slide', 'name'=>'slide', 'title'=>'Slide'])
+            ->addColumn(['data' => 'slide', 'name'=>'slide', 'title'=>'Foto Slide'])
             ->addColumn(['data' => 'judul_slide', 'name'=>'judul_slide', 'title'=>'Judul Slide']) 
             ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'', 'orderable'=>false, 'searchable'=>false]);
 
