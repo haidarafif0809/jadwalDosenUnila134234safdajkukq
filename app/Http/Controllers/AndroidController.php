@@ -23,13 +23,13 @@ class AndroidController extends Controller
         if (Auth::attempt(['email' => $request->username, 'password' => $request->password])) {
             // Authentication passed...
             $response["value"] = 1;
-       		$response["message"] = "Login Berhasil";
-       		return  json_encode($response);
+          $response["message"] = "Login Berhasil";
+          return  json_encode($response);
         }
         else {
-        	$response["value"] = 2;
-       		$response["message"] = "Login Gagal";
-       		return  json_encode($response);
+          $response["value"] = 2;
+          $response["message"] = "Login Gagal";
+          return  json_encode($response);
         }
     }
 
@@ -168,6 +168,14 @@ class AndroidController extends Controller
     return $date_terbalik;
     }
 
+
+  function tanggal_mysql($tanggal2){
+
+   $date= date_create($tanggal2);
+   $date_format = date_format($date,"Y-m-d");
+   return $date_format;
+  }
+
 // list jadwal dosen
     public function list_jadwal_dosen(Request $request){
 
@@ -175,8 +183,9 @@ class AndroidController extends Controller
         $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
         $value = 0;
         $result = array();// ARRAY RESULT
+        $waktu = date("Y-m-d H:i:s");
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
@@ -184,7 +193,7 @@ class AndroidController extends Controller
                         // LEFT JOIN MASTER RUANGAN
                         ->where('jadwal_dosens.id_dosen',$id_dosen->id)
                         //WHERE ID DOSEN = ID DOSEN LOGIN
-                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)'),'>=',date("Y-m-d H:i:s"))
+                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
                         ->where('jadwal_dosens.status_jadwal',0)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
@@ -204,7 +213,10 @@ class AndroidController extends Controller
                         'mata_kuliah' => $list_jadwal_dosen['nama_mata_kuliah'],// MATA KULIAH
                         'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
                         'id_jadwal' => $list_jadwal_dosen['id_jadwal'], // ID JADWAL
-                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'] // ID RUANGAN
+                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_dosen['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_dosen['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_dosen['batas_jarak_absen'] // LONGITUDE
 
 
                         )// ARRAY
@@ -223,10 +235,11 @@ class AndroidController extends Controller
         $search = $request->search;// REQUEST SEARCH
         $dosen = $request->username;// DOSEN YANG LOGIN
         $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+        $waktu = date("Y-m-d H:i:s");
 
         $result = array();// ARRAY RESULT
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
@@ -234,7 +247,7 @@ class AndroidController extends Controller
                         // LEFT JOIN MASTER RUANGAN
                         ->where('jadwal_dosens.id_dosen',$id_dosen->id)
                         //WHERE ID DOSEN = ID DOSEN LOGIN
-                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)'),'>=',date("Y-m-d H:i:s"))
+                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
                         ->where('jadwal_dosens.status_jadwal',0)                        
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA  
@@ -262,7 +275,10 @@ class AndroidController extends Controller
                         'mata_kuliah' => $list_jadwal_dosen['nama_mata_kuliah'],// MATA KULIAH
                         'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
                         'id_jadwal' => $list_jadwal_dosen['id_jadwal'], // ID JADWAL
-                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'] // ID RUANGAN
+                        'id_ruangan' => $list_jadwal_dosen['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_dosen['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_dosen['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_dosen['batas_jarak_absen'] // 
                         )// ARRAY
                   );// ARRAY PUSH
 
@@ -309,71 +325,87 @@ class AndroidController extends Controller
       $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
       $id_jadwal = $request->id_jadwal;// ID JADWAL
       $id_ruangan = $request->id_ruangan; // ID RUANGAN
-      $longitude = "-";// LONGITUDE
-      $latitude = "-";// LATITUDE
+      $longitude = $request->longitude_sekarang;// LONGITUDE
+      $latitude = $request->latitude_sekarang;// LATITUDE
       $image = $request->image; // FOTO ABSEN
+      $jarak_ke_lokasi_absen = $request->jarak_ke_lokasi_absen;
+      $waktu = $waktu = date("Y-m-d H:i:s");
+      $tanggal = $request->tanggal;
+      $waktu_jadwal = $request->waktu_jadwal;
+
+      $waktu_jadwal_dosen = explode(" - ", $waktu_jadwal); 
+      $waktu_mulai = $waktu_jadwal_dosen[0]; 
+      $waktu_selesai = $waktu_jadwal_dosen[1];
+
+      $waktu_jadwal_mulai = $tanggal ." ". $waktu_mulai;      
+      $waktu_jadwal_selesai = $tanggal ." ". $waktu_selesai; 
+
 
       // CEK APAKAH DOSEN INI SUDAH ABSEN BELUM UNTUK JADWAL INI
       $query_cek_presensi = Presensi::where('id_jadwal',$id_jadwal) // WHERE ID JADWAL
                           ->where('id_user',$id_dosen->id)// AND ID DOSEN
                           ->count();
 
-          // JIKA 0, ARTINYA BELUM ABSEN
-          if ($query_cek_presensi == 0) {
+                              // JIKA 0, ARTINYA BELUM ABSEN
+                    if ($query_cek_presensi == 0) {
 
-              // INSERT KE TABLE PRESENSI
-                $presensi = Presensi::create([
-                'id_user' => $id_dosen->id,// ID USER DOSEN
-                'id_jadwal' => $id_jadwal,// ID JADWAL
-                'id_ruangan' => $id_ruangan,// ID JADWAL
-                'longitude' => $longitude,// LONGITUDE
-                'latitude' => $latitude// LATITUDE
-                ]);
+                        // INSERT KE TABLE PRESENSI
+                          $presensi = Presensi::create([
+                          'id_user' => $id_dosen->id,// ID USER DOSEN
+                          'id_jadwal' => $id_jadwal,// ID JADWAL
+                          'id_ruangan' => $id_ruangan,// ID JADWAL
+                          'longitude' => $longitude,// LONGITUDE
+                          'latitude' => $latitude,// LATITUDE
+                          'jarak_ke_lokasi_absen' => $jarak_ke_lokasi_absen 
+                          ]);
 
-                // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 
-                $filename = 'image' . DIRECTORY_SEPARATOR . str_random(40) . '.png';
+                          // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 
+                          $filename = 'image' . DIRECTORY_SEPARATOR . str_random(40) . '.png';
 
-                // UPLOAD FOTO
-                file_put_contents($filename,base64_decode($image));
-                 
-                // INSERT FOTO KE TABLE PRSENSI   
-                $presensi->foto = $filename;     
-                $presensi->save();  
+                          // UPLOAD FOTO
+                          file_put_contents($filename,base64_decode($image));
+                           
+                          // INSERT FOTO KE TABLE PRSENSI   
+                          $presensi->foto = $filename;     
+                          $presensi->save();  
 
-                // CEK ADA BERAPA DOSEN UNTUK JADWAL INI 
-                $count_jadwal_dosen = Jadwal_dosen::where('id_jadwal',$id_jadwal)->count();
-                
-                // CEK ADA BERAPA DOSEN YANG SUDAH HADIR UNTUK JADWAL INI       
-                $count_presensi = Presensi::where('id_jadwal',$id_jadwal)->count(); 
+                          // CEK ADA BERAPA DOSEN UNTUK JADWAL INI 
+                          $count_jadwal_dosen = Jadwal_dosen::where('id_jadwal',$id_jadwal)->count();
+                          
+                          // CEK ADA BERAPA DOSEN YANG SUDAH HADIR UNTUK JADWAL INI       
+                          $count_presensi = Presensi::where('id_jadwal',$id_jadwal)->count(); 
 
-                  // JIKA SAMA
-                  if ($count_jadwal_dosen == $count_presensi) {                  
+                                // JIKA SAMA
+                                if ($count_jadwal_dosen == $count_presensi) {                  
 
-                    // MAKA JADWAL AKAN DIUPDATE STATUSNYA MENJADI TERLAKSANA
+                                  // MAKA JADWAL AKAN DIUPDATE STATUSNYA MENJADI TERLAKSANA
 
-                    $penjadwalan_terlaksana = Penjadwalan::where("id",$id_jadwal)->update(["status_jadwal" => 1]);
-                     // update Penjadwalan (status jadwal di set = 1 atau "TERLAKSANA") where id_jadwal dosen = $id jadwal dosen
+                                  $penjadwalan_terlaksana = Penjadwalan::where("id",$id_jadwal)->update(["status_jadwal" => 1]);
+                                   // update Penjadwalan (status jadwal di set = 1 atau "TERLAKSANA") where id_jadwal dosen = $id jadwal dosen
 
-                    $jadwal_dosen_terlaksana = Jadwal_dosen::where("id_jadwal",$id_jadwal)->update(["status_jadwal" => 1]);
-                    // update jadwal dosen (status jadwal di set = 1 atau "TERLAKSANA") where id_jadwal dosen = $id jadwal dosen
+                                  $jadwal_dosen_terlaksana = Jadwal_dosen::where("id_jadwal",$id_jadwal)->update(["status_jadwal" => 1]);
+                                  // update jadwal dosen (status jadwal di set = 1 atau "TERLAKSANA") where id_jadwal dosen = $id jadwal dosen
 
-                  }
+                                }
 
-                $response["value"] = 1;// RESPONSE VALUE 1
-                $response["message"] = "Berhasil Absen";// RESPONSE BERHASIL ABSEN
-                // DATA DIKEMBALIKAN DALAM BENTUK JSON
-                return  json_encode($response);
+                          $response["value"] = 1;// RESPONSE VALUE 1
+                          $response["message"] = "Berhasil Absen";// RESPONSE BERHASIL ABSEN
+                          // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                          return  json_encode($response);
 
-            
-          }else{// JIKA TIDAK NOL, MAKA DOSEN SUDAH ABSEN
+                      
+                    }else{// JIKA TIDAK NOL, MAKA DOSEN SUDAH ABSEN
 
 
-                $response["value"] = 0;// RESPONSE VALUE 0
-                $response["message"] = "Gagal Absen";// RESPONSE Gagal ABSEN
-                // DATA DIKEMBALIKAN DALAM BENTUK JSON
-                return  json_encode($response);
+                          $response["value"] = 2;// RESPONSE VALUE 0
+                          $response["message"] = "Gagal Absen";// RESPONSE Gagal ABSEN
+                          // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                          return  json_encode($response);
 
-          }// END          
+                    }// END          
+
+  
+
     
     }// PRESENSI
 

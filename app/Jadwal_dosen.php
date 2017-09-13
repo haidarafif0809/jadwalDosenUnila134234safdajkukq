@@ -55,7 +55,7 @@ class Jadwal_dosen extends Model
                         })->orwhere(function($query) use ($request,$data_setting_waktu) {
                            $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
                           });
-                            });
+                            })->where('status_jadwal','<','2');
 
               return $query;
     
@@ -81,7 +81,7 @@ class Jadwal_dosen extends Model
                         })->orwhere(function($query) use ($request,$data_setting_waktu) {
                            $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
                           });
-                            });
+                            })->where('status_jadwal','<','2');
 
               return $query;
 		

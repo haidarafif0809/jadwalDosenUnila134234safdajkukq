@@ -8,6 +8,7 @@ use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\Penjadwalan; 
 use App\Jadwal_dosen; 
+use App\SettingSlide;
 
 class WelcomeController extends Controller
 {
@@ -19,7 +20,7 @@ class WelcomeController extends Controller
         if ($request->ajax()) {
             # code...
         	$tanggal_sekarang = date('Y-m-d');// tanggal sekarang
-
+            //MENAMPILKAN DATA PENJADWALAN
             $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul'])->where('tanggal',$tanggal_sekarang);
             return Datatables::of($penjadwalans)->addColumn('jadwal_dosen', function($jadwal){
                 $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
@@ -56,7 +57,8 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
   
-        return view('welcome')->with(compact('html'));
+        $setting_slide = SettingSlide::get();
+        return view('welcome',['setting_slide'=>$setting_slide])->with(compact('html'));
     }
 
     public function besok(Request $request, Builder $htmlBuilder)
@@ -65,8 +67,8 @@ class WelcomeController extends Controller
         if ($request->ajax()) {
             # code...
 			$besok = mktime (0,0,0, date("m"), date("d")+1,date("Y"));
-        	$tanggal_besok = date('Y-m-d',$besok );// tanggal sekarang
-
+        	$tanggal_besok = date('Y-m-d',$besok );// TANGGAL BESOK
+            //MENAMPILKAN DATA PENJADWALAN BESOK
             $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul'])->where('tanggal',$tanggal_besok);
             return Datatables::of($penjadwalans)->addColumn('jadwal_dosen', function($jadwal){
                 $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
@@ -102,8 +104,9 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
-  
-        return view('welcome')->with(compact('html'));
+   
+        $setting_slide = SettingSlide::get();
+        return view('welcome',['setting_slide'=>$setting_slide])->with(compact('html'));
     }
 
     public function lusa(Request $request, Builder $htmlBuilder)
@@ -112,8 +115,8 @@ class WelcomeController extends Controller
         if ($request->ajax()) {
             # code...
 			$besok = mktime (0,0,0, date("m"), date("d")+2,date("Y"));
-        	$tanggal_besok = date('Y-m-d',$besok );// tanggal sekarang
-
+        	$tanggal_besok = date('Y-m-d',$besok );// TANGGAL LUSA
+            //MENAMPILKAN DATA PENJADWALAN LUSA
             $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul'])->where('tanggal',$tanggal_besok);
             return Datatables::of($penjadwalans)->addColumn('jadwal_dosen', function($jadwal){
                 $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
@@ -150,6 +153,7 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
   
-        return view('welcome')->with(compact('html'));
+        $setting_slide = SettingSlide::get();
+        return view('welcome',['setting_slide'=>$setting_slide])->with(compact('html'));
     }
 }

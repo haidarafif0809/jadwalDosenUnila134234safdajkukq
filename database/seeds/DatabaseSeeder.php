@@ -22,5 +22,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingWaktuSeeder::class);
         $this->call(AngkatanSeeder::class);
         $this->call(UserPjDosenSeeder::class);
+        $this->call(SettingSlideSeeder::class);
     }
 }

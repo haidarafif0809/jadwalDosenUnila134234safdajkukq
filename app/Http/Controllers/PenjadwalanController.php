@@ -107,7 +107,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
             'dari_tanggal'     => 'required',
             'sampai_tanggal'     => 'required',
             'id_ruangan'    => 'required',
-            'id_dosen[]'    => 'required'
+            'id_dosen'    => 'required'
             ]);   
 
             if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
@@ -163,6 +163,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
             }
 
 
+
     Excel::create('Data Penjadwalan', function($excel) use ($penjadwalans , $jenis_id_jadwal) {
       // Set property        
       $excel->sheet('Data Penjadwalan', function($sheet) use ($penjadwalans,$jenis_id_jadwal) {
@@ -175,7 +176,8 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
           'Block',
           'Mata Kuliah',
           'Ruangan',
-          'Dosen'
+          'Dosen',
+          'Status Jadwal'
 
         ]);
 
@@ -188,6 +190,19 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                 else {
                      $id_jadwal = $penjadwalan->id_jadwal;
                 }
+
+                if ($penjadwalan->status_jadwal == 0 ) {
+                    # code...
+                    $status = "Belum Terlaksana";
+                }
+                elseif ($penjadwalan->status_jadwal == 1) {
+                    # code...
+                     $status = "Sudah Terlaksana";
+                }
+                elseif ($penjadwalan->status_jadwal == 2) {
+                    # code...
+                     $status = "Batal";
+                } 
 
                  $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_jadwal',$id_jadwal)->get(); 
 
@@ -213,6 +228,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
             $penjadwalan->mata_kuliah->nama_mata_kuliah,
             $penjadwalan->ruangan->nama_ruangan,
             $dosen_list,
+            $status,
             ]); 
 
 
@@ -337,6 +353,23 @@ public function filter(Request $request, Builder $htmlBuilder)
                         'model_user'     => $jadwal_dosens,
                         'id_jadwal' => $id_jadwal
                     ]);
+                })
+             //MENAMPILKAN STATUS PENJADWALAN
+            ->addColumn('status',function($status_penjadwalan){
+                $status = "status_jadwal";
+                if ($status_penjadwalan->status_jadwal == 0 ) {
+                    # code...
+                    $status = "Belum Terlaksana";
+                }
+                elseif ($status_penjadwalan->status_jadwal == 1) {
+                    # code...
+                     $status = "Sudah Terlaksana";
+                }
+                elseif ($status_penjadwalan->status_jadwal == 2) {
+                    # code...
+                     $status = "Batal";
+                } 
+                return $status;
                 })->make(true);
         }
         $html = $htmlBuilder
@@ -347,6 +380,7 @@ public function filter(Request $request, Builder $htmlBuilder)
         ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah'])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan'])     
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen'])     
+         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false]) 
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
 
             $users = DB::table('users')
@@ -383,7 +417,7 @@ public function filter(Request $request, Builder $htmlBuilder)
     public function data_modul_perblock_penjadwalan (Request $request){
         if ($request->ajax()) {
             
-            $modul =  ModulBlok::with('modul')->where('id_blok',$request->id_block)->get();
+            $modul =  ModulBlok::with('modul')->where('id_blok',$request->id_block)->orderBy('dari_tanggal','ASC')->get();
                 echo "<option readonly='on'>Pilih Modul</option>";
             foreach ($modul as $data) {
                 echo "<option value='".$data->id_modul_blok."'>".$data->modul->nama_modul."</option>";
@@ -612,7 +646,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
             'id_ruangan'    => 'required|exists:master_ruangans,id',
             'id_user'    => 'required|exists:users,id',
-            'modul'    => 'required|exists:moduls,id',
+            'modul'    => 'required',
             'tipe_jadwal'    => 'required',
             ]); 
 
