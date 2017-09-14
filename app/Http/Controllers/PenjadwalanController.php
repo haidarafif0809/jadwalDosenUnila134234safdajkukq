@@ -388,6 +388,17 @@ public function filter(Request $request, Builder $htmlBuilder)
                 } 
                 return $status;
                 })
+             ->addColumn('tombol_status', function($data_status){  
+                    return view('penjadwalans._action_status', [ 
+                        'model'     => $data_status,
+                        'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
+                        'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
+                        'batal_url' => route('penjadwalans.batal', $data_status->id),
+                        'terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Terlaksana ?',
+                        'belum_terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Belum Terlaksana?',
+                        'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
+                        ]);
+                })
              ->addColumn('mata_kuliah',function($penjadwalan){
 
                 if ($penjadwalan->id_mata_kuliah == "-") {
@@ -406,7 +417,8 @@ public function filter(Request $request, Builder $htmlBuilder)
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block'])
         ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah'])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan'])     
-        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen'])     
+        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen']) 
+          ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])       
          ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false]) 
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
 
