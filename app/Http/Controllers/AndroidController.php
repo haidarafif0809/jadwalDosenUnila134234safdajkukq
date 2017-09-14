@@ -11,6 +11,7 @@ use App\Jadwal_dosen;
 use App\Presensi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 
 class AndroidController extends Controller
@@ -305,7 +306,8 @@ class AndroidController extends Controller
       $image = $request->image; // FOTO ABSEN
       $jarak_ke_lokasi_absen = $request->jarak_ke_lokasi_absen;
       $waktu = date("Y-m-d H:i:s");
-      $tanggal = $request->tanggal;
+      $tanggal1 = $request->tanggal;
+      $tanggal = Carbon::createFromFormat('d/m/Y', $tanggal1)->format('Y-m-d');
       $waktu_jadwal = $request->waktu_jadwal;
 
       $waktu_jadwal_dosen = explode(" - ", $waktu_jadwal); 
@@ -315,6 +317,8 @@ class AndroidController extends Controller
       $waktu_jadwal_mulai = $tanggal ." ". $waktu_mulai;      
       $waktu_jadwal_selesai = $tanggal ." ". $waktu_selesai; 
 
+
+      if ($waktu >= $waktu_jadwal_mulai AND $waktu <= $waktu_jadwal_selesai) {
 
       // CEK APAKAH DOSEN INI SUDAH ABSEN BELUM UNTUK JADWAL INI
       $query_cek_presensi = Presensi::where('id_jadwal',$id_jadwal) // WHERE ID JADWAL
@@ -378,6 +382,14 @@ class AndroidController extends Controller
                           return  json_encode($response);
 
                     }// END          
+
+      }else{
+
+                          $response["value"] = 3;// RESPONSE VALUE 0
+                          $response["message"] = "Gagal Absen, Jadwal belum dimulai";// RESPONSE Gagal ABSEN
+                          // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                          return  json_encode($response);
+      }
 
   
 
