@@ -73,7 +73,17 @@ class PenjadwalanController extends Controller
                      $status = "Batal";
                 } 
                 return $status;
-                })->make(true);
+                })
+            ->addColumn('mata_kuliah',function($penjadwalan){
+
+                if ($penjadwalan->id_mata_kuliah == "-") {
+                    
+                    return "-";
+                }
+                else {
+                    return $penjadwalan->mata_kuliah->nama_mata_kuliah;
+                }
+            })->make(true);
         }
 
         //MENAMPILKAN COLUM PENJADWALAN
@@ -83,7 +93,7 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
@@ -218,6 +228,13 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                     $dosen_list.= ",".$jadwal_dosen->dosen->name;
                     }
                 }
+            if ($penjadwalan->id_mata_kuliah == "-") {
+                
+                $mata_kuliah = "-";
+            }
+            else {
+                $mata_kuliah =$penjadwalan->mata_kuliah->nama_mata_kuliah;
+            }
 
 
              $sheet->row(++$row, [
@@ -225,7 +242,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
             $penjadwalan->waktu_mulai,
             $penjadwalan->waktu_selesai,
             $penjadwalan->block->nama_block,
-            $penjadwalan->mata_kuliah->nama_mata_kuliah,
+            $mata_kuliah,
             $penjadwalan->ruangan->nama_ruangan,
             $dosen_list,
             $status,
@@ -370,14 +387,24 @@ public function filter(Request $request, Builder $htmlBuilder)
                      $status = "Batal";
                 } 
                 return $status;
-                })->make(true);
+                })
+             ->addColumn('mata_kuliah',function($penjadwalan){
+
+                if ($penjadwalan->id_mata_kuliah == "-") {
+                    
+                    return "-";
+                }
+                else {
+                    return $penjadwalan->mata_kuliah->nama_mata_kuliah;
+                }
+            })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
         ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block'])
-        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah'])  
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah'])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan'])     
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen'])     
          ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false]) 
@@ -442,12 +469,16 @@ public function filter(Request $request, Builder $htmlBuilder)
             'tanggal'   => 'required',
             'data_waktu'     => 'required', 
             'id_block'    => 'required|exists:master_blocks,id',
-            'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
             'id_ruangan'    => 'required|exists:master_ruangans,id',
             'id_user'    => 'required|exists:users,id',
             'modul'    => 'required',
             'tipe_jadwal'    => 'required',
         ]);   
+
+        //jika tipe jadwalnya bukan kuliah atau praktikum maka mata kuliah nya -
+        if ($request->id_mata_kuliah == NULL) {
+            $request->id_mata_kuliah = "-";
+        }
 
         //MEMISAHKAN WAKTU MULAI DAN SELESAIA
         $data_setting_waktu = explode("-",$request->data_waktu);
@@ -470,7 +501,8 @@ public function filter(Request $request, Builder $htmlBuilder)
             //APABILA JADWAL NYA SAMA MAKA MUNCUL PERINGATAN
                 if (count($dosen_punya_jadwal) > 0 ) { 
                     $message = 'Tidak Bisa Menambahkan Dosen Berikut Karena Sudah Memiliki Jadwal :<ul>'; 
-                        foreach ($dosen_punya_jadwal as $dosen_punya_jadwals) {  
+
+                     foreach ($dosen_punya_jadwal as $dosen_punya_jadwals) {  
                             $nama_dosen = User::find($dosen_punya_jadwals['id_dosen']);
                             $data_penjadwalans = Penjadwalan::find($dosen_punya_jadwals['id_jadwal']);
                             $data_ruangan =  Master_ruangan::find($data_penjadwalans->id_ruangan);
@@ -500,7 +532,10 @@ public function filter(Request $request, Builder $htmlBuilder)
                 ]);
             return redirect()->back()->withInput();
         } 
+
+     
         //JIKA PENJADWALAN TIDAK ADA YANG SAMA MAKA PROSES TAMBAH PENJADWALAN BERHASIL
+
         $penjadwalan = Penjadwalan::create([ 
             'tanggal' =>$request->tanggal,
             'waktu_mulai'=>$data_setting_waktu[0],
@@ -643,12 +678,16 @@ public function filter(Request $request, Builder $htmlBuilder)
             'tanggal'   => 'required',
             'data_waktu'     => 'required',
             'id_block'    => 'required|exists:master_blocks,id',
-            'id_mata_kuliah'    => 'required|exists:master_mata_kuliahs,id',
             'id_ruangan'    => 'required|exists:master_ruangans,id',
             'id_user'    => 'required|exists:users,id',
             'modul'    => 'required',
             'tipe_jadwal'    => 'required',
             ]); 
+
+          //jika tipe jadwalnya bukan kuliah atau praktikum maka mata kuliah nya -
+        if ($request->id_mata_kuliah == NULL) {
+            $request->id_mata_kuliah = "-";
+        }
 
          //MEMISAHKAN WAKTU MULAI DAN SELESAI
         $data_setting_waktu = explode("-",$request->data_waktu);
