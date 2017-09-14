@@ -134,31 +134,6 @@ class AndroidController extends Controller
         return  json_encode($response);
     }
 
-// CARI RUANGAN
-    public function cari_ruangan(Request $request){
-
-        $search = $request->search;// REQUEST SEARCH
-
-        $cari_ruangan =  Master_ruangan::select(['id','kode_ruangan','nama_ruangan','lokasi_ruangan','batas_jarak_absen','longitude','latitude'])->where(function($query) use ($search){// SEARCH
-                              $query->orWhere('kode_ruangan','LIKE',$search.'%')// OR LIKE KODE RUANGAN
-                                    ->orWhere('nama_ruangan','LIKE',$search.'%')// OR LIKE NAMA RUANGAN
-                                    ->orWhere('lokasi_ruangan','LIKE',$search.'%')// OR LIKE LOKASI
-                                    ->orWhere('batas_jarak_absen','LIKE',$search.'%');  //OR LIKE BATAS
-
-                          })->orderBy('id', 'ASC')->get();
-        $result = array();
-
-        foreach ($cari_ruangan as $row ) {       
-          array_push($result, array('id'=>$row['id'], 'kode_ruangan'=>$row['kode_ruangan'], 'nama_ruangan'=>$row['nama_ruangan'], 'lokasi_ruangan' => $row['lokasi_ruangan'], 'latitude' => $row['latitude'], 'longitude' => $row['longitude'], 'batas_jarak_absen' => $row['batas_jarak_absen']));
-        }
-
-
-      // DATA YANG DIKEMBALIKAN  BERUPA JSON
-      return json_encode(array('value' => '1' , 'result'=>$result));
-
-
-    }
-// END CARI RUANGAN
 
 // function tanggal terbalik
     function tanggal_terbalik($tanggal){
@@ -329,7 +304,7 @@ class AndroidController extends Controller
       $latitude = $request->latitude_sekarang;// LATITUDE
       $image = $request->image; // FOTO ABSEN
       $jarak_ke_lokasi_absen = $request->jarak_ke_lokasi_absen;
-      $waktu = $waktu = date("Y-m-d H:i:s");
+      $waktu = date("Y-m-d H:i:s");
       $tanggal = $request->tanggal;
       $waktu_jadwal = $request->waktu_jadwal;
 
