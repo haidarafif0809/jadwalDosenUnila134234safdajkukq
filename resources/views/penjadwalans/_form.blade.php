@@ -46,6 +46,21 @@
 
 @endif
 
+<div class="form-group{{ $errors->has('tipe_jadwal') ? ' has-error' : '' }}">
+	{!! Form::label('tipe_jadwal', 'Tipe Jadwal', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4">
+		{!! Form::select('tipe_jadwal', ['KULIAH'=>'KULIAH','PRAKTIKUM'=>'PRAKTIKUM','CSL'=>'CSL','PLENO'=>'PLENO','TUTORIAL'=>'TUTORIAL'], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Tipe Jadwal','id' => 'tipe_jadwal']) !!}
+		{!! $errors->first('tipe_jadwal', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
+
+<div class="form-group{{ $errors->has('id_mata_kuliah') ? ' has-error' : '' }} kolom-mata-kuliah">
+	{!! Form::label('id_mata_kuliah', 'Mata Kuliah', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4">
+		{!! Form::select('id_mata_kuliah', ['' => 'Pilih Mata Kuliah']+App\Master_mata_kuliah::pluck('nama_mata_kuliah','id')->all(), null, ['class'=>'form-control js-selectize-reguler','id' => 'id_mata_kuliah']) !!}
+		{!! $errors->first('id_mata_kuliah', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
 @if(isset($asal_input))
 <div class="form-group{{ $errors->has('tanggal') ? ' has-error' : '' }}">
 	{!! Form::label('tanggal', 'Tanggal', ['class'=>'col-md-2 control-label']) !!}
@@ -84,13 +99,7 @@
 
 @endif
 
-<div class="form-group{{ $errors->has('id_mata_kuliah') ? ' has-error' : '' }}">
-	{!! Form::label('id_mata_kuliah', 'Mata Kuliah', ['class'=>'col-md-2 control-label']) !!}
-	<div class="col-md-4">
-		{!! Form::select('id_mata_kuliah', []+App\Master_mata_kuliah::pluck('nama_mata_kuliah','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Mata Kuliah']) !!}
-		{!! $errors->first('id_mata_kuliah', '<p class="help-block">:message</p>') !!}
-	</div>
-</div>
+
 
 <div class="form-group{{ $errors->has('id_ruangan') ? ' has-error' : '' }}">
 	{!! Form::label('id_ruangan', 'Ruangan', ['class'=>'col-md-2 control-label']) !!}
@@ -100,13 +109,7 @@
 	</div>
 </div>
 
-<div class="form-group{{ $errors->has('tipe_jadwal') ? ' has-error' : '' }}">
-	{!! Form::label('tipe_jadwal', 'Tipe Jadwal', ['class'=>'col-md-2 control-label']) !!}
-	<div class="col-md-4">
-		{!! Form::select('tipe_jadwal', ['KULIAH'=>'KULIAH','CSL'=>'CSL','PLENO'=>'PLENO','TUTORIAL'=>'TUTORIAL'], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Tipe Jadwal']) !!}
-		{!! $errors->first('tipe_jadwal', '<p class="help-block">:message</p>') !!}
-	</div>
-</div>
+
 
 <div class="form-group{{ $errors->has('id_user[]') ? ' has-error' : '' }}">
 	{!! Form::label('id_user[]', 'Dosen', ['class'=>'col-md-2 control-label']) !!}

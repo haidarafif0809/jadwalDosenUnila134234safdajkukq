@@ -15,6 +15,6 @@ class Master_block extends Model
 		  
  		   public function user_pj_dosen()
           {
-            return $this->hasOne('App\UserPjDosen','id','id_pj_dosen');
+            return $this->hasOne('App\UserPjDosen','id_master_block','id');
           }  
 }

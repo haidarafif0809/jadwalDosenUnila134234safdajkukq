@@ -60,8 +60,46 @@
 		});
 
 	});
+
+	$("#tipe_jadwal").change(function(){
+
+		var tipe_jadwal = $(this).val(); 
+		
+		if (tipe_jadwal == 'KULIAH') {
+			$(".kolom-mata-kuliah").show();
+			$("#id_mata_kuliah").val("");
+		}
+		else if (tipe_jadwal == 'PRAKTIKUM')  {
+			$(".kolom-mata-kuliah").show();
+			$("#id_mata_kuliah").val("");
+
+		}
+		else {
+			$(".kolom-mata-kuliah").hide();
+		}
+
+
+	});
 	
 	$(document).ready(function(){
+
+
+
+		var tipe_jadwal = $("#tipe_jadwal").val(); 
+		
+		if (tipe_jadwal == 'KULIAH') {
+			$(".kolom-mata-kuliah").show();
+			$("#id_mata_kuliah").val("");
+		}
+		else if (tipe_jadwal == 'PRAKTIKUM')  {
+			$(".kolom-mata-kuliah").show();
+			$("#id_mata_kuliah").val("");
+
+		}
+		else {
+			$(".kolom-mata-kuliah").hide();
+		}
+
 		//MENAMPILKAN MODUL SESUAI DATA PENJADWALAN
 		var id_modul = '{{ $penjadwalans->id_modul }}';
 		//POST ID MODUL KE CONTROLLER UNTUK MENAMPILKAN PERIODE YANG ADA DI MODUL

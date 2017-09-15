@@ -12,6 +12,7 @@ use Yajra\Datatables\Html\Builder;
 use App\Jadwal_dosen;
 use Yajra\Datatables\Datatables;
 use Jenssegers\Agent\Agent;
+use App\UserPjDosen;
 
 
 class HomeController extends Controller
@@ -107,12 +108,22 @@ class HomeController extends Controller
             # code...
             $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul']);
             return Datatables::of($penjadwalans)->addColumn('action', function($penjadwalan){
-                    return view('datatable._action', [
+
+                $pj_dosen = UserPjDosen::where('id_master_block',$penjadwalan->id_block)->where('id_pj_dosen',Auth::user()->id)->count();
+
+                if ($pj_dosen > 0) {
+                       return view('datatable._action', [
                         'model'     => $penjadwalan,
                         'form_url'  => route('penjadwalans.destroy', $penjadwalan->id),
                         'edit_url'  => route('penjadwalans.edit', $penjadwalan->id),
                         'confirm_message'   => 'Apakah Anda Yakin Mau Menghapus Penjadwalan ?'
                         ]);
+                }
+                else {
+                    return "-";
+                }
+
+                 
                 })
             ->addColumn('jadwal_dosen', function($jadwal){
                 $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
@@ -147,14 +158,24 @@ class HomeController extends Controller
                      $status = "Batal";
                 } 
                 return $status;
-                })->make(true);
+                })
+            ->addColumn('mata_kuliah',function($penjadwalan){
+
+                if ($penjadwalan->id_mata_kuliah == "-") {
+                    
+                    return "-";
+                }
+                else {
+                    return $penjadwalan->mata_kuliah->nama_mata_kuliah;
+                }
+            })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
         ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
