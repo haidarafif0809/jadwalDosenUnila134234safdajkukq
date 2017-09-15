@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Penjadwalan; 
 use App\Jadwal_dosen; 
 use App\SettingSlide;
+use Jenssegers\Agent\Agent;
 
 class WelcomeController extends Controller
 {
@@ -57,8 +58,36 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
   
+        $agent = new Agent();
+        $jadwal_terlaksana = 0;
+        $jadwal_belum_terlaksana = 0;
+        $jadwal_batal = 0; 
+
+        $tanggal_sekarang = date('Y-m-d');// tanggal sekarang 
+        $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal')) 
+                        ->where('tanggal',$tanggal_sekarang)
+                        ->groupBy('status_jadwal')
+                        ->get(); 
+
+        foreach ($penjadwalans as $penjadwalan) {
+           
+                if ($penjadwalan->status_jadwal == 0 ) {
+                    
+                    $jadwal_belum_terlaksana = $jadwal_belum_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 1) {
+                    
+                    $jadwal_terlaksana = $jadwal_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 2) {
+   
+                    $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
+                } 
+
+        }
+
         $setting_slide = SettingSlide::get();
-        return view('welcome',['setting_slide'=>$setting_slide])->with(compact('html'));
+        return view('welcome',['setting_slide'=>$setting_slide,'jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent])->with(compact('html'));
     }
 
     public function besok(Request $request, Builder $htmlBuilder)
@@ -105,8 +134,37 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
    
+        $agent = new Agent();
+        $jadwal_terlaksana = 0;
+        $jadwal_belum_terlaksana = 0;
+        $jadwal_batal = 0; 
+
+        $besok = mktime (0,0,0, date("m"), date("d")+1,date("Y"));
+        $tanggal_besok = date('Y-m-d',$besok );// TANGGAL BESOK
+        $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal')) 
+                        ->where('tanggal',$tanggal_besok)
+                        ->groupBy('status_jadwal')
+                        ->get(); 
+
+        foreach ($penjadwalans as $penjadwalan) {
+           
+                if ($penjadwalan->status_jadwal == 0 ) {
+                    
+                    $jadwal_belum_terlaksana = $jadwal_belum_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 1) {
+                    
+                    $jadwal_terlaksana = $jadwal_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 2) {
+   
+                    $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
+                } 
+
+        }
+
         $setting_slide = SettingSlide::get();
-        return view('welcome',['setting_slide'=>$setting_slide])->with(compact('html'));
+        return view('welcome',['setting_slide'=>$setting_slide,'jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent])->with(compact('html'));
     }
 
     public function lusa(Request $request, Builder $htmlBuilder)
@@ -153,7 +211,36 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
   
+        $agent = new Agent();
+        $jadwal_terlaksana = 0;
+        $jadwal_belum_terlaksana = 0;
+        $jadwal_batal = 0; 
+
+        $besok = mktime (0,0,0, date("m"), date("d")+2,date("Y"));
+        $tanggal_besok = date('Y-m-d',$besok );// TANGGAL LUSA
+        $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal')) 
+                        ->where('tanggal',$tanggal_besok)
+                        ->groupBy('status_jadwal')
+                        ->get(); 
+                        
+        foreach ($penjadwalans as $penjadwalan) {
+           
+                if ($penjadwalan->status_jadwal == 0 ) {
+                    
+                    $jadwal_belum_terlaksana = $jadwal_belum_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 1) {
+                    
+                    $jadwal_terlaksana = $jadwal_terlaksana + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 2) {
+   
+                    $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
+                } 
+
+        }
+
         $setting_slide = SettingSlide::get();
-        return view('welcome',['setting_slide'=>$setting_slide])->with(compact('html'));
+        return view('welcome',['setting_slide'=>$setting_slide,'jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent])->with(compact('html'));
     }
 }

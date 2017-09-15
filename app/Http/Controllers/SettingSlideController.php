@@ -22,14 +22,14 @@ class SettingSlideController extends Controller
         //
          if ($request->ajax()) {
 
-            $setting_slide = SettingSlide::select('id','slide','judul_slide'); 
+            $setting_slide = SettingSlide::select('id','slide'); 
             return Datatables::of($setting_slide)
             ->addColumn('action', function($setting_slide){
                     return view('datatable._action', [
                         'model'     => $setting_slide,
                         'form_url'  => route('setting_slide.destroy', $setting_slide->id),
                         'edit_url'  => route('setting_slide.edit', $setting_slide->id),
-                        'confirm_message'   => 'Yakin Mau Menghapus Slide ' . $setting_slide->judul_slide. '?'
+                        'confirm_message'   => 'Yakin Mau Menghapus Slide ?'
                         ]);
                 })
             //UNTUK MENAMPILKAN FOTO SLIDE DI DATATABLE
@@ -41,8 +41,7 @@ class SettingSlideController extends Controller
             }
 
             $html = $htmlBuilder
-            ->addColumn(['data' => 'slide', 'name'=>'slide', 'title'=>'Foto Slide'])
-            ->addColumn(['data' => 'judul_slide', 'name'=>'judul_slide', 'title'=>'Judul Slide']) 
+            ->addColumn(['data' => 'slide', 'name'=>'slide', 'title'=>'Foto Slide']) 
             ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'', 'orderable'=>false, 'searchable'=>false]);
 
             return view('setting_slide.index')->with(compact('html'));
@@ -58,30 +57,27 @@ class SettingSlideController extends Controller
     public function store(Request $request)
     {
            $this->validate($request, [ 
-                'slide' => 'image|max:2048', 
-                'judul_slide' => 'max:191',    
+                'slide[]' => 'image|max:2048',  
                 ]); 
-        //PROSES MEMBUAT DATA SLIDE   
-        $setting_slide =  SettingSlide::create();
-        //MENAMBAHKAN NAMA JUDUL SLIDE
-        $setting_slide->judul_slide = $request->judul_slide; 
-        //PROSES MENG UPLOAD FOTO SLIDE
-         // isi field cover jika ada cover yang diupload
-        if ($request->hasFile('slide')) {
-            // Mengambil file yang diupload
-            $uploaded_slide = $request->file('slide');
-            // mengambil extension file
-            $extension = $uploaded_slide->getClientOriginalExtension();
-            // membuat nama file random berikut extension
-            $filename = md5(microtime()) . '.' . $extension;
-            // menyimpan cover ke folder public/img
-            $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img';
-            $uploaded_slide->move($destinationPath, $filename);
-            // mengisi field cover di book dengan filename yang baru dibuat
-            $setting_slide->slide = $filename;
-            $setting_slide->save();
-        }
-
+ 
+                        foreach($request->file('slide') as $slide)
+                        {
+                             $setting_slide =  SettingSlide::create(); 
+                            
+                                // mengambil extension file
+                                $extension = $slide->getClientOriginalExtension();
+                                // membuat nama file random berikut extension
+                                $filename = md5(microtime()) . '.' . $extension;
+                                // menyimpan cover ke folder public/img
+                                $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img';
+                                $slide->move($destinationPath, $filename);
+                                // mengisi field cover di book dengan filename yang baru dibuat
+                                $setting_slide->slide = $filename;
+                                $setting_slide->save();
+                            
+                        } 
+ 
+     
         Session::flash("flash_notification", [
         "level"=>"success",
         "message"=>"Berhasil Menambah Slide"
@@ -99,13 +95,11 @@ class SettingSlideController extends Controller
     public function update(Request $request, $id)
     { 
            $this->validate($request, [ 
-                'slide' => 'image|max:2048', 
-                'judul_slide' => 'max:191',    
+                'slide' => 'image|max:2048',  
                 ]); 
            //PROSES UPDATE SETTING SLIDE  
             $setting_slide = SettingSlide::find($id);
-            //PROSES MENGUBAH NAMA JUDUL SLIDE
-            $setting_slide->judul_slide = $request->judul_slide; 
+            //PROSES MENGUBAH NAMA JUDUL SLIDE 
             $setting_slide->update();
             //PROSES MENG UPDATE FOTO SLIDE
         if ($request->hasFile('slide')) {

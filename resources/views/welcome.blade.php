@@ -47,6 +47,63 @@
                 </a>
               </div><br> 
           @endif
+ 
+
+            <div class="row">
+                <div class="col-lg-4 col-xs-4 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-thumbs-o-up fa-4x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ $jadwal_terlaksana }}</div>
+                                    <div>Jadwal Terlaksana!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#lihat_detail_terlaksana" id="lihat_table_terlaksana"> 
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-xs-4 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-thumbs-o-down fa-4x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ $jadwal_belum_terlaksana }}</div>
+                                    <div>Belum Terlaksana!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#lihat_detail_belum_terlaksana" id="lihat_table_belum_terlaksana"> 
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-xs-4 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-times fa-4x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ $jadwal_batal }}</div>
+                                    <div>Jadwal Batal!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#lihat_detail_batal" id="lihat_table_batal"> 
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+ 
 
             <div class="panel panel-default">
                 <div class="panel-heading">

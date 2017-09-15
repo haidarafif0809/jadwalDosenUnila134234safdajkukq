@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class SettingSlide extends Model
 {
     //
-     protected $fillable = ['id','slide','judul_slide'];
+     protected $fillable = ['id','slide'];
 }
