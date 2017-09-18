@@ -238,6 +238,7 @@ Route::post('/list_jadwal_dosen', "AndroidController@list_jadwal_dosen");
 Route::post('/search_jadwal_dosen', "AndroidController@search_jadwal_dosen");
 Route::post('/batal_jadwal_dosen', "AndroidController@batal_jadwal_dosen");
 Route::post('/presensi_dosen', "AndroidController@presensi_dosen");
+Route::post('/ubah_password_dosen', "AndroidController@ubah_password_dosen");
 
 
 
