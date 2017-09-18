@@ -49,6 +49,7 @@ class PenjadwalanController extends Controller
             ->addColumn('tombol_status', function($data_status){  
                     return view('penjadwalans._action_status', [ 
                         'model'     => $data_status,
+                        'ubah_dosen'  => route('penjadwalans.ubah_dosen', $data_status->id),
                         'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
                         'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
                         'batal_url' => route('penjadwalans.batal', $data_status->id),
@@ -71,6 +72,10 @@ class PenjadwalanController extends Controller
                 elseif ($status_penjadwalan->status_jadwal == 2) {
                     # code...
                      $status = "Batal";
+                } 
+                elseif ($status_penjadwalan->status_jadwal == 3) {
+                    # code...
+                     $status = "Dosen Di Gantikan";
                 } 
                 return $status;
                 })
@@ -212,6 +217,10 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                 elseif ($penjadwalan->status_jadwal == 2) {
                     # code...
                      $status = "Batal";
+                } 
+                elseif ($status_penjadwalan->status_jadwal == 3) {
+                    # code...
+                     $status = "Dosen Di Gantikan";
                 } 
 
                  $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_jadwal',$id_jadwal)->get(); 
@@ -385,6 +394,10 @@ public function filter(Request $request, Builder $htmlBuilder)
                 elseif ($status_penjadwalan->status_jadwal == 2) {
                     # code...
                      $status = "Batal";
+                } 
+                elseif ($status_penjadwalan->status_jadwal == 3) {
+                    # code...
+                     $status = "Dosen Di Gantikan";
                 } 
                 return $status;
                 })
@@ -645,6 +658,147 @@ public function filter(Request $request, Builder $htmlBuilder)
         return redirect()->back();
     } 
 
+    public function status_ubah_dosen($id)
+    {
+        //MENYIAPKAN DATA UNTUNG DI TAMPILKAN DI EDIT PENJDWALAN
+        $penjadwalans = Penjadwalan::find($id);
+        //MENAMPILKAN USER YANG OTORITAS DOSEN
+        $users = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',2)
+            ->pluck('name','id');
+
+        //MENAMPILKAN BLOCK SESUAI DENGAN YANG LOGIN(APABILA PJ DOSEN YANG LOGIN MAKA BLOCK NYA YANG MUNCUL USER PJ DOSEN YANG ADA DI BLOK DAN APABILA ADMIN MAKA MUNCUL SEMUA BLOCK)
+        $pj_dosen = Auth::user()->id;
+        $data_block = DB::table('master_blocks')
+            ->leftJoin('user_pj_dosens', 'master_blocks.id', '=', 'user_pj_dosens.id_master_block')
+            ->where('user_pj_dosens.id_pj_dosen',$pj_dosen)
+            ->pluck('master_blocks.nama_block','master_blocks.id'); 
+        //MENAMPILKAN JADWAL DOSEN SESUAI YANG ADA DI PENJADWALAN
+        $jadwal_dosen = DB::table('jadwal_dosens')
+            ->leftJoin('users', 'users.id', '=', 'jadwal_dosens.id_dosen')
+            ->where('jadwal_dosens.id_jadwal',$id)
+            ->pluck('users.name','users.id'); 
+            
+            $dosen = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$id)->get(); 
+            $data_dosen = '';
+            foreach ($dosen as $dosens) { 
+              $data_dosen .= ( "'".$dosens->dosen->id ."'," ); //untuk menampilkan data user yang sesuai ketika tambah
+            }    
+        //MENAMPILKAN WAKTU SUSAI YANG ADA DI PENJADWALAN
+         $data_waktu = substr($penjadwalans->waktu_mulai, 0, -3) ." - ".substr($penjadwalans->waktu_selesai, 0, -3);
+
+        //MENAMPILKAN MODUL BLOK YANG ADA DI PENJADWALAN
+        $modul = ModulBlok::leftJoin('moduls','moduls.id','=','modul_bloks.id_modul')->where('id_blok',$penjadwalans->id_block)->pluck('moduls.nama_modul','modul_bloks.id_modul_blok');
+      
+        return view('penjadwalans.ubah_dosen',['users' => $users,'data_waktu' => $data_waktu,'data_block'=>$data_block])->with(compact('penjadwalans','data_dosen','modul')); 
+    }
+
+    //PROSES UPDATE PENJADWALAN
+    public function proses_ubah_dosen(Request $request, $id)
+    {
+        //NGAMBIL DATA DARI FORM EDIT
+         $this->validate($request, [
+            'tanggal'   => 'required',
+            'data_waktu'     => 'required',
+            'id_block'    => 'required|exists:master_blocks,id',
+            'id_ruangan'    => 'required|exists:master_ruangans,id',
+            'id_user'    => 'required|exists:users,id',
+            'modul'    => 'required',
+            'tipe_jadwal'    => 'required',
+            ]); 
+
+          //jika tipe jadwalnya bukan kuliah atau praktikum maka mata kuliah nya -
+        if ($request->id_mata_kuliah == NULL) {
+            $request->id_mata_kuliah = "-";
+        }
+
+         //MEMISAHKAN WAKTU MULAI DAN SELESAI
+        $data_setting_waktu = explode("-",$request->data_waktu);
+            //MENGECEK DATA YANG SAMA APA TIDAK
+            $penjadwalans = Penjadwalan::find($id); 
+            $data_penjadwalan = Penjadwalan::statusRuanganEdit($request,$data_setting_waktu,$id); 
+            //APABILA $data_penjadwalan == 0 maka ngecek dosen
+            if ($data_penjadwalan->count() == 0) {
+                $dosen_punya_jadwal = array();
+                foreach ($request->id_user as $user_dosen) {
+                 $jadwal_dosen = Jadwal_dosen::statusDosenEdit($request,$user_dosen,$data_setting_waktu,$id); 
+                 $data_jadwal_dosen = $jadwal_dosen->first(); 
+
+                    if ($jadwal_dosen->count() > 0) {
+                        array_push($dosen_punya_jadwal, ['id_jadwal'=>$data_jadwal_dosen->id_jadwal,'id_dosen'=>$data_jadwal_dosen->id_dosen]);
+                    }
+                } 
+            //APABILA JADWAL NYA SAMA MAKA MUNCUL PERINGATAN
+                if (count($dosen_punya_jadwal) > 0 ) { 
+                    $message = 'Tidak Bisa Menambahkan Dosen Berikut Karena Sudah Memiliki Jadwal :<ul>'; 
+                        foreach ($dosen_punya_jadwal as $dosen_punya_jadwals) {  
+                            $nama_dosen = User::find($dosen_punya_jadwals['id_dosen']);
+                            $data_penjadwalans = Penjadwalan::find($dosen_punya_jadwals['id_jadwal']);
+                            $data_ruangan =  Master_ruangan::find($data_penjadwalans->id_ruangan);
+                            $data_block = Master_block::find($data_penjadwalans->id_block);
+                            $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalans->id_mata_kuliah);
+
+                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>$data_ruangan->nama_ruangan</b> Block <b>$data_block->nama_block</b>  Mata Kuliah <b>$data_mata_kuliah->nama_mata_kuliah</b> </li>";
+                        }
+                    $message .= '</ul>';
+
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"$message"
+                        ]); 
+                    return redirect()->back()->withInput();
+                }
+            }
+            else{ 
+            //APABILA RUANGAN SUDAH DI PAKAI MAKA MUNCUL PERINGATAN 
+                $data_ruangan =  Master_ruangan::find($request->id_ruangan);
+                $data_block = Master_block::find($request->id_block);
+                $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah);
+
+                Session::flash("flash_notification", [
+                    "level"=>"danger",
+                    "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
+                    ]);
+                return redirect()->back()->withInput();
+            } 
+       
+        //JIKA PENJADWALAN TIDAK ADA YANG SAMA MAKA PROSES TAMBAH PENJADWALAN BERHASIL 
+            $penjadwalan = Penjadwalan::find($id)->update(["status_jadwal" => 3]);
+            $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$id)->update(["status_jadwal" => 3]);
+
+        //JIKA PENJADWALAN TIDAK ADA YANG SAMA MAKA PROSES TAMBAH PENJADWALAN BERHASIL
+
+        $penjadwalan = Penjadwalan::create([ 
+            'tanggal' =>$request->tanggal,
+            'waktu_mulai'=>$data_setting_waktu[0],
+            'waktu_selesai'=>$data_setting_waktu[1],
+            'id_block'=>$request->id_block,
+            'id_modul'=>$request->modul,
+            'tipe_jadwal'=>$request->tipe_jadwal,
+            'id_mata_kuliah'=>$request->id_mata_kuliah,
+            'id_ruangan'=>$request->id_ruangan]);
+
+        //UNTUK MEMBUAT JADWAL DOSEN YANG BERKAIT SAMA PENJADWALAN
+            foreach ($request->id_user as $user_dosen) { 
+                $jadwal_dosen = Jadwal_dosen::create([ 
+                    'id_jadwal' =>$penjadwalan->id,
+                    'id_dosen'=>$user_dosen,
+                    'id_block'=>$request->id_block,
+                    'id_mata_kuliah'=>$request->id_mata_kuliah,
+                    'id_ruangan'=>$request->id_ruangan,
+                    'tanggal' =>$request->tanggal,
+                    'waktu_mulai'=>$data_setting_waktu[0],
+                    'waktu_selesai'=>$data_setting_waktu[1],
+                    ]);                
+            }
+
+        Session::flash("flash_notification", [
+            "level"=>"success",
+            "message"=>"Penjadwalan Berhasil Di Ubah"
+            ]);
+        return redirect()->route('penjadwalans.index');
+    }
 
     public function edit($id)
     {

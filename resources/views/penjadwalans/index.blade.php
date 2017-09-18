@@ -103,4 +103,20 @@ $(document.body).on('click', '#button_export', function () {
 	$("#filter").hide();
 	});  
 </script>
+
+<script type="text/javascript">
+	$(document.body).on('click', '.btn-terlaksana', function () {
+	 var id =  $(this).attr('data-id');
+	 $('.form-terlaksana-'+id).submit();
+ 
+		});	
+</script>
+
+<script type="text/javascript">
+	$(document.body).on('click', '.btn-batal-jadwal', function () {
+	 var id =  $(this).attr('data-id');
+	 $('.form-batal-jadwal-'+id).submit();
+ 
+		});	
+</script>
 @endsection

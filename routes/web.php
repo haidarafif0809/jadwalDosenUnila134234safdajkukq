@@ -119,6 +119,12 @@ Route::get('/jadwal-dosen',[
 	'uses' => 'HomeController@table_batal'
 	]);
 
+	Route::get('home/table_ubah_dosen',[
+	'middleware' => ['auth'],
+	'as' => 'table.ubah_dosen',
+	'uses' => 'HomeController@table_ubah_dosen'
+	]);
+
 
 
 Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_dosen']], function () {
@@ -169,6 +175,18 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'middleware' => ['auth'],
 	'as' => 'penjadwalans.batal',
 	'uses' => 'PenjadwalanController@status_batal'
+	]);
+
+	Route::get('penjadwalans/ubah-dosen/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.ubah_dosen',
+	'uses' => 'PenjadwalanController@status_ubah_dosen'
+	]);
+
+	Route::put('penjadwalans/proses_ubah-dosen/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.proses_ubah_dosen',
+	'uses' => 'PenjadwalanController@proses_ubah_dosen'
 	]);
 
 	Route::get('master_users/no_konfirmasi/{id}',[
