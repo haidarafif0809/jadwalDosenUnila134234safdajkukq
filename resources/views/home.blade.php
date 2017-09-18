@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-12 col-md-offset-1">
 
             {!! Form::open(['url' => 'home/analisa_jadwal/data/','method' => 'get', 'class'=>'form-inline']) !!}
 
@@ -48,7 +48,7 @@
 
            <!-- /.row -->
             <div class="row">
-                <div class="col-lg-4 col-xs-4 col-md-6">
+                <div class="col-lg-5 col-xs-5 col-md-6">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <div class="row">
@@ -70,7 +70,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-4 col-xs-4 col-md-6">
+                <div class="col-lg-5 col-xs-5 col-md-6">
                     <div class="panel panel-green">
                         <div class="panel-heading">
                             <div class="row">
@@ -93,7 +93,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-4 col-xs-4 col-md-6">
+                <div class="col-lg-5 col-xs-5 col-md-6">
                     <div class="panel panel-red">
                         <div class="panel-heading">
                             <div class="row">
@@ -116,6 +116,29 @@
                         </a>
                     </div>
                 </div>
+                <div class="col-lg-5 col-xs-5 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    <i class="fa fa-edit fa-1x"></i>
+                                </div>
+                                <div class="col-xs-10 text-center">
+                                    <div class="huge">{{ $jadwal_ubah_dosen }}</div>
+                                    <div>Dosen Di Gantikan</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="#lihat_detail_batal" id="lihat_table_ubah_dosen">
+                            <div class="panel-footer">
+                                <span class="pull-left">Lihat Detail</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
 
             </div>
 
@@ -123,7 +146,7 @@
            <!-- /.row -->
 
             <div class="row">
-                <div class="col-lg-4 col-xs-4 col-md-6">
+                <div class="col-lg-3 col-xs-4 col-md-6">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <div class="row">
@@ -145,7 +168,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-4 col-xs-4 col-md-6">
+                <div class="col-lg-3 col-xs-4 col-md-6">
                     <div class="panel panel-green">
                         <div class="panel-heading">
                             <div class="row">
@@ -167,7 +190,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-4 col-xs-4 col-md-6">
+                <div class="col-lg-3 col-xs-4 col-md-6">
                     <div class="panel panel-red">
                         <div class="panel-heading">
                             <div class="row">
@@ -181,6 +204,28 @@
                             </div>
                         </div>
                         <a href="#lihat_detail_batal" id="lihat_table_batal">
+                            <div class="panel-footer">
+                                <span class="pull-left">Lihat Detail</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-xs-4 col-md-6">
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-edit fa-4x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">{{ $jadwal_ubah_dosen }}</div>
+                                    <div>Dosen Di Gantikan</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#lihat_detail_batal" id="lihat_table_ubah_dosen">
                             <div class="panel-footer">
                                 <span class="pull-left">Lihat Detail</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -233,6 +278,23 @@
 
                          <div class="table-responsive" style="display:none" id="tampil_table_batal">
                                  <table class="table table-bordered" id="table-batal">
+                                    <thead>
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Mulai</th>
+                                            <th>Selesai</th>
+                                            <th>Tipe Jadwal</th>
+                                            <th>BLock</th>
+                                            <th>Mata Kuliah</th>
+                                            <th>Ruangan</th>
+                                            <th>Dosen</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                        </div>
+
+                         <div class="table-responsive" style="display:none" id="tampil_table_ubah_dosen">
+                                 <table class="table table-bordered" id="table-ubah-dosen">
                                     <thead>
                                         <tr>
                                             <th>Tanggal</th>
@@ -308,6 +370,7 @@ $(function() {
         $("#tampil_table_terlaksana").hide();
         $("#tampil_table_belum_terlaksana").show();
         $("#tampil_table_batal").hide();
+        $("#tampil_table_ubah_dosen").hide();
 
     $('#table-belum-terlaksana').DataTable().destroy();
     $('#table-belum-terlaksana').DataTable({
@@ -351,6 +414,7 @@ $(function() {
         $("#tampil_table_terlaksana").hide();
         $("#tampil_table_belum_terlaksana").hide();
         $("#tampil_table_batal").show();
+        $("#tampil_table_ubah_dosen").hide();
 
     $('#table-batal').DataTable().destroy();
 
@@ -359,6 +423,51 @@ $(function() {
         serverSide: true,
                  "ajax": {
             url: '{{ Url("/home/table_batal") }}',
+                        "data": function ( d ) {
+                      d.dari_tanggal = $("#dari_tanggal").val();
+                      d.sampai_tanggal = $("#sampai_tanggal").val();
+                      d.tipe_jadwal = $("#tipe_jadwal").val();
+                      d.id_block = $("#id_block").val();
+                      // d.custom = $('#myInput').val();
+                      // etc
+                  },
+            type:'GET',
+              'headers': {
+                  'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              },
+          },
+        columns: [
+            { data: 'tanggal', name: 'tanggal' },
+            { data: 'waktu_mulai', mulai: 'waktu_mulai' },
+            { data: 'waktu_selesai', name: 'waktu_selesai' },
+            { data: 'tipe_jadwal', name: 'tipe_jadwal' },
+            { data: 'block.nama_block', name: 'block.nama_block' },
+            { data: 'mata_kuliah.nama_mata_kuliah', name: 'mata_kuliah.nama_mata_kuliah' },
+            { data: 'ruangan.nama_ruangan', name: 'ruangan.nama_ruangan' },
+            { data: 'jadwal_dosen', name: 'jadwal_dosen' }
+        ]
+     });    
+    });
+});
+</script>
+
+<script>
+$(function() {
+
+    $(document).on('click','#lihat_table_ubah_dosen',function(){
+
+        $("#tampil_table_terlaksana").hide();
+        $("#tampil_table_belum_terlaksana").hide();
+        $("#tampil_table_batal").hide();
+        $("#tampil_table_ubah_dosen").show();
+
+    $('#table-ubah-dosen').DataTable().destroy();
+
+    $('#table-ubah-dosen').DataTable({
+        processing: true,
+        serverSide: true,
+                 "ajax": {
+            url: '{{ Url("/home/table_ubah_dosen") }}',
                         "data": function ( d ) {
                       d.dari_tanggal = $("#dari_tanggal").val();
                       d.sampai_tanggal = $("#sampai_tanggal").val();

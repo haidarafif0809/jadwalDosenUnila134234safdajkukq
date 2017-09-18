@@ -45,6 +45,7 @@ class HomeController extends Controller
         $jadwal_terlaksana = 0;
         $jadwal_belum_terlaksana = 0;
         $jadwal_batal = 0;
+        $jadwal_ubah_dosen = 0; 
 
         foreach ($penjadwalans as $penjadwalan) {
            
@@ -60,6 +61,10 @@ class HomeController extends Controller
    
                     $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
                 } 
+                if ($penjadwalan->status_jadwal == 3) {
+   
+                    $jadwal_ubah_dosen = $jadwal_ubah_dosen + $penjadwalan->jumlah_data;
+                } 
 
         }
      
@@ -72,7 +77,7 @@ class HomeController extends Controller
             case 'admin':
                 
               
-                return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'agent' => $agent]);
+                return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'jadwal_ubah_dosen'=>$jadwal_ubah_dosen,'agent' => $agent]);
 
                 break;  
             case 'dosen':
@@ -156,6 +161,10 @@ class HomeController extends Controller
                 elseif ($status_penjadwalan->status_jadwal == 2) {
                     # code...
                      $status = "Batal";
+                } 
+                elseif ($status_penjadwalan->status_jadwal == 3) {
+                    # code...
+                     $status = "Dosen Di Gantikan";
                 } 
                 return $status;
                 })
@@ -341,6 +350,54 @@ class HomeController extends Controller
 
     }
 
+    public function table_ubah_dosen(Request $request){
+
+        
+       if ($request->id_block == 'Semua' AND $request->tipe_jadwal != 'Semua') {
+            # code...
+
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
+                        ->where('tipe_jadwal',$request->tipe_jadwal)
+                        ->where('status_jadwal',3)
+                        ->get();
+
+        }elseif ($request->tipe_jadwal == 'Semua' AND $request->id_block != 'Semua') {
+            # code...
+
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal) 
+                        ->where('id_block',$request->id_block)
+                        ->where('status_jadwal',3)
+                        ->get();
+        }elseif ($request->id_block == 'Semua' AND $request->tipe_jadwal == 'Semua') {
+            # code...
+        $penjadwalans   = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->where('tanggal','>=',$request->dari_tanggal)
+                        ->where('tanggal','<=',$request->sampai_tanggal)  
+                        ->where('status_jadwal',3)
+                        ->get();
+        }
+        else{
+        
+        $bulan_sekarang = date('m');// bulan sekarang
+                    // query untuk menghitung penjadwalan bulan ini
+        $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])
+                        ->whereMonth('tanggal',$bulan_sekarang)
+                        ->where('status_jadwal',3);
+        }
+        return Datatables::of($penjadwalans)->addColumn('jadwal_dosen', function($jadwal){
+                $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
+                    return view('penjadwalans._action', [ 
+                        'model_user'     => $jadwal_dosens,
+                        'id_jadwal' => $jadwal->id
+                        ]);
+                })->make(true);
+
+    }
+
         public function analisa_jadwal(Request $request){
         
         $this->validate($request, [
@@ -396,6 +453,7 @@ class HomeController extends Controller
         $jadwal_terlaksana = 0;
         $jadwal_belum_terlaksana = 0;
         $jadwal_batal = 0; 
+        $jadwal_ubah_dosen = 0; 
         $bulan_sekarang = date('m');// bulan sekarang
 
         foreach ($penjadwalans as $penjadwalan) {
@@ -412,10 +470,14 @@ class HomeController extends Controller
    
                     $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
                 } 
+                if ($penjadwalan->status_jadwal == 3) {
+   
+                    $jadwal_ubah_dosen = $jadwal_ubah_dosen + $penjadwalan->jumlah_data;
+                } 
 
         }
                         # code...
-                return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent,'bulan_sekarang'=>$bulan_sekarang]);
+                return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'jadwal_ubah_dosen'=>$jadwal_ubah_dosen,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent,'bulan_sekarang'=>$bulan_sekarang]);
 
 
     }
@@ -470,6 +532,10 @@ class HomeController extends Controller
                 elseif ($status_penjadwalan->jadwal->status_jadwal == 2) {
                     # code...
                      $status = "Batal";
+                } 
+                elseif ($status_penjadwalan->status_jadwal == 3) {
+                    # code...
+                     $status = "Dosen Di Gantikan";
                 } 
                 return $status;
                 })->make(true);

@@ -119,6 +119,12 @@ Route::get('/jadwal-dosen',[
 	'uses' => 'HomeController@table_batal'
 	]);
 
+	Route::get('home/table_ubah_dosen',[
+	'middleware' => ['auth'],
+	'as' => 'table.ubah_dosen',
+	'uses' => 'HomeController@table_ubah_dosen'
+	]);
+
 
 
 Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_dosen']], function () {
