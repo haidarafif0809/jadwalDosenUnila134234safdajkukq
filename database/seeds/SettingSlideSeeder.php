@@ -14,8 +14,7 @@ class SettingSlideSeeder extends Seeder
     {
         //
     $settingslide = new SettingSlide();
-    $settingslide->slide   = "#";   
-    $settingslide->judul_slide  = "-";  
+    $settingslide->slide   = "#";    
     $settingslide->save();
     }
 }

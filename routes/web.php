@@ -171,6 +171,18 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'uses' => 'PenjadwalanController@status_batal'
 	]);
 
+	Route::get('penjadwalans/ubah-dosen/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.ubah_dosen',
+	'uses' => 'PenjadwalanController@status_ubah_dosen'
+	]);
+
+	Route::put('penjadwalans/proses_ubah-dosen/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.proses_ubah_dosen',
+	'uses' => 'PenjadwalanController@proses_ubah_dosen'
+	]);
+
 	Route::get('master_users/no_konfirmasi/{id}',[
 	'middleware' => ['auth'],
 	'as' => 'master_users.no_konfirmasi',
