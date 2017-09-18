@@ -29,21 +29,23 @@
 		{!! $errors->first('alamat', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
+
+ 
+
 @if (isset($master_users) && $master_users)  
-<div class="form-group{{ $errors->has('role_id') ? ' has-error' : '' }}">
-	{!! Form::label('role_id', 'Otoritas', ['class'=>'col-md-2 control-label']) !!}
+<div class="form-group{{ $errors->has('role_id[]') ? ' has-error' : '' }}">
+	{!! Form::label('role_id[]', 'Otoritas', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::select('role_id', []+App\Role::pluck('display_name','id')->all(), $master_users->role->role_id, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Otoritas']) !!}
-		{!! $errors->first('role_id', '<p class="help-block">:message</p>') !!}
+		{!! Form::select('role_id[]', []+App\Role::pluck('display_name','id')->all(), null, ['class'=>'form-control js-selectize-multi-edit role-id', 'placeholder' => 'Pilih Otoritas']) !!}
+		{!! $errors->first('role_id[]', '<p class="help-block">:message</p>') !!}
 	</div>
-</div>
-{!! Form::hidden('role_lama', $master_users->role->role_id, ['class'=>'form-control','required','autocomplete'=>'off']) !!}
+</div> 
 @else
-<div class="form-group{{ $errors->has('role_id') ? ' has-error' : '' }}">
-	{!! Form::label('role_id', 'Otoritas', ['class'=>'col-md-2 control-label']) !!}
+<div class="form-group{{ $errors->has('role_id[]') ? ' has-error' : '' }}">
+	{!! Form::label('role_id[]', 'Otoritas', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::select('role_id', []+App\Role::pluck('display_name','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Otoritas']) !!}
-		{!! $errors->first('role_id', '<p class="help-block">:message</p>') !!}
+		{!! Form::select('role_id[]', []+App\Role::pluck('display_name','id')->all(), null, ['class'=>'form-control js-selectize-multi role-id', 'placeholder' => 'Pilih Otoritas']) !!}
+		{!! $errors->first('role_id[]', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
 @endif
