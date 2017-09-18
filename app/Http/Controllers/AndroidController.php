@@ -38,7 +38,7 @@ class AndroidController extends Controller
     public function login_dosen_android(Request $request){
 
 
-        if (Auth::attempt(['email' => $request->username, 'password' => $request->password])) {
+        if (Auth::attempt(['email' => $request->username, 'password' => $request->password]) && Auth::user()->status) {
             // Authentication passed...
 
             $user_otoritas = Auth::user()->roles->first()->name;
@@ -64,7 +64,7 @@ class AndroidController extends Controller
             else {
 
                 $response["value"] = 3;// value = 3
-                $response["message"] = "Login Gagal";// login gagal
+                $response["message"] = "Anda Tidak Bisa Login Di Karenakan Belum Di Konfirmasi Oleh Admin";// login gagal
                 return  json_encode($response);// data yang dikembalikan berupa json
 
             }
@@ -424,6 +424,39 @@ class AndroidController extends Controller
     }// PRESENSI
 
 //MAHASISWA
+    public function ubah_password_dosen (Request $request){
+
+      $dosen = $request->username;// DOSEN YANG LOGIN
+      $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+
+      $password_lama = $request->password_lama;
+      $username_baru = $request->username_baru;
+      $password_baru = $request->password_baru;
+
+
+          if (Auth::attempt(['email' => $dosen, 'password' => $password_lama])) {
+             
+
+
+                  $update_user = User::where("id",$id_dosen->id)->update(["email" => $username_baru, "password" => bcrypt($password_baru)]);
+
+            
+                  $response["value"] = 1;// RESPONSE VALUE 0
+                  $response["message"] = "Password Berhasil Di Ubah";// RESPONSE Gagal ABSEN
+                                // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                  return  json_encode($response);
+
+               }else{
+
+                    $response["value"] = 0;// RESPONSE VALUE 0
+                  $response["message"] = "Mohon Maaf Password Lama Anda Salah";// RESPONSE Gagal ABSEN
+                                // DATA DIKEMBALIKAN DALAM BENTUK JSON
+
+                  return json_encode($response);
+
+              }     
+  
+    }
 
     //LOGIN ABSEN MAHASISWA
     public function login_mahasiswa_android(Request $request){

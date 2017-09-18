@@ -245,6 +245,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 
 // ROTE ANDROID
 
+Route::get('/list_ruangan', "AndroidController@list_ruangan");
 	//DOSEN
 
 	Route::post('/login_android', "AndroidController@authenticate");
@@ -258,6 +259,8 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::post('/search_jadwal_dosen', "AndroidController@search_jadwal_dosen");
 	Route::post('/batal_jadwal_dosen', "AndroidController@batal_jadwal_dosen");
 	Route::post('/presensi_dosen', "AndroidController@presensi_dosen");
+	Route::post('/ubah_password_dosen', "AndroidController@ubah_password_dosen");
+
 
 	//MAHASISWA
 	Route::post('/login_mahasiswa_android', "AndroidController@login_mahasiswa_android");

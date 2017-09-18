@@ -51,13 +51,18 @@ class MasterUserController extends Controller
                         'confirm_message'   => 'Apakah Anda Yakin Ingin Me Reset Password User ' . $reset->name . '?',
                         'reset_url' => route('master_users.reset', $reset->id),
                         ]);
-                })//Reset Password apabila di klik tombol reset password maka password menjadi 123456
+                })//Reset Password apabila di klik tombol reset password maka password menjadi 123456 
             ->addColumn('role', function($user){
-                $role = Role::where('id',$user->role->role_id)->first();
-                return $role->display_name;
-                })
+                $role = User_otoritas::with('role')->where('user_id',$user->id)->get();
+
+                    return view('master_users._role', [ 
+                        'model_role'     => $role,
+                        'id_role' => $user->id,
+                        ]); 
+                }) 
             ->addColumn('angkatan',function($user){
-                if ($user->role->role_id == 3) {
+                $role = User_otoritas::with('role')->where('user_id',$user->id)->where('role_id',3)->count();
+                if ($role > 0 ) {
                     if ($user->id_angkatan != null) {
                         # code...
                     $angkatan = Angkatan::find($user->id_angkatan);
@@ -237,7 +242,10 @@ class MasterUserController extends Controller
         if ($request->ajax()) {
             # code... 
 
-            $master_users = User::with('role')->orwhere('id_role',$id);
+            $master_users = User::with('role')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_id',$id);
+
             return Datatables::of($master_users)
             ->addColumn('action', function($master_user){
                     return view('datatable._action', [
@@ -363,17 +371,18 @@ class MasterUserController extends Controller
             'role_id'    => 'required', 
             ]);
 
+
          $user_baru = User::create([ 
             'name' =>$request->name,
             'email'=>$request->email,
             'no_hp'=>$request->no_hp,
             'alamat'=>$request->alamat,
-            'id_angkatan' => $request->id_angkatan,
-            'id_role'=>$request->role_id,
+            'id_angkatan' => $request->id_angkatan, 
             'password' => bcrypt('123456')]);
 
-        $role_baru = Role::where('id',$request->role_id)->first();
-        $user_baru->attachRole($role_baru->id);
+            foreach ($request->role_id as $role) {  
+                $user_baru->attachRole($role);
+            }
 
         Session::flash("flash_notification", [
             "level"=>"success",
@@ -387,8 +396,13 @@ class MasterUserController extends Controller
     {
         //
         $master_users = User::with('role')->find($id);
+        $role = User_otoritas::with('role')->where('user_id',$id)->get();
+            $data_role = '';
+            foreach ($role as $roles) { 
+              $data_role .= ( "'".$roles->role_id ."'," ); //untuk menampilkan data user yang sesuai ketika tambah
+            }    
 
-        return view('master_users.edit')->with(compact('master_users'));
+        return view('master_users.edit',['data_role'=>$data_role])->with(compact('master_users'));
     }
  
      public function update(Request $request, $id)
@@ -399,26 +413,24 @@ class MasterUserController extends Controller
             'email'     => 'required|unique:users,email,' .$id,
             'no_hp'    => 'required',
             'alamat'    => 'required',
-            'role_id'    => 'required',
-            'role_lama'    => 'required',
+            'role_id'    => 'required', 
             ]);
 
-        $user = User::where('id', $id) ->update([ 
+        $user = User::where('id', $id)->update([ 
             'name' =>$request->name,
             'email'=>$request->email,
             'no_hp'=>$request->no_hp,
-            'alamat'=>$request->alamat,
-            'id_role'=>$request->role_id,
+            'alamat'=>$request->alamat, 
             'id_angkatan' => $request->id_angkatan
             ]);
 
-        $role_lama = Role::where('id',$request->role_lama)->first();
-        $role_baru = Role::where('id',$request->role_id)->first();
-        $user_baru = User::find($id);
+            User_otoritas::where('user_id', $id)->delete();  
 
-        $user_baru->detachRole($role_lama->id);
+            $user_baru = User::find($id);
+            foreach ($request->role_id as $role) {  
+                $user_baru->attachRole($role);
+            }
 
-        $user_baru->attachRole($role_baru->id);
 
         Session::flash("flash_notification", [
             "level"=>"success",
