@@ -44,6 +44,10 @@ class WelcomeController extends Controller
                     # code...
                      $status = "Batal";
                 } 
+                elseif ($status_penjadwalan->status_jadwal == 3) {
+                    # code...
+                     $status = "Dosen Di Gantikan";
+                } 
                 return $status;
                 })->make(true);
         }
@@ -62,6 +66,7 @@ class WelcomeController extends Controller
         $jadwal_terlaksana = 0;
         $jadwal_belum_terlaksana = 0;
         $jadwal_batal = 0; 
+        $jadwal_ubah_dosen = 0;
 
         $tanggal_sekarang = date('Y-m-d');// tanggal sekarang 
         $penjadwalans   = Penjadwalan::select(DB::raw('count(*) as jumlah_data, status_jadwal')) 
@@ -83,11 +88,15 @@ class WelcomeController extends Controller
    
                     $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
                 } 
+                if ($penjadwalan->status_jadwal == 3) {
+   
+                    $jadwal_ubah_dosen = $jadwal_ubah_dosen + $penjadwalan->jumlah_data;
+                }
 
         }
 
         $setting_slide = SettingSlide::get();
-        return view('welcome',['setting_slide'=>$setting_slide,'jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent])->with(compact('html'));
+        return view('welcome',['setting_slide'=>$setting_slide,'jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'jadwal_ubah_dosen'=>$jadwal_ubah_dosen,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent])->with(compact('html'));
     }
 
     public function besok(Request $request, Builder $htmlBuilder)
@@ -120,6 +129,10 @@ class WelcomeController extends Controller
                     # code...
                      $status = "Batal";
                 } 
+                elseif ($status_penjadwalan->status_jadwal == 3) {
+                    # code...
+                     $status = "Dosen Di Gantikan";
+                } 
                 return $status;
                 })->make(true);
         }
@@ -138,6 +151,7 @@ class WelcomeController extends Controller
         $jadwal_terlaksana = 0;
         $jadwal_belum_terlaksana = 0;
         $jadwal_batal = 0; 
+        $jadwal_ubah_dosen = 0;
 
         $besok = mktime (0,0,0, date("m"), date("d")+1,date("Y"));
         $tanggal_besok = date('Y-m-d',$besok );// TANGGAL BESOK
@@ -160,11 +174,15 @@ class WelcomeController extends Controller
    
                     $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
                 } 
+                if ($penjadwalan->status_jadwal == 3) {
+   
+                    $jadwal_ubah_dosen = $jadwal_ubah_dosen + $penjadwalan->jumlah_data;
+                }
 
         }
 
         $setting_slide = SettingSlide::get();
-        return view('welcome',['setting_slide'=>$setting_slide,'jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent])->with(compact('html'));
+        return view('welcome',['setting_slide'=>$setting_slide,'jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'jadwal_ubah_dosen'=>$jadwal_ubah_dosen,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent])->with(compact('html'));
     }
 
     public function lusa(Request $request, Builder $htmlBuilder)
@@ -197,6 +215,10 @@ class WelcomeController extends Controller
                     # code...
                      $status = "Batal";
                 } 
+                elseif ($status_penjadwalan->status_jadwal == 3) {
+                    # code...
+                     $status = "Dosen Di Gantikan";
+                } 
                 return $status;
                 })->make(true);
         }
@@ -215,6 +237,7 @@ class WelcomeController extends Controller
         $jadwal_terlaksana = 0;
         $jadwal_belum_terlaksana = 0;
         $jadwal_batal = 0; 
+        $jadwal_ubah_dosen = 0;
 
         $besok = mktime (0,0,0, date("m"), date("d")+2,date("Y"));
         $tanggal_besok = date('Y-m-d',$besok );// TANGGAL LUSA
@@ -236,11 +259,15 @@ class WelcomeController extends Controller
                 if ($penjadwalan->status_jadwal == 2) {
    
                     $jadwal_batal = $jadwal_batal + $penjadwalan->jumlah_data;
+                }
+                if ($penjadwalan->status_jadwal == 3) {
+   
+                    $jadwal_ubah_dosen = $jadwal_ubah_dosen + $penjadwalan->jumlah_data;
                 } 
 
         }
 
         $setting_slide = SettingSlide::get();
-        return view('welcome',['setting_slide'=>$setting_slide,'jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent])->with(compact('html'));
+        return view('welcome',['setting_slide'=>$setting_slide,'jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'jadwal_ubah_dosen'=>$jadwal_ubah_dosen,'dari_tanggal'=>$request->dari_tanggal,'sampai_tanggal'=>$request->sampai_tanggal,'agent' => $agent])->with(compact('html'));
     }
 }
