@@ -243,21 +243,31 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 
 });
 
-// route android 
+// ROTE ANDROID
 
-Route::post('/login_android', "AndroidController@authenticate");
-Route::post('/login_dosen_android', "AndroidController@login_dosen_android");
-Route::post('/tambah_ruangan', "AndroidController@tambah_ruangan");
-Route::get('/list_ruangan', "AndroidController@list_ruangan");
-Route::post('/update_ruangan', "AndroidController@update_ruangan");
-Route::post('/hapus_ruangan', "AndroidController@hapus_ruangan");
-Route::post('/cari_ruangan', "AndroidController@cari_ruangan");
-Route::post('/list_jadwal_dosen', "AndroidController@list_jadwal_dosen");
-Route::post('/search_jadwal_dosen', "AndroidController@search_jadwal_dosen");
-Route::post('/batal_jadwal_dosen', "AndroidController@batal_jadwal_dosen");
-Route::post('/presensi_dosen', "AndroidController@presensi_dosen");
+	//DOSEN
 
+	Route::post('/login_android', "AndroidController@authenticate");
+	Route::post('/login_dosen_android', "AndroidController@login_dosen_android");
+	Route::post('/tambah_ruangan', "AndroidController@tambah_ruangan");
+	Route::get('/list_ruangan', "AndroidController@list_ruangan");
+	Route::post('/update_ruangan', "AndroidController@update_ruangan");
+	Route::post('/hapus_ruangan', "AndroidController@hapus_ruangan");
+	Route::post('/cari_ruangan', "AndroidController@cari_ruangan");
+	Route::post('/list_jadwal_dosen', "AndroidController@list_jadwal_dosen");
+	Route::post('/search_jadwal_dosen', "AndroidController@search_jadwal_dosen");
+	Route::post('/batal_jadwal_dosen', "AndroidController@batal_jadwal_dosen");
+	Route::post('/presensi_dosen', "AndroidController@presensi_dosen");
 
+	//MAHASISWA
+	Route::post('/login_mahasiswa_android', "AndroidController@login_mahasiswa_android");
+	Route::post('/list_jadwal_mahasiswa', "AndroidController@list_jadwal_mahasiswa");
+	Route::post('/presensi_mahasiswa', "AndroidController@presensi_mahasiswa");
+	Route::post('/search_jadwal_mahasiswa', "AndroidController@search_jadwal_mahasiswa");
+	Route::post('/jadwal_besok', "AndroidController@jadwal_besok");
+	Route::post('/search_jadwal_mahasiswa_besok', "AndroidController@search_jadwal_mahasiswa_besok");
+	Route::post('/jadwal_lusa', "AndroidController@jadwal_lusa");
+	Route::post('/search_jadwal_mahasiswa_lusa', "AndroidController@search_jadwal_mahasiswa_lusa");
 
 
 
