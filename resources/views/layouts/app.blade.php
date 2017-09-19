@@ -74,6 +74,17 @@
                             <li><a href="{{ route('setting_slide.index') }}">Setting Slide</a></li>
                           </ul>
                         </li>
+
+                        <!-- DROPDOWN LAPORAN -->
+                        <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                   Laporan <span class="caret"></span>
+                                </a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">                           
+                            <li><a href="{{ route('laporan_presensi_mahasiswa.index') }}">Laporan Rekap Presensi Mahasiswa</a></li>             
+                          </ul>
+                        </li>
+                        <!-- DROPDOWN LAPORAN -->
                     @endrole  
 
                     @role('pimpinan')  

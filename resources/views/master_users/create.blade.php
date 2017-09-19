@@ -24,3 +24,25 @@
 	</div>
 </div>
 @endsection
+
+@section('scripts') 
+<script type="text/javascript"> 
+	$(".role-id").change(function(){ 
+		var is_mahasiswa = 0;
+		var role_id = $(this).val();
+	
+		for (var i = 0; i < role_id.length; i++) {
+		 
+			if (role_id[i] == 3) {
+				is_mahasiswa = 1;
+			} 
+		}
+		if (is_mahasiswa == 1){ 
+			$("#data_angkatan").show();
+		}
+		else { 
+			$("#data_angkatan").hide();
+		}
+	});
+</script>
+@endsection
