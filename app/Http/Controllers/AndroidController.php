@@ -352,6 +352,9 @@ class AndroidController extends Controller
                           ->where('id_user',$id_dosen->id)// AND ID DOSEN
                           ->count();
 
+                          // ambil id block
+      $query_penjadwalan = Penjadwalan::select('id_block')->where('id',$id_jadwal)->first();
+
                               // JIKA 0, ARTINYA BELUM ABSEN
                     if ($query_cek_presensi == 0) {
 
@@ -362,7 +365,8 @@ class AndroidController extends Controller
                           'id_ruangan' => $id_ruangan,// ID JADWAL
                           'longitude' => $longitude,// LONGITUDE
                           'latitude' => $latitude,// LATITUDE
-                          'jarak_ke_lokasi_absen' => $jarak_ke_lokasi_absen // JARAK KE LOKASI ABSEN
+                          'jarak_ke_lokasi_absen' => $jarak_ke_lokasi_absen, // JARAK KE LOKASI ABSEN
+                          'id_block'  =>  $query_penjadwalan->id_block
                           ]);
 
                           // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 

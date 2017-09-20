@@ -127,6 +127,7 @@ Route::get('/jadwal-dosen',[
 
 
 
+
 Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_dosen']], function () {
 
 	Route::resource('master_ruangans', 'MasterRuanganController'); 
@@ -139,6 +140,15 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('settingwaktu', 'SettingWaktuController'); 
 	Route::resource('angkatan', 'AngkatanController'); 
 	Route::resource('setting_slide', 'SettingSlideController'); 
+
+	Route::resource('laporan_rekap_presensi_dosen', 'LaporanPresensiDosenController'); 
+
+
+	Route::post('admin/laporan_rekap_presensi_dosen', [
+  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+    'as'   => 'laporan_rekap_presensi_dosen.export',
+    'uses' => 'LaporanPresensiDosenController@export_excel'
+  	]);
 
 	Route::get('master_users/filterkonfirmasi/{id}',[
 	'middleware' => ['auth'],
