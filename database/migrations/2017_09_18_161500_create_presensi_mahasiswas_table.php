@@ -22,6 +22,7 @@ class CreatePresensiMahasiswasTable extends Migration
             $table->string('latitude');
             $table->string('foto');
             $table->string("jarak_ke_lokasi_absen");
+            $table->integer("id_block");
             $table->timestamps();
         });
     }

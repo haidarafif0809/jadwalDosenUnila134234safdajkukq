@@ -14,7 +14,7 @@ class PresensiDosenSeeder extends Seeder
     {
         //
     $presensi_dosen = new Presensi();
-    $presensi_dosen->id_user   = "1";    
+    $presensi_dosen->id_user   = "5";    
     $presensi_dosen->id_ruangan   = "1";  
     $presensi_dosen->id_jadwal   = "1";  
     $presensi_dosen->longitude   = "00000";    
@@ -25,7 +25,7 @@ class PresensiDosenSeeder extends Seeder
     $presensi_dosen->save();
 
     $presensi_dosen = new Presensi();
-    $presensi_dosen->id_user   = "2";    
+    $presensi_dosen->id_user   = "6";    
     $presensi_dosen->id_ruangan   = "1";  
     $presensi_dosen->id_jadwal   = "1";  
     $presensi_dosen->longitude   = "00000";    
