@@ -612,7 +612,7 @@ class AndroidController extends Controller
       $longitude = $request->longitude_sekarang;// LONGITUDE
       $latitude = $request->latitude_sekarang;// LATITUDE
       $image = $request->image; // FOTO ABSEN
-      $jarak_ke_lokasi_absen = $request->jarak_ke_lokasi_absen;
+      $jarak_ke_lokasi_absen = $request->jarak_ke_lokasi_absen; //JARAK LOKASI
       $waktu = date("Y-m-d H:i:s");
       $tanggal_db = $request->tanggal;
       $tanggal = Carbon::createFromFormat('d/m/Y', $tanggal_db)->format('Y-m-d');
@@ -625,6 +625,7 @@ class AndroidController extends Controller
       $waktu_jadwal_mulai = $tanggal ." ". $waktu_mulai;      
       $waktu_jadwal_selesai = $tanggal ." ". $waktu_selesai; 
 
+      $data_block = Penjadwalan::select(['id', 'id_block'])->where('id', $id_jadwal)->first();
 
       if ($waktu >= $waktu_jadwal_mulai AND $waktu <= $waktu_jadwal_selesai) {
 
@@ -643,7 +644,8 @@ class AndroidController extends Controller
                           'id_ruangan' => $id_ruangan,// ID JADWAL
                           'longitude' => $longitude,// LONGITUDE
                           'latitude' => $latitude,// LATITUDE
-                          'jarak_ke_lokasi_absen' => $jarak_ke_lokasi_absen 
+                          'jarak_ke_lokasi_absen' => $jarak_ke_lokasi_absen,// JARAK LOKASI
+                          'id_block' => $data_block->id_block,//ID BLOCK
                           ]);
 
                           // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 
@@ -1058,5 +1060,42 @@ class AndroidController extends Controller
 
     }
 // END CARI JADWAL MAHASISWA LUSA
+
+
+//UBAH PASSWORD MAHASISWA
+    public function ubah_password_mahasiswa (Request $request){
+
+      $dosen = $request->username;// DOSEN YANG LOGIN
+      $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+
+      $password_lama = $request->password_lama;
+      $username_baru = $request->username_baru;
+      $password_baru = $request->password_baru;
+
+
+          if (Auth::attempt(['email' => $dosen, 'password' => $password_lama])) {
+             
+
+
+                  $update_user = User::where("id",$id_dosen->id)->update(["email" => $username_baru, "password" => bcrypt($password_baru)]);
+
+            
+                  $response["value"] = 1;// RESPONSE VALUE 0
+                  $response["message"] = "Password Berhasil Di Ubah";// RESPONSE Gagal ABSEN
+                                // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                  return  json_encode($response);
+
+               }else{
+
+                    $response["value"] = 0;// RESPONSE VALUE 0
+                  $response["message"] = "Mohon Maaf Password Lama Anda Salah";// RESPONSE Gagal ABSEN
+                                // DATA DIKEMBALIKAN DALAM BENTUK JSON
+
+                  return json_encode($response);
+
+              }     
+  
+    }
+//END UBAH PASSWORD MAHASISWA
 
 }//END CLASS

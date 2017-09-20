@@ -142,6 +142,12 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('setting_slide', 'SettingSlideController');
 	Route::resource('laporan_presensi_mahasiswa', 'LaporanRekapPresensiMahasiswaController'); 
 
+	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_presensi/{id_block}',[
+	'middleware' => ['auth'],
+	'as' => 'laporan_presensi_mahasiswa.download_lap_rekap_presensi',
+	'uses' => 'LaporanRekapPresensiMahasiswaController@download_lap_rekap_presensi'
+	]);
+
 	Route::post('laporan_presensi_mahasiswa/proses_laporan_rekap',[
 	'middleware' => ['auth'],
 	'as' => 'laporan_presensi_mahasiswa.proses_laporan_rekap',
@@ -288,6 +294,7 @@ Route::get('/list_ruangan', "AndroidController@list_ruangan");
 	Route::post('/search_jadwal_mahasiswa_besok', "AndroidController@search_jadwal_mahasiswa_besok");
 	Route::post('/jadwal_lusa', "AndroidController@jadwal_lusa");
 	Route::post('/search_jadwal_mahasiswa_lusa', "AndroidController@search_jadwal_mahasiswa_lusa");
+	Route::post('/ubah_password_mahasiswa', "AndroidController@ubah_password_mahasiswa");
 
 
 
