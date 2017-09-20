@@ -550,12 +550,19 @@ public function filter(Request $request, Builder $htmlBuilder)
             //APABILA RUANGAN SUDAH DI PAKAI DI WAKTU YANG BERSAMAAN MAKA MUNCUL ALERT DI BAWAH
             $data_ruangan =  Master_ruangan::find($request->id_ruangan);
             $data_block = Master_block::find($request->id_block);
-            $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah);
-
-            Session::flash("flash_notification", [
-                "level"=>"danger",
-                "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
-                ]);
+            $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah); 
+       
+                if ($data_penjadwalan->first()->id_mata_kuliah == NULL OR $data_penjadwalan->first()->id_mata_kuliah == '-') { 
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block"
+                        ]);
+                }else{
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
+                        ]);
+                }
             return redirect()->back()->withInput();
         } 
 
@@ -756,11 +763,18 @@ public function filter(Request $request, Builder $htmlBuilder)
                 $data_ruangan =  Master_ruangan::find($request->id_ruangan);
                 $data_block = Master_block::find($request->id_block);
                 $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah);
-
-                Session::flash("flash_notification", [
-                    "level"=>"danger",
-                    "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
-                    ]);
+   
+                if ($data_penjadwalan->first()->id_mata_kuliah == NULL OR $data_penjadwalan->first()->id_mata_kuliah == '-') { 
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block"
+                        ]);
+                }else{
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
+                        ]);
+                }
                 return redirect()->back()->withInput();
             } 
        
@@ -899,11 +913,18 @@ public function filter(Request $request, Builder $htmlBuilder)
                 $data_ruangan =  Master_ruangan::find($request->id_ruangan);
                 $data_block = Master_block::find($request->id_block);
                 $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah);
-
-                Session::flash("flash_notification", [
-                    "level"=>"danger",
-                    "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
-                    ]);
+                
+                if ($data_penjadwalan->first()->id_mata_kuliah == NULL OR $data_penjadwalan->first()->id_mata_kuliah == '-') { 
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block"
+                        ]);
+                }else{
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
+                        ]);
+                }
                 return redirect()->back()->withInput();
             } 
        
