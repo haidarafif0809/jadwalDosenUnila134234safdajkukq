@@ -279,7 +279,7 @@ class AndroidController extends Controller
                         'latitude' => $list_jadwal_dosen['latitude'], // LATITUDE
                         'longitude' => $list_jadwal_dosen['longitude'], // LONGITUDE
                         'batas_jarak_absen' => $list_jadwal_dosen['batas_jarak_absen'] , // BATAS JARAK ABSEN
-                        'tipe_jadwal' => $tipe_jadwal // TIPE JADWAL 
+                        'tipe_jadwal' => $list_jadwal_dosen['tipe_jadwal'] // TIPE JADWAL 
                         )// ARRAY
                   );// ARRAY PUSH
 
@@ -432,33 +432,75 @@ class AndroidController extends Controller
 
       $dosen = $request->username;// DOSEN YANG LOGIN
       $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
-
-      $password_lama = $request->password_lama;
-      $username_baru = $request->username_baru;
-      $password_baru = $request->password_baru;
-
-
-          if (Auth::attempt(['email' => $dosen, 'password' => $password_lama])) {
-             
+      
+      $password_lama = $request->password_lama;// PASSWORD LAMA
+      $username_baru = $request->username_baru;// USERNAME BARU
+      $password_baru = $request->password_baru;// PASSWORD BARU
 
 
-                  $update_user = User::where("id",$id_dosen->id)->update(["email" => $username_baru, "password" => bcrypt($password_baru)]);
+      // jika username dosen == username baru  atau maksudnya username tidak diedit
+      if ($dosen == $username_baru) {// maka
+                
+                // CEK USER DAN PASSWORD LAMA
+                if (Auth::attempt(['email' => $dosen, 'password' => $password_lama])) {
+                  
+                  // UPDATE USER SET PASSWORD
+                    $update_user = User::where("id",$id_dosen->id)->update(["password" => bcrypt($password_baru)]);
 
-            
-                  $response["value"] = 1;// RESPONSE VALUE 0
-                  $response["message"] = "Password Berhasil Di Ubah";// RESPONSE Gagal ABSEN
-                                // DATA DIKEMBALIKAN DALAM BENTUK JSON
-                  return  json_encode($response);
+              
+                    $response["value"] = 1;// RESPONSE VALUE 0
+                    $response["message"] = "Password Berhasil Di Ubah";// RESPONSE Gagal ABSEN
+                                  // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                    return  json_encode($response);
 
-               }else{
+                  }else{
 
-                    $response["value"] = 0;// RESPONSE VALUE 0
-                  $response["message"] = "Mohon Maaf Password Lama Anda Salah";// RESPONSE Gagal ABSEN
-                                // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                      $response["value"] = 0;// RESPONSE VALUE 0
+                    $response["message"] = "Mohon Maaf Password Lama Anda Salah";// RESPONSE Gagal ABSEN
+                                  // DATA DIKEMBALIKAN DALAM BENTUK JSON
 
-                  return json_encode($response);
+                    return json_encode($response);
 
-              }     
+                  } 
+
+
+      }// jika tidak
+      else{
+              $cek_username = User::where('email',$username_baru)->count();// cek username baru
+
+                    // jika username baru tidak ada yang sama dengan username./email yang lain
+                    if ($cek_username == 0) {
+                                // CEK USERNAME DAN PASSWPRD LAMA
+                                if (Auth::attempt(['email' => $dosen, 'password' => $password_lama])) {
+                           
+                                $update_user = User::where("id",$id_dosen->id)->update(["email" => $username_baru, "password" => bcrypt($password_baru)]);
+
+                          
+                                $response["value"] = 1;// RESPONSE VALUE 0
+                                $response["message"] = "Password Berhasil Di Ubah";// RESPONSE Gagal ABSEN
+                                              // DATA DIKEMBALIKAN DALAM BENTUK JSON
+                                return  json_encode($response);
+
+                              }else{
+
+                                  $response["value"] = 0;// RESPONSE VALUE 0
+                                $response["message"] = "Mohon Maaf Password Lama Anda Salah";// RESPONSE Gagal ABSEN
+                                              // DATA DIKEMBALIKAN DALAM BENTUK JSON
+
+                                return json_encode($response);
+
+                              } 
+
+                       // jika tidak,         
+                    }else{
+
+                                $response["value"] = 2;// RESPONSE VALUE 0
+                                $response["message"] = "Mohon Maaf, Username atau Email anda sudah ada";// RESPONSE Gagal ABSEN
+                                              // DATA DIKEMBALIKAN DALAM BENTUK JSON
+
+                                return json_encode($response);
+                    }
+        }
   
     }
 
