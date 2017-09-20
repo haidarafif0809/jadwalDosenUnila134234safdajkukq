@@ -17,4 +17,12 @@ class Master_block extends Model
           {
             return $this->hasOne('App\UserPjDosen','id_master_block','id');
           }  
+
+    public function getJumlahJadwalAttribute() {
+
+        $jumlah_jadwal = Penjadwalan::where('id_block',$this->id)->where('status_jadwal',1)->count();
+
+        return $jumlah_jadwal;
+        
+    }
 }

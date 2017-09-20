@@ -54,6 +54,9 @@ class MasterBlockController extends Controller
                     return $angkatan->nama_angkatan; 
                 }
                
+            })
+            ->addColumn('jumlah_jadwal', function($block){ 
+                    return $block->jumlah_jadwal;
             })->make(true);
         }
         $html = $htmlBuilder
@@ -61,8 +64,9 @@ class MasterBlockController extends Controller
         ->addColumn(['data' => 'nama_block', 'name' => 'nama_block', 'title' => 'Nama Block'])
         ->addColumn(['data' => 'user_pj_dosen', 'name' => 'user_pj_dosen', 'title' => 'Pj Dosen','orderable' => false, 'searchable' => false]) 
         ->addColumn(['data' => 'modul', 'name' => 'modul', 'title' => 'Modul','orderable' => false, 'searchable' => false]) 
-         ->addColumn(['data' => 'angkatan', 'name' => 'angkatan', 'title' => 'Angkatan','orderable' => false, 'searchable' => false])
-         ->addColumn(['data' => 'mahasiswa', 'name' => 'mahasiswa', 'title' => 'Mahasiswa','orderable' => false, 'searchable' => false])
+        ->addColumn(['data' => 'angkatan', 'name' => 'angkatan', 'title' => 'Angkatan','orderable' => false, 'searchable' => false])
+        ->addColumn(['data' => 'mahasiswa', 'name' => 'mahasiswa', 'title' => 'Mahasiswa','orderable' => false, 'searchable' => false])
+        ->addColumn(['data' => 'jumlah_jadwal', 'name' => 'jumlah_jadwal', 'title' => 'Jumlah Jadwal', 'orderable' => false, 'searchable'=>false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
 
         return view('master_blocks.index')->with(compact('html'));

@@ -139,7 +139,14 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('modul', 'ModulController'); 
 	Route::resource('settingwaktu', 'SettingWaktuController'); 
 	Route::resource('angkatan', 'AngkatanController'); 
-	Route::resource('setting_slide', 'SettingSlideController'); 
+	Route::resource('setting_slide', 'SettingSlideController');
+	Route::resource('laporan_presensi_mahasiswa', 'LaporanRekapPresensiMahasiswaController'); 
+
+	Route::post('laporan_presensi_mahasiswa/proses_laporan_rekap',[
+	'middleware' => ['auth'],
+	'as' => 'laporan_presensi_mahasiswa.proses_laporan_rekap',
+	'uses' => 'LaporanRekapPresensiMahasiswaController@proses_laporan_rekap'
+	]);
 
 	Route::resource('laporan_rekap_presensi_dosen', 'LaporanPresensiDosenController'); 
 

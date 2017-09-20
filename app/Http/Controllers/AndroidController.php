@@ -9,6 +9,7 @@ use App\Penjadwalan;
 use App\User;
 use App\Jadwal_dosen;
 use App\Presensi;
+use App\PresensiMahasiswa;
 use App\Master_block;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -628,7 +629,7 @@ class AndroidController extends Controller
       if ($waktu >= $waktu_jadwal_mulai AND $waktu <= $waktu_jadwal_selesai) {
 
       // CEK APAKAH MAHASISWA INI SUDAH ABSEN BELUM UNTUK JADWAL INI
-      $query_cek_presensi = Presensi::where('id_jadwal',$id_jadwal) // WHERE ID JADWAL
+      $query_cek_presensi = PresensiMahasiswa::where('id_jadwal',$id_jadwal) // WHERE ID JADWAL
                           ->where('id_user',$id_mahasiswa->id)// AND ID MAHASISWA
                           ->count();
 
@@ -636,7 +637,7 @@ class AndroidController extends Controller
                     if ($query_cek_presensi == 0) {
 
                         // INSERT KE TABLE PRESENSI
-                          $presensi = Presensi::create([
+                          $presensi = PresensiMahasiswa::create([
                           'id_user' => $id_mahasiswa->id,// ID USER MAHASISWA
                           'id_jadwal' => $id_jadwal,// ID JADWAL
                           'id_ruangan' => $id_ruangan,// ID JADWAL
