@@ -81,6 +81,7 @@
                                    Laporan <span class="caret"></span>
                                 </a>
                           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">                           
+                            <li><a href="{{ route('laporan_rekap_presensi_dosen.index') }}">Laporan Rekap Presensi Dosen</a></li>    
                             <li><a href="{{ route('laporan_presensi_mahasiswa.index') }}">Laporan Rekap Presensi Mahasiswa</a></li>             
                           </ul>
                         </li>
