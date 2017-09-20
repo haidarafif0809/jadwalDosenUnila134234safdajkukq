@@ -39,7 +39,7 @@ class PenjadwalanController extends Controller
                 })
             //MENGONEKSIKAN TOMBOL DOSEN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
             ->addColumn('jadwal_dosen', function($jadwal){
-                $jadwal_dosens = Jadwal_dosen::with(['jadwal','dosen'])->where('id_jadwal',$jadwal->id)->get(); 
+                $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_jadwal',$jadwal->id)->get(); 
                     return view('penjadwalans._action', [ 
                         'model_user'     => $jadwal_dosens,
                         'id_jadwal' => $jadwal->id
@@ -529,12 +529,13 @@ public function filter(Request $request, Builder $htmlBuilder)
 
                      foreach ($dosen_punya_jadwal as $dosen_punya_jadwals) {  
                             $nama_dosen = User::find($dosen_punya_jadwals['id_dosen']);
-                            $data_penjadwalans = Penjadwalan::find($dosen_punya_jadwals['id_jadwal']);
-                            $data_ruangan =  Master_ruangan::find($data_penjadwalans->id_ruangan);
-                            $data_block = Master_block::find($data_penjadwalans->id_block);
-                            $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalans->id_mata_kuliah);
+                            $data_penjadwalans = Penjadwalan::find($dosen_punya_jadwals['id_jadwal']); 
 
-                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>$data_ruangan->nama_ruangan</b> Block <b>$data_block->nama_block</b>  Mata Kuliah <b>$data_mata_kuliah->nama_mata_kuliah</b> </li>";
+                            if ($data_penjadwalans->id_mata_kuliah == NULL OR $data_penjadwalans->id_mata_kuliah == '-') {
+                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>".$data_penjadwalans->ruangan->nama_ruangan." </b> Block <b>".$data_penjadwalans->block->nama_block."</b></li>";
+                            }else{
+                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>".$data_penjadwalans->ruangan->nama_ruangan."</b> Block <b>".$data_penjadwalans->block->nama_block."</b>  Mata Kuliah <b>". $data_penjadwalans->mata_kuliah->nama_mata_kuliah." </b> </li>";   
+                            }
                         }
                     $message .= '</ul>';
 
@@ -549,12 +550,19 @@ public function filter(Request $request, Builder $htmlBuilder)
             //APABILA RUANGAN SUDAH DI PAKAI DI WAKTU YANG BERSAMAAN MAKA MUNCUL ALERT DI BAWAH
             $data_ruangan =  Master_ruangan::find($request->id_ruangan);
             $data_block = Master_block::find($request->id_block);
-            $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah);
-
-            Session::flash("flash_notification", [
-                "level"=>"danger",
-                "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
-                ]);
+            $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah); 
+       
+                if ($data_penjadwalan->first()->id_mata_kuliah == NULL OR $data_penjadwalan->first()->id_mata_kuliah == '-') { 
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block"
+                        ]);
+                }else{
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
+                        ]);
+                }
             return redirect()->back()->withInput();
         } 
 
@@ -624,7 +632,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$id)->update(["status_jadwal" => 0]);
 
         Session::flash("flash_notification", [
-            "level"=>"primary",
+            "level"=>"success",
             "message"=>"Penjadwalan Berhasil Belum Terlaksana"
         ]);
  
@@ -715,8 +723,7 @@ public function filter(Request $request, Builder $htmlBuilder)
 
          //MEMISAHKAN WAKTU MULAI DAN SELESAI
         $data_setting_waktu = explode("-",$request->data_waktu);
-            //MENGECEK DATA YANG SAMA APA TIDAK
-            $penjadwalans = Penjadwalan::find($id); 
+            //MENGECEK DATA YANG SAMA APA TIDAK 
             $data_penjadwalan = Penjadwalan::statusRuanganEdit($request,$data_setting_waktu,$id); 
             //APABILA $data_penjadwalan == 0 maka ngecek dosen
             if ($data_penjadwalan->count() == 0) {
@@ -734,12 +741,13 @@ public function filter(Request $request, Builder $htmlBuilder)
                     $message = 'Tidak Bisa Menambahkan Dosen Berikut Karena Sudah Memiliki Jadwal :<ul>'; 
                         foreach ($dosen_punya_jadwal as $dosen_punya_jadwals) {  
                             $nama_dosen = User::find($dosen_punya_jadwals['id_dosen']);
-                            $data_penjadwalans = Penjadwalan::find($dosen_punya_jadwals['id_jadwal']);
-                            $data_ruangan =  Master_ruangan::find($data_penjadwalans->id_ruangan);
-                            $data_block = Master_block::find($data_penjadwalans->id_block);
-                            $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalans->id_mata_kuliah);
+                            $data_penjadwalans = Penjadwalan::find($dosen_punya_jadwals['id_jadwal']); 
 
-                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>$data_ruangan->nama_ruangan</b> Block <b>$data_block->nama_block</b>  Mata Kuliah <b>$data_mata_kuliah->nama_mata_kuliah</b> </li>";
+                            if ($data_penjadwalans->id_mata_kuliah == NULL OR $data_penjadwalans->id_mata_kuliah == '-') {
+                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>".$data_penjadwalans->ruangan->nama_ruangan." </b> Block <b>".$data_penjadwalans->block->nama_block."</b></li>";
+                            }else{
+                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>".$data_penjadwalans->ruangan->nama_ruangan."</b> Block <b>".$data_penjadwalans->block->nama_block."</b>  Mata Kuliah <b>". $data_penjadwalans->mata_kuliah->nama_mata_kuliah." </b> </li>";   
+                            }
                         }
                     $message .= '</ul>';
 
@@ -755,11 +763,18 @@ public function filter(Request $request, Builder $htmlBuilder)
                 $data_ruangan =  Master_ruangan::find($request->id_ruangan);
                 $data_block = Master_block::find($request->id_block);
                 $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah);
-
-                Session::flash("flash_notification", [
-                    "level"=>"danger",
-                    "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
-                    ]);
+   
+                if ($data_penjadwalan->first()->id_mata_kuliah == NULL OR $data_penjadwalan->first()->id_mata_kuliah == '-') { 
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block"
+                        ]);
+                }else{
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
+                        ]);
+                }
                 return redirect()->back()->withInput();
             } 
        
@@ -795,7 +810,7 @@ public function filter(Request $request, Builder $htmlBuilder)
 
         Session::flash("flash_notification", [
             "level"=>"success",
-            "message"=>"Penjadwalan Berhasil Di Ubah"
+            "message"=>"Dosen Berhasil Di Gantikan"
             ]);
         return redirect()->route('penjadwalans.index');
     }
@@ -876,12 +891,13 @@ public function filter(Request $request, Builder $htmlBuilder)
                     $message = 'Tidak Bisa Menambahkan Dosen Berikut Karena Sudah Memiliki Jadwal :<ul>'; 
                         foreach ($dosen_punya_jadwal as $dosen_punya_jadwals) {  
                             $nama_dosen = User::find($dosen_punya_jadwals['id_dosen']);
-                            $data_penjadwalans = Penjadwalan::find($dosen_punya_jadwals['id_jadwal']);
-                            $data_ruangan =  Master_ruangan::find($data_penjadwalans->id_ruangan);
-                            $data_block = Master_block::find($data_penjadwalans->id_block);
-                            $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalans->id_mata_kuliah);
+                            $data_penjadwalans = Penjadwalan::find($dosen_punya_jadwals['id_jadwal']); 
 
-                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>$data_ruangan->nama_ruangan</b> Block <b>$data_block->nama_block</b>  Mata Kuliah <b>$data_mata_kuliah->nama_mata_kuliah</b> </li>";
+                            if ($data_penjadwalans->id_mata_kuliah == NULL OR $data_penjadwalans->id_mata_kuliah == '-') {
+                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>".$data_penjadwalans->ruangan->nama_ruangan." </b> Block <b>".$data_penjadwalans->block->nama_block."</b></li>";
+                            }else{
+                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>".$data_penjadwalans->ruangan->nama_ruangan."</b> Block <b>".$data_penjadwalans->block->nama_block."</b>  Mata Kuliah <b>". $data_penjadwalans->mata_kuliah->nama_mata_kuliah." </b> </li>";   
+                            }
                         }
                     $message .= '</ul>';
 
@@ -897,11 +913,18 @@ public function filter(Request $request, Builder $htmlBuilder)
                 $data_ruangan =  Master_ruangan::find($request->id_ruangan);
                 $data_block = Master_block::find($request->id_block);
                 $data_mata_kuliah = Master_mata_kuliah::find($data_penjadwalan->first()->id_mata_kuliah);
-
-                Session::flash("flash_notification", [
-                    "level"=>"danger",
-                    "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
-                    ]);
+                
+                if ($data_penjadwalan->first()->id_mata_kuliah == NULL OR $data_penjadwalan->first()->id_mata_kuliah == '-') { 
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block"
+                        ]);
+                }else{
+                    Session::flash("flash_notification", [
+                        "level"=>"danger",
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
+                        ]);
+                }
                 return redirect()->back()->withInput();
             } 
        
