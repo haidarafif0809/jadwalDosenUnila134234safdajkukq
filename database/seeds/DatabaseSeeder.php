@@ -23,5 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AngkatanSeeder::class);
         $this->call(UserPjDosenSeeder::class);
         $this->call(SettingSlideSeeder::class);
+        $this->call(PresensiMahasiswaSeeder::class);
+        $this->call(PresensiDosenSeeder::class);
     }
 }
