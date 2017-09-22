@@ -34,7 +34,7 @@
                             {!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}                    
                         </div>
 
-                        <div class="form-group">                    
+                        <div class="form-group col-md-4">                    
                             <button id="tampil_laporan" class="btn btn-primary"> <span class="glyphicon glyphicon-eye-open"></span> Tampil</button>
 
                         <!-- MEMBUAT TOMBOL EXPORT EXCEL -->
@@ -43,7 +43,8 @@
 
                     {!! Form::close() !!}
 
-                <div class="col-md-12">
+                <div class="col-md-12" style="display: none" id="laporan_presensi">
+                <center><h1>REKAP DAFTAR HADIR MAHASISWA</h1></center><br>
                     <div class="table-responsive">
                         <table class="table table-bordered table-sm" id="table-laporan">
                             <thead>
@@ -102,6 +103,7 @@ $(document).on('click','#tampil_laporan',function(){
         ]
     });
 
+    $("#laporan_presensi").show();
     $("#btnExcel").show();
     $("#btnExcel").attr("href", "laporan_presensi_mahasiswa/download_lap_rekap_presensi/"+id_block+"");
 
