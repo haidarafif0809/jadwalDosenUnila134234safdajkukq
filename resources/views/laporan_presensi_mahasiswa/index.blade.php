@@ -34,12 +34,17 @@
                             {!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}                    
                         </div>
 
-                        <div class="form-group">                    
-                            <button id="tampil_laporan" class="btn btn-primary"> <span class="glyphicon glyphicon-eye-open"></span> Tampil</button>             
+                        <div class="form-group col-md-4">                    
+                            <button id="tampil_laporan" class="btn btn-primary"> <span class="glyphicon glyphicon-eye-open"></span> Tampil</button>
+
+                        <!-- MEMBUAT TOMBOL EXPORT EXCEL -->
+                            <a href='#' style="display: none" class='btn btn-warning' id="btnExcel" target='blank'><span class="glyphicon glyphicon-export"></span> Export Excel</a>           
                         </div>
+
                     {!! Form::close() !!}
 
-                <div class="col-md-12">
+                <div class="col-md-12" style="display: none" id="laporan_presensi">
+                <center><h1>REKAP DAFTAR HADIR MAHASISWA</h1></center><br>
                     <div class="table-responsive">
                         <table class="table table-bordered table-sm" id="table-laporan">
                             <thead>
@@ -50,7 +55,7 @@
                                     <th>Jumlah Jadwal</th>
                                     <th>Jumlah Hadir</th>
                                     <th>Presentase</th>
-                                    <th>KETERANGAN</th>
+                                    <th>Keterangan</th>
 
                                 </tr>
                             </thead>
@@ -69,6 +74,8 @@
 @section('scripts')
 <script>
 $(document).on('click','#tampil_laporan',function(){
+
+    var id_block = $("#block").val();
 
     $('#table-laporan').DataTable().destroy();
     $('#table-laporan').DataTable({
@@ -92,9 +99,13 @@ $(document).on('click','#tampil_laporan',function(){
             { data: 'jumlah_jadwal', name: 'jumlah_jadwal', class: 'angka' },
             { data: 'jumlah_hadir', name: 'jumlah_hadir', class: 'angka' },
             { data: 'presentase', name: 'presentase', class: 'angka' },
-            { data: 'keterangan', name: 'keterangan', class: 'tengah' }
+            { data: 'keterangan', name: 'keterangan' }
         ]
     });
+
+    $("#laporan_presensi").show();
+    $("#btnExcel").show();
+    $("#btnExcel").attr("href", "laporan_presensi_mahasiswa/download_lap_rekap_presensi/"+id_block+"");
 
 });
 

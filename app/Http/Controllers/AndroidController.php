@@ -536,17 +536,24 @@ class AndroidController extends Controller
     public function list_jadwal_mahasiswa(Request $request){
 
         $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
-        $data_mahasiswa = User::select(['id', 'id_angkatan'])->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA
-        $data_block = Master_block::select('id')->where('id_angkatan',$data_mahasiswa->id_angkatan)->get();
+        $data_mahasiswa = User::select(['id', 'id_angkatan'])->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA dan ANGKATAN
+
+//SELECT SEMUA ID BLOCK BERDASARKAN ANGKATAN USER LOGIN
+        $data_block = Master_block::select('master_blocks.id')
+        ->leftJoin('mahasiswa_block', 'mahasiswa_block.id_block', '=', 'master_blocks.id')
+        ->where('mahasiswa_block.id_mahasiswa',$data_mahasiswa->id)
+        ->orWhere('master_blocks.id_angkatan',$data_mahasiswa->id_angkatan)->get();
+
         $value = 0;
         $result = array();// ARRAY RESULT
         $waktu = date("Y-m-d H:i:s");
         $hari_ini = date("Y-m-d");
 
         $array_block = array();
-        foreach ($data_block as $data_blocks) {
+        foreach($data_block as $data_blocks) {
           array_push($array_block, $data_blocks->id);
         }
+
 
         $penjadwalans = Penjadwalan::select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
 
@@ -612,7 +619,7 @@ class AndroidController extends Controller
       $longitude = $request->longitude_sekarang;// LONGITUDE
       $latitude = $request->latitude_sekarang;// LATITUDE
       $image = $request->image; // FOTO ABSEN
-      $jarak_ke_lokasi_absen = $request->jarak_ke_lokasi_absen;
+      $jarak_ke_lokasi_absen = $request->jarak_ke_lokasi_absen; //JARAK LOKASI
       $waktu = date("Y-m-d H:i:s");
       $tanggal_db = $request->tanggal;
       $tanggal = Carbon::createFromFormat('d/m/Y', $tanggal_db)->format('Y-m-d');
@@ -625,6 +632,7 @@ class AndroidController extends Controller
       $waktu_jadwal_mulai = $tanggal ." ". $waktu_mulai;      
       $waktu_jadwal_selesai = $tanggal ." ". $waktu_selesai; 
 
+      $data_block = Penjadwalan::select(['id', 'id_block'])->where('id', $id_jadwal)->first();
 
       if ($waktu >= $waktu_jadwal_mulai AND $waktu <= $waktu_jadwal_selesai) {
 
@@ -643,7 +651,8 @@ class AndroidController extends Controller
                           'id_ruangan' => $id_ruangan,// ID JADWAL
                           'longitude' => $longitude,// LONGITUDE
                           'latitude' => $latitude,// LATITUDE
-                          'jarak_ke_lokasi_absen' => $jarak_ke_lokasi_absen 
+                          'jarak_ke_lokasi_absen' => $jarak_ke_lokasi_absen,// JARAK LOKASI
+                          'id_block' => $data_block->id_block,//ID BLOCK
                           ]);
 
                           // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 
@@ -684,7 +693,13 @@ class AndroidController extends Controller
         $search = $request->search;// REQUEST SEARCH
         $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
         $data_mahasiswa = User::select(['id', 'id_angkatan'])->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA
-        $data_block = Master_block::select('id')->where('id_angkatan',$data_mahasiswa->id_angkatan)->get();
+    
+//SELECT SEMUA ID BLOCK BERDASARKAN ANGKATAN USER LOGIN
+        $data_block = Master_block::select('master_blocks.id')
+        ->leftJoin('mahasiswa_block', 'mahasiswa_block.id_block', '=', 'master_blocks.id')
+        ->where('mahasiswa_block.id_mahasiswa',$data_mahasiswa->id)
+        ->orWhere('master_blocks.id_angkatan',$data_mahasiswa->id_angkatan)->get();
+
         $value = 0;
         $result = array();// ARRAY RESULT
         $waktu = date("Y-m-d H:i:s");
@@ -1058,5 +1073,78 @@ class AndroidController extends Controller
 
     }
 // END CARI JADWAL MAHASISWA LUSA
+
+
+//UBAH PASSWORD MAHASISWA
+    public function ubah_password_mahasiswa (Request $request){
+
+      $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
+      $id_mahasiswa = User::select('id')->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA
+
+      $password_lama = $request->password_lama;
+      $username_baru = $request->username_baru;
+      $password_baru = $request->password_baru;
+
+//JIKA USERNAME TIDAK DIUBAH -> UPDATE PASSWORD SAJA
+      if ($mahasiswa == $username_baru) {
+
+          if (Auth::attempt(['email' => $mahasiswa, 'password' => $password_lama])) {
+
+            $update_user = User::where("id",$id_mahasiswa->id)->update(["email" => $username_baru, "password" => bcrypt($password_baru)]);
+
+            $response["value"] = 1;// RESPONSE VALUE 1
+            $response["message"] = "Password Berhasil Di Ubah";// RESPONSE BERHASIL ABSEN
+
+            return  json_encode($response);
+
+          }
+          else{
+
+            $response["value"] = 0;// RESPONSE VALUE 0
+            $response["message"] = "Mohon Maaf Password Lama Anda Salah";// RESPONSE Gagal ABSEN
+
+            return json_encode($response);
+          } 
+      }
+//JIKA USERNAME DIUBAH -> UPDATE USERNAME DAN PASSWORD
+      else{
+
+      //CEK USERNAME SUDAH ADA ATAU BELUM
+      $cek_username = User::where('email',$username_baru)->count();
+
+      //JIKA USERNAME BELUM ADA DI AKUN LAIN
+        if ($cek_username == 0) {
+
+            if (Auth::attempt(['email' => $mahasiswa, 'password' => $password_lama])) {
+
+              $update_user = User::where("id",$id_mahasiswa->id)->update(["email" => $username_baru, "password" => bcrypt($password_baru)]);
+
+              $response["value"] = 1;// RESPONSE VALUE 1
+              $response["message"] = "Password Berhasil Di Ubah";// RESPONSE BERHASIL ABSEN
+
+              return  json_encode($response);
+
+            }
+            else{
+
+              $response["value"] = 0;// RESPONSE VALUE 0
+              $response["message"] = "Mohon Maaf Password Lama Anda Salah";// RESPONSE GAGAL ABSEN
+
+              return json_encode($response);
+            } 
+        }
+        //JIKA USERNAME SUDAH ADA DI AKUN LAIN
+        else{
+
+            $response["value"] = 2;// RESPONSE VALUE 0
+            $response["message"] = "Mohon Maaf, Username Atau Email Anda Sudah Ada";// RESPONSE GAGAL ABSEN
+
+            return json_encode($response);
+        }
+
+      }
+  
+    }
+//END UBAH PASSWORD MAHASISWA
 
 }//END CLASS

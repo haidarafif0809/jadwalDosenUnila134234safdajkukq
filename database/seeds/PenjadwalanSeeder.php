@@ -21,6 +21,7 @@ class PenjadwalanSeeder extends Seeder
     $penjadwalans->waktu_mulai = "07:00";
     $penjadwalans->waktu_selesai = "08:00";
     $penjadwalans->id_modul   = "1";
+    $penjadwalans->status_jadwal   = "1";
     $penjadwalans->save();
     }
 }
