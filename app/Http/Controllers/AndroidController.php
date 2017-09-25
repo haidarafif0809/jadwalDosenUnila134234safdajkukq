@@ -508,7 +508,7 @@ class AndroidController extends Controller
     //LOGIN ABSEN MAHASISWA
     public function login_mahasiswa_android(Request $request){
 
-      if (Auth::attempt(['email' => $request->username, 'password' => $request->password])) { // Authentication passed...
+      if (Auth::attempt(['email' => $request->username, 'password' => $request->password]) && Auth::user()->status) { // Authentication passed...
 
         $user_otoritas = Auth::user()->roles->first()->name; // cek otoritas
 
