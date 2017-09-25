@@ -15,7 +15,7 @@
 				</div>
 
 				<div class="panel-body">
-
+<br>
 					   <div class="row">
 						    <div class="col-md-2">
 
@@ -38,7 +38,7 @@
 						    <div class="col-md-1">
 						        <div class="form-group">
 						            
-						            {!! Form::submit('Tampil', ['class'=>'btn btn-primary', 'id' => 'tampil_rekap']) !!}
+                        <button  class="btn btn-primary" id="tampil_rekap"> <span class="glyphicon glyphicon-th-list"></span> Tampil</button>
 						            
 						        </div>
 			          </div>
@@ -49,7 +49,8 @@
                             {!! Form::open(['url' => route('laporan_rekap_presensi_dosen.export'),'method' => 'post', 'class'=>'form-inline']) !!}
             
                                {!! Form::text('block', null, ['class'=>'form-control','autocomplete'=>'off','id' => 'block', 'style'=>'display:none']) !!}
-                               {!! Form::submit('Export', ['class'=>'btn btn-danger', 'id' => 'export_excel', 'style'=>'display:none']) !!}
+                              <button id="export_excel" class="btn btn-warning" style="display:none"> <span class="glyphicon glyphicon-export"></span> Export Excel</button> 
+
 
                              {!! Form::close() !!}
                         
@@ -99,19 +100,21 @@ $(function() {
 
     $(document).on('click','#tampil_rekap',function(){
 
+      // master block
     	var master_blocks = $("#id_block").val();
-      var blocks = master_blocks.split(" - ");
-      var id_block = blocks[0];
-      var nama_block = blocks[1];
+      var blocks = master_blocks.split(" - ");// master block split
+      var id_block = blocks[0];// split yang 0 adalah id block
+      var nama_block = blocks[1];// split yang pertama adalah nama block
 
-      $("#export_excel").show();
-    	$("#text_judul").show();
-      $("#keterangan").show();
-    	$("#text_judul").text("REKAP DAFTAR HADIR DOSEN BLOCK "+ nama_block)
-      $("#block").val(id_block);
+      $("#export_excel").show();// show tombol export excel
+    	$("#text_judul").show();// show text judul laporan rekap
+      $("#keterangan").show();// show keterangan
+    	$("#text_judul").text("REKAP DAFTAR HADIR DOSEN BLOCK "+ nama_block); // kita ubah isi text judul nya
+      $("#block").val(id_block);// kita isi input block dengan id block
 
-    	$("#tampil_table_presensi_dosen").show();
+    	$("#tampil_table_presensi_dosen").show();// show table
   
+  // datatable
         $('#table_presensi_dosen').DataTable().destroy();
          $('#table_presensi_dosen').DataTable({
                 processing: true,

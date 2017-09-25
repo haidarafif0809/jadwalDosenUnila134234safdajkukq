@@ -99,7 +99,7 @@ class LaporanPresensiDosenController extends Controller
                            $presentasi = ($jumlah_hadir * 100) / $jumlah_jadwal;
 
                                 // kita bulatkan 2 angka dibelakang koma hasil presentasinya dengan mengunakan fungsi count(,2)
-                        return round($presentasi,2);
+                        return round($presentasi,2)." %";
                         })
 
 
@@ -159,7 +159,7 @@ class LaporanPresensiDosenController extends Controller
                         $jumlah_belum_terlaksana,
                         $jumlah_batal,
                         $jumlah_digantikan,
-                        round($presentasi,2)                   
+                        round($presentasi,2)." %"                   
 
                     ]);
 
