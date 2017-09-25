@@ -524,7 +524,7 @@ class AndroidController extends Controller
       }
       else {
             $response["value"] = 3;// value = 3
-            $response["message"] = "Login Gagal";// login gagal            
+            $response["message"] = "Anda Tidak Bisa Login Di Karenakan Belum Di Konfirmasi Oleh Admin atau Username dan Password Anda Salah";// login gagal            
       }
 
       return  json_encode($response);// data yang dikembalikan berupa json
