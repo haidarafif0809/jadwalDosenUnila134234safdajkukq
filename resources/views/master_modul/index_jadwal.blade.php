@@ -42,35 +42,96 @@
 @section('scripts')
 
 <script type="text/javascript">
-	
+//MENGAMBIL ID BLOK UNTUK MENAMPILKAN MODUL YANG ADA DI BLOK YANG DI PILIH
+	$("#id_block").change(function(){
 
-		$('.single-event').click(function(){
-			var id_jadwal = $(this).attr('data-id');
-			$.post('{{ route('jadwal.info')}}',{
-
+		var $select = $("#modul").selectize(); 
+		var selectize = $select[0].selectize.destroy(); 
+		var id_block = $(this).val(); 
+		//POST ID BLOCK KE CONTROLLER
+		$.post('{{ route('modul.data_modul_perblock_penjadwalan')}}',{
 			 '_token': $('meta[name=csrf-token]').attr('content'),
-			 'id_jadwal' :id_jadwal
-			},function(data){
-				$('.isi-event').html(data);
-			});
-			
+			id_block:id_block},
+			function(data){
+			$('#modul')
+			    .find('option')
+			    .remove();
+			$("#modul").append(data);
+			$("#modul").selectize();
+
+
 		});
 
-		var date = new Date('{{$modul->dari_tanggal}}');
-		var end_date = new Date('{{$tanggal_akhir}}');
-		// use this to allow certain dates only
+	});	
 
 
-		$('.datepicker-modul-jadwal').datepicker({
-		    format: 'yyyy-mm-dd',
-		    daysOfWeekDisabled: '0,6',
-		    startDate: date,
-		    autoclose: true,
-		    endDate : end_date
-		   
+	$("#tipe_jadwal").change(function(){
+
+		var tipe_jadwal = $(this).val(); 
+		
+		if (tipe_jadwal == 'KULIAH') {
+			$(".kolom-mata-kuliah").show();
+			$("#id_mata_kuliah").val("");
+		}
+		else if (tipe_jadwal == 'PRAKTIKUM')  {
+			$(".kolom-mata-kuliah").show();
+			$("#id_mata_kuliah").val("");
+
+		}
+		else {
+			$(".kolom-mata-kuliah").hide();
+		}
+
+
+	});
+
+	$(document).ready(function(){
+		//MENAMPILKAN MODUL SESUAI DATA PENJADWALAN
+		var $select = $("#modul").selectize(); 
+		var selectize = $select[0].selectize.destroy(); 
+		var id_block = $("#id_block").val();
+		if (id_block != '') {
+		//POST ID MODUL KE CONTROLLER UNTUK MENAMPILKAN PERIODE YANG ADA DI MODUL
+		$.post('{{ route('modul.data_modul_perblock_penjadwalan')}}',{
+			 '_token': $('meta[name=csrf-token]').attr('content'),
+			id_block:id_block},
+			function(data){
+			$('#modul')
+			    .find('option')
+			    .remove();
+			$("#modul").append(data);
+			$("#modul").selectize();
+
+
 		});
+		}
 
-
-	
+	});
 </script>
+
+<script type="text/javascript">
+  //MENGIRIMKAN ID MODUL KE CONTROLLER
+	$("#modul").change(function(){ 
+		var id_modul = $(this).val(); 
+		$.post('{{ route('modul.tanggal_modul_perblock_penjadwalan')}}',{
+			 '_token': $('meta[name=csrf-token]').attr('content'),
+			id_modul:id_modul},
+			function(data){
+		var res = data.split(",");  
+		var date = new Date(res[0]);
+		var end_date = new Date(res[1]); 
+ 	//MENAMPILKAN TANGGAL SESUAI PERIODE MODUL YANG DI PILIH
+			$('.datepicker-modul-jadwal').datepicker('remove');
+			$('.datepicker-modul-jadwal').datepicker({
+			    format: 'yyyy-mm-dd',
+			    daysOfWeekDisabled: '0,6',
+			    startDate: date,
+			    autoclose: true,
+			    endDate : end_date
+			   
+			});
+		}); 
+	}); 
+</script>
+
 @endsection
