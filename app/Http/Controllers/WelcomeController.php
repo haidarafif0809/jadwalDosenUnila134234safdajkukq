@@ -52,8 +52,9 @@ class WelcomeController extends Controller
                 })
             ->addColumn('mata_kuliah',function($penjadwalan){
 
-                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == "") {
-                    
+                if ($penjadwalan->id_mata_kuliah == "-") { 
+                    return "-";
+                }elseif ($penjadwalan->id_mata_kuliah == "") {
                     return "-";
                 }
                 else {
