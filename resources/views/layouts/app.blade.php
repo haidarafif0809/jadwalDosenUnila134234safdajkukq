@@ -49,6 +49,7 @@
 
 
                     @if (!Auth::guest())
+                        <li><a href="https://anjungan.fk.unila.ac.id/">Anjungan</a></li>
                         <li><a href="{{ route('home') }}">Beranda</a></li>
                     @endif
                     @role('admin')
