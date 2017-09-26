@@ -49,7 +49,17 @@ class WelcomeController extends Controller
                      $status = "Dosen Di Gantikan";
                 } 
                 return $status;
-                })->make(true);
+                })
+            ->addColumn('mata_kuliah',function($penjadwalan){
+
+                if ($penjadwalan->id_mata_kuliah == "-") {
+                    
+                    return "-";
+                }
+                else {
+                    return $penjadwalan->mata_kuliah->nama_mata_kuliah;
+                }
+            })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
@@ -57,7 +67,7 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
@@ -134,7 +144,17 @@ class WelcomeController extends Controller
                      $status = "Dosen Di Gantikan";
                 } 
                 return $status;
-                })->make(true);
+                })
+            ->addColumn('mata_kuliah',function($penjadwalan){
+
+                if ($penjadwalan->id_mata_kuliah == "-") {
+                    
+                    return "-";
+                }
+                else {
+                    return $penjadwalan->mata_kuliah->nama_mata_kuliah;
+                }
+            })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
@@ -142,7 +162,7 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
@@ -220,7 +240,17 @@ class WelcomeController extends Controller
                      $status = "Dosen Di Gantikan";
                 } 
                 return $status;
-                })->make(true);
+                })
+            ->addColumn('mata_kuliah',function($penjadwalan){
+
+                if ($penjadwalan->id_mata_kuliah == "-") {
+                    
+                    return "-";
+                }
+                else {
+                    return $penjadwalan->mata_kuliah->nama_mata_kuliah;
+                }
+            })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
@@ -228,7 +258,7 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
