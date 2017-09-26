@@ -81,9 +81,7 @@ class PenjadwalanController extends Controller
                 })
             ->addColumn('mata_kuliah',function($penjadwalan){
 
-                
-                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == "") {
-                    
+                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
                     return "-";
                 }
                 else {
@@ -238,8 +236,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                     $dosen_list.= ",".$jadwal_dosen->dosen->name;
                     }
                 }
-            
-                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == "") {
+            if ($penjadwalan->id_mata_kuliah == "-") {
                 
                 $mata_kuliah = "-";
             }
@@ -415,11 +412,9 @@ public function filter(Request $request, Builder $htmlBuilder)
                         'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
                         ]);
                 })
-             ->addColumn('mata_kuliah',function($penjadwalan){
+            ->addColumn('mata_kuliah',function($penjadwalan){
 
-                
-                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == "") {
-                    
+                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
                     return "-";
                 }
                 else {
