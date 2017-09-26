@@ -81,7 +81,8 @@ class PenjadwalanController extends Controller
                 })
             ->addColumn('mata_kuliah',function($penjadwalan){
 
-                if ($penjadwalan->id_mata_kuliah == "-") {
+                
+                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == "") {
                     
                     return "-";
                 }
@@ -237,7 +238,8 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                     $dosen_list.= ",".$jadwal_dosen->dosen->name;
                     }
                 }
-            if ($penjadwalan->id_mata_kuliah == "-") {
+            
+                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == "") {
                 
                 $mata_kuliah = "-";
             }
@@ -415,7 +417,8 @@ public function filter(Request $request, Builder $htmlBuilder)
                 })
              ->addColumn('mata_kuliah',function($penjadwalan){
 
-                if ($penjadwalan->id_mata_kuliah == "-") {
+                
+                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == "") {
                     
                     return "-";
                 }
