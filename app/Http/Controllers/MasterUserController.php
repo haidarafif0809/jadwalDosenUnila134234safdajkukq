@@ -365,7 +365,7 @@ class MasterUserController extends Controller
         //
          $this->validate($request, [
             'name'   => 'required',
-            'email'     => 'required|unique:users,email',
+            'email'     => 'required|without_spaces|unique:users,email',
             'no_hp'    => 'required',
             'alamat'    => 'required',
             'role_id'    => 'required', 
@@ -410,7 +410,7 @@ class MasterUserController extends Controller
         //
          $this->validate($request, [
             'name'   => 'required',
-            'email'     => 'required|unique:users,email,' .$id,
+            'email'     => 'required|without_spaces|unique:users,email,' .$id,
             'no_hp'    => 'required',
             'alamat'    => 'required',
             'role_id'    => 'required', 
