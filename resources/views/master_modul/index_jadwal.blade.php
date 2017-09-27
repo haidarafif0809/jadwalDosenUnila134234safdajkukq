@@ -26,6 +26,16 @@
 										{!! Form::close() !!}
 					</div>
 				@endrole
+				@role('dosen')
+				<p> <button data-toggle="collapse" data-target="#form_penjadwalan" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Tambah Jadwal</button>
+</p>
+				
+					<div id="form_penjadwalan" class="collapse">
+					{!! Form::open(['url' => route('penjadwalans.store'),'method' => 'post', 'class'=>'form-horizontal']) !!}
+										@include('penjadwalans._form')
+										{!! Form::close() !!}
+					</div>
+				@endrole
 
 					@include('mahasiswa.schedule_mahasiswa')
 				</div>

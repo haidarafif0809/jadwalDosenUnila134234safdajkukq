@@ -29,9 +29,9 @@ class PenjadwalanController extends Controller
             $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul']);
             return Datatables::of($penjadwalans)
             //MENGONEKSIKAN TOMBOL HAPUS DAN EDIT
-            ->addColumn('action', function($penjadwalan){
+            ->addColumn('action', function($penjadwalan){ 
                     return view('penjadwalans._tombol', [
-                        'model'     => $penjadwalan,
+                        'model'     => $penjadwalan, 
                         'form_url'  => route('penjadwalans.destroy', $penjadwalan->id),
                         'edit_url'  => route('penjadwalans.edit', $penjadwalan->id),
                         'confirm_message'   => 'Apakah Anda Yakin Mau Menghapus Penjadwalan ?'
@@ -47,8 +47,11 @@ class PenjadwalanController extends Controller
                 })
             //MENGONEKSIKAN TOMBOL STATUS PENJADWALAN
             ->addColumn('tombol_status', function($data_status){  
+              $id_user_login =  Auth::user()->id;
+                $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_dosen',$id_user_login)->count(); 
                     return view('penjadwalans._action_status', [ 
                         'model'     => $data_status,
+                        'model_user'     => $jadwal_dosens,
                         'ubah_dosen'  => route('penjadwalans.ubah_dosen', $data_status->id),
                         'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
                         'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),

@@ -92,6 +92,11 @@
                         <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li> 
                         <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>      
                     @endrole 
+
+                    @role('dosen')  
+                        <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li> 
+                        <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>      
+                    @endrole 
                     </ul>
 
                     <!-- Right Side Of Navbar -->
