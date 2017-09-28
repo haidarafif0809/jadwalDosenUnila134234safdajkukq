@@ -29,9 +29,9 @@ class PenjadwalanController extends Controller
             $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul']);
             return Datatables::of($penjadwalans)
             //MENGONEKSIKAN TOMBOL HAPUS DAN EDIT
-            ->addColumn('action', function($penjadwalan){
+            ->addColumn('action', function($penjadwalan){ 
                     return view('penjadwalans._tombol', [
-                        'model'     => $penjadwalan,
+                        'model'     => $penjadwalan, 
                         'form_url'  => route('penjadwalans.destroy', $penjadwalan->id),
                         'edit_url'  => route('penjadwalans.edit', $penjadwalan->id),
                         'confirm_message'   => 'Apakah Anda Yakin Mau Menghapus Penjadwalan ?'
@@ -47,8 +47,11 @@ class PenjadwalanController extends Controller
                 })
             //MENGONEKSIKAN TOMBOL STATUS PENJADWALAN
             ->addColumn('tombol_status', function($data_status){  
+              $id_user_login =  Auth::user()->id;
+                $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_dosen',$id_user_login)->count(); 
                     return view('penjadwalans._action_status', [ 
                         'model'     => $data_status,
+                        'model_user'     => $jadwal_dosens,
                         'ubah_dosen'  => route('penjadwalans.ubah_dosen', $data_status->id),
                         'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
                         'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
@@ -81,8 +84,7 @@ class PenjadwalanController extends Controller
                 })
             ->addColumn('mata_kuliah',function($penjadwalan){
 
-                if ($penjadwalan->id_mata_kuliah == "-") {
-                    
+                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
                     return "-";
                 }
                 else {
@@ -100,7 +102,7 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
         ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
-        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])    
+        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => 'Ubah & Hapus', 'orderable' => false, 'searchable'=>false]);
@@ -404,6 +406,7 @@ public function filter(Request $request, Builder $htmlBuilder)
              ->addColumn('tombol_status', function($data_status){  
                     return view('penjadwalans._action_status', [ 
                         'model'     => $data_status,
+                        'ubah_dosen'  => route('penjadwalans.ubah_dosen', $data_status->id),
                         'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
                         'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
                         'batal_url' => route('penjadwalans.batal', $data_status->id),
@@ -412,10 +415,9 @@ public function filter(Request $request, Builder $htmlBuilder)
                         'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
                         ]);
                 })
-             ->addColumn('mata_kuliah',function($penjadwalan){
+            ->addColumn('mata_kuliah',function($penjadwalan){
 
-                if ($penjadwalan->id_mata_kuliah == "-") {
-                    
+                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
                     return "-";
                 }
                 else {
@@ -427,13 +429,14 @@ public function filter(Request $request, Builder $htmlBuilder)
         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
         ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
-        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block'])
-        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah'])  
-        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan'])     
-        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen']) 
-          ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])       
-         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false]) 
-        ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable'=>false]);
+        ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
+        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
+        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
+        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
+        ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
+        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
+        ->addColumn(['data' => 'action', 'name' => 'action', 'title' => 'Ubah & Hapus', 'orderable' => false, 'searchable'=>false]);
 
             $users = DB::table('users')
             ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')

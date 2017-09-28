@@ -46,7 +46,7 @@
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
-
+                        <li><a href="https://anjungan.fk.unila.ac.id/">Agenda Pimpinan</a></li> 
 
                     @if (!Auth::guest())
                         <li><a href="{{ route('home') }}">Beranda</a></li>
@@ -81,7 +81,7 @@
                                    Laporan <span class="caret"></span>
                                 </a>
                           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">                           
-                            <li><a href="{{ route('laporan_rekap_presensi_dosen.index') }}">Laporan Rekap Presensi Dosen</a></li>    
+                            <li><a href="{{ route('laporan_rekap_presensi_dosen.index') }}">Laporan Presensi Dosen</a></li>    
                             <li><a href="{{ route('laporan_presensi_mahasiswa.index') }}">Laporan Rekap Presensi Mahasiswa</a></li>             
                           </ul>
                         </li>
@@ -89,6 +89,11 @@
                     @endrole  
 
                     @role('pimpinan')  
+                        <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li> 
+                        <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>      
+                    @endrole 
+
+                    @role('dosen')  
                         <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li> 
                         <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>      
                     @endrole 

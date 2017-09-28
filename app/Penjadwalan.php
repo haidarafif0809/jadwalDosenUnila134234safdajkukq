@@ -3,11 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Yajra\Auditable\AuditableTrait;
 
 class Penjadwalan extends Model
 {
-    //
-     protected $fillable = ['id_block','id_mata_kuliah','id_ruangan','tanggal','waktu_mulai','waktu_selesai','status_jadwal','id_modul','tipe_jadwal'];
+     use AuditableTrait;
+     protected $fillable = ['id_block','id_mata_kuliah','id_ruangan','tanggal','waktu_mulai','waktu_selesai','status_jadwal','id_modul','tipe_jadwal','created_by','updated_by'];
 
     	public function block()
 		  {

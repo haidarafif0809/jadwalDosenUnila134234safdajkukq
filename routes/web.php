@@ -49,7 +49,7 @@ Route::get('/jadwal-mahasiswa',[
 	'uses' => 'HomeController@proses_jadwal_mahasiswa'
 	]);
 Route::get('/lihat-jadwal-permodul/{id_modul}/{id_block}',[
-	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
 	'as' => 'modul.jadwal',
 	'uses' => 'MasterBlockController@lihat_jadwal_permodul'
 	]);
@@ -75,13 +75,13 @@ Route::get('/jadwal-dosen',[
 	]);
 
 	Route::get('admin/penjadwalans/filter',[
-	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
 	'as' => 'penjadwalans.filter',
 	'uses' => 'PenjadwalanController@filter'
 	]);	
 
   	Route::post('admin/penjadwalans/export', [
-  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
     'as'   => 'penjadwalans.export',
     'uses' => 'PenjadwalanController@exportPost'
   	]);
@@ -128,7 +128,7 @@ Route::get('/jadwal-dosen',[
 
 
 
-Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_dosen']], function () {
+Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_dosen|dosen']], function () {
 
 	Route::resource('master_ruangans', 'MasterRuanganController'); 
 	Route::resource('master_mata_kuliahs', 'MasterMataKuliahController'); 
@@ -141,6 +141,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('angkatan', 'AngkatanController'); 
 	Route::resource('setting_slide', 'SettingSlideController');
 	Route::resource('laporan_presensi_mahasiswa', 'LaporanRekapPresensiMahasiswaController'); 
+	Route::resource('laporan_rekap_presensi_dosen', 'LaporanPresensiDosenController'); 
 
 //DOWNLOAD EXCEL REKAP
 	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}',[
@@ -173,10 +174,23 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('laporan_rekap_presensi_dosen', 'LaporanPresensiDosenController'); 
 
 
-	Route::post('admin/laporan_rekap_presensi_dosen', [
+	Route::get('export_rekap_presensi_dosen/{dosen}/{id_block}/{tipe_jadwal}', [
   	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
     'as'   => 'laporan_rekap_presensi_dosen.export',
     'uses' => 'LaporanPresensiDosenController@export_excel'
+  	]);
+
+
+  	Route::post('admin/laporan_detail_presensi_dosen', [
+  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+    'as'   => 'laporan_rekap_presensi_dosen.detail',
+    'uses' => 'LaporanPresensiDosenController@detail'
+  	]);
+
+  	Route::get('export_detail_presensi_dosen/{dosen}/{id_block}/{tipe_jadwal}', [
+  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+    'as'   => 'export_detail_presensi_dosen.export',
+    'uses' => 'LaporanPresensiDosenController@export_detail'
   	]);
 
 	Route::get('master_users/filterkonfirmasi/{id}',[
@@ -234,12 +248,12 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'uses' => 'MasterUserController@no_konfirmasi'
 	]);	
 	Route::get('master_blocks/modul/{id}',[
-	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
 	'as' => 'master_blocks.modul',
 	'uses' => 'MasterBlockController@createModul'
 	]);	
 	Route::get('master_blocks/mahasiswa/{id}',[
-	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
 	'as' => 'master_blocks.mahasiswa',
 	'uses' => 'MasterBlockController@createMahasiswa'
 	]);

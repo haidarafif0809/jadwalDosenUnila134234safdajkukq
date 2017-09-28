@@ -43,7 +43,7 @@
                 @foreach($jadwal_senin as $data)
                     <li class="single-event" data-start="{{$data['waktu_mulai']}}" data-end="{{$data['waktu_selesai']}}"  data-content="" data-id="{{ $data['id_jadwal']}}" data-event="event-2">
                         <a href="#0">
-                            <em class="event-name">{{ $data['nama_mata_kuliah'] }}</em>
+                            <em class="event-name">{{ $data['tipe_jadwal'] }} - {{ $data['nama_mata_kuliah'] }}</em><br>
                         </a>
                     </li>
                 @endforeach
@@ -58,7 +58,7 @@
                 @foreach($jadwal_selasa as $data)
                     <li class="single-event" data-start="{{$data['waktu_mulai']}}" data-end="{{$data['waktu_selesai']}}"  data-content="event-rowing-workout" data-id="{{ $data['id_jadwal']}}" data-event="event-2">
                         <a href="#0">
-                            <em class="event-name">{{ $data['nama_mata_kuliah'] }}</em>
+                            <em class="event-name">{{ $data['tipe_jadwal'] }} - {{ $data['nama_mata_kuliah'] }}</em><br>
                         </a>
                     </li>
                 @endforeach
@@ -74,7 +74,7 @@
                 @foreach($jadwal_rabu as $data)
                     <li class="single-event" data-start="{{$data['waktu_mulai']}}" data-end="{{$data['waktu_selesai']}}"  data-content="event-rowing-workout" data-id="{{ $data['id_jadwal']}}" data-event="event-2">
                         <a href="#0">
-                            <em class="event-name">{{ $data['nama_mata_kuliah'] }}</em>
+                            <em class="event-name">{{ $data['tipe_jadwal'] }} - {{ $data['nama_mata_kuliah'] }}</em><br>
                         </a>
                     </li>
                 @endforeach
@@ -88,7 +88,7 @@
                 @foreach($jadwal_kamis as $data)
                     <li class="single-event" data-start="{{$data['waktu_mulai']}}" data-end="{{$data['waktu_selesai']}}"  data-content="event-rowing-workout" data-id="{{ $data['id_jadwal']}}" data-event="event-2">
                         <a href="#0">
-                            <em class="event-name">{{ $data['nama_mata_kuliah'] }}</em>
+                            <em class="event-name">{{ $data['tipe_jadwal'] }} - {{ $data['nama_mata_kuliah'] }}</em><br>
                         </a>
                     </li>
                 @endforeach     
@@ -102,7 +102,8 @@
                 @foreach($jadwal_jumat as $data)
                     <li class="single-event" data-start="{{$data['waktu_mulai']}}" data-end="{{$data['waktu_selesai']}}"  data-content="event-rowing-workout" data-id="{{ $data['id_jadwal']}}" data-event="event-2">
                         <a href="#0">
-                            <em class="event-name">{{ $data['nama_mata_kuliah'] }}</em>
+                            <em class="event-name">{{ $data['tipe_jadwal'] }} - {{ $data['nama_mata_kuliah'] }}</em><br>
+                           
                         </a>
                     </li>
                 @endforeach

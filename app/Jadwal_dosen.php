@@ -34,6 +34,11 @@ class Jadwal_dosen extends Model
         return $this->hasOne('App\Master_ruangan','id','id_ruangan');
       } 
 
+      public function presensi()
+      {
+        return $this->hasOne('App\Presensi','id_jadwal','id_jadwal');
+      } 
+
 
 
     //MENGECEK DOSEN KETIKA TAMBAH DI PENJADWALAN

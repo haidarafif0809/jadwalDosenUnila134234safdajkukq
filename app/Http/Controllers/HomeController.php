@@ -167,11 +167,10 @@ class HomeController extends Controller
                      $status = "Dosen Di Gantikan";
                 } 
                 return $status;
-                })
+                }) 
             ->addColumn('mata_kuliah',function($penjadwalan){
 
-                if ($penjadwalan->id_mata_kuliah == "-") {
-                    
+                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
                     return "-";
                 }
                 else {
@@ -538,14 +537,23 @@ class HomeController extends Controller
                      $status = "Dosen Di Gantikan";
                 } 
                 return $status;
-                })->make(true);
+                })
+            ->addColumn('mata_kuliah',function($penjadwalan){
+
+                if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
+                    return "-";
+                }
+                else {
+                    return $penjadwalan->mata_kuliah->nama_mata_kuliah;
+                }
+            })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
         ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
         ->addColumn(['data' => 'status_jadwal', 'name' => 'status_jadwal', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])
@@ -586,6 +594,12 @@ class HomeController extends Controller
         if ($request->ajax()) {
             $penjadwalans = Penjadwalan::with('mata_kuliah','ruangan','block')->where('id',$request->id_jadwal)->first();
             $user = Auth::user();
+            if ($penjadwalans->id_mata_kuliah == "-" OR $penjadwalans->id_mata_kuliah == ""  OR $penjadwalans->id_mata_kuliah == "0") {
+                $mata_kuliah = "-";
+            }
+            else {
+                $mata_kuliah = $penjadwalans->mata_kuliah->nama_mata_kuliah;
+            }
             $link =  url('admin/penjadwalans/'.$penjadwalans->id.'/edit');
                   $isi_event = "
                 <p>";
@@ -600,7 +614,7 @@ class HomeController extends Controller
                $isi_event .=  "Waktu : ".$penjadwalans->tanggal." ". $penjadwalans->waktu_mulai ."-". $penjadwalans->waktu_selesai ." <br>
                 Block : ".$penjadwalans->block->nama_block ."<br>
                 Ruangan :". $penjadwalans->ruangan->nama_ruangan ."<br>
-                Mata Kuliah : ".$penjadwalans->mata_kuliah->nama_mata_kuliah . "<br>
+                Mata Kuliah : ".$mata_kuliah . "<br>
                 Dosen: <br>
 
                 <ulstyle=list-style-type:circle'>";
@@ -634,41 +648,49 @@ class HomeController extends Controller
 
         foreach ($penjadwalan as $penjadwalans) {
             
+
+                if ($penjadwalans->id_mata_kuliah == "-" OR $penjadwalans->id_mata_kuliah == ""  OR $penjadwalans->id_mata_kuliah == "0") {
+                    $mata_kuliah = "-";
+                }
+                else {
+                    $mata_kuliah = $penjadwalans->mata_kuliah->nama_mata_kuliah;
+                }
+
             $timestamp = strtotime($penjadwalans->tanggal);
             $day = date('w', $timestamp);
 
 
             switch ($day) {
                 case '1':
-                    # code...
+                  
 
-                array_push($jadwal_senin, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                array_push($jadwal_senin, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
                 
                     break; 
                  case '2':
-                    # code...
+                 
 
-                array_push($jadwal_selasa, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                array_push($jadwal_selasa, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
 
                     break;    
                  case '3':
-                    # code...
-                array_push($jadwal_rabu, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                  
+                array_push($jadwal_rabu, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
 
                     break;    
                  case '4':
-                    # code...
-                array_push($jadwal_kamis, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                   
+                array_push($jadwal_kamis, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
 
                     break;    
                  case '5':
-                    # code...
-                array_push($jadwal_jumat, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                  
+                array_push($jadwal_jumat, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
 
                     break;
                 
                 default:
-                    # code...
+                    
                     break;
             }
 
@@ -701,40 +723,50 @@ class HomeController extends Controller
         $jadwal_jumat = array();
 
         foreach ($penjadwalan as $penjadwalans) {
-            
+
+
+                if ($penjadwalans->id_mata_kuliah == "-" OR $penjadwalans->id_mata_kuliah == ""  OR $penjadwalans->id_mata_kuliah == "0") {
+                    $mata_kuliah = "-";
+                }
+                else {
+                    $mata_kuliah = $penjadwalans->mata_kuliah->nama_mata_kuliah;
+                }
+
             $timestamp = strtotime($penjadwalans->tanggal);
             $day = date('w', $timestamp);
 
 
             switch ($day) {
                 case '1':
-                    # code...
-                array_push($jadwal_senin, ['waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                  
+
+                array_push($jadwal_senin, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
                 
                     break; 
                  case '2':
-                    # code...
-                array_push($jadwal_selasa, ['waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                 
+
+                array_push($jadwal_selasa, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
 
                     break;    
                  case '3':
-                    # code...
-                array_push($jadwal_rabu, ['waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                  
+                array_push($jadwal_rabu, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
 
                     break;    
                  case '4':
-                    # code...
-                array_push($jadwal_kamis, ['waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                   
+                array_push($jadwal_kamis, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
 
                     break;    
                  case '5':
-                    # code...
-                array_push($jadwal_jumat, ['waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $penjadwalans->mata_kuliah->nama_mata_kuliah]);
+                  
+                array_push($jadwal_jumat, ['id_jadwal'=> $penjadwalans->id ,'waktu_mulai'=> $penjadwalans->waktu_mulai,'waktu_selesai'=> $penjadwalans->waktu_selesai,'nama_mata_kuliah'=> $mata_kuliah,'tipe_jadwal'=>$penjadwalans->tipe_jadwal]);
 
                     break;
                 
                 default:
-                    # code...
+                    
                     break;
             }
 
