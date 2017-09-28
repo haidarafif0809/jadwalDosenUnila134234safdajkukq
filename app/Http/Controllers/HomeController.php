@@ -594,6 +594,12 @@ class HomeController extends Controller
         if ($request->ajax()) {
             $penjadwalans = Penjadwalan::with('mata_kuliah','ruangan','block')->where('id',$request->id_jadwal)->first();
             $user = Auth::user();
+            if ($penjadwalans->id_mata_kuliah == "-" OR $penjadwalans->id_mata_kuliah == ""  OR $penjadwalans->id_mata_kuliah == "0") {
+                $mata_kuliah = "-";
+            }
+            else {
+                $mata_kuliah = $penjadwalans->mata_kuliah->nama_mata_kuliah;
+            }
             $link =  url('admin/penjadwalans/'.$penjadwalans->id.'/edit');
                   $isi_event = "
                 <p>";
@@ -608,7 +614,7 @@ class HomeController extends Controller
                $isi_event .=  "Waktu : ".$penjadwalans->tanggal." ". $penjadwalans->waktu_mulai ."-". $penjadwalans->waktu_selesai ." <br>
                 Block : ".$penjadwalans->block->nama_block ."<br>
                 Ruangan :". $penjadwalans->ruangan->nama_ruangan ."<br>
-                Mata Kuliah : ".$penjadwalans->mata_kuliah->nama_mata_kuliah . "<br>
+                Mata Kuliah : ".$mata_kuliah . "<br>
                 Dosen: <br>
 
                 <ulstyle=list-style-type:circle'>";
