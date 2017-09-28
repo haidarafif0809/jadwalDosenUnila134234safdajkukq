@@ -567,7 +567,7 @@ class AndroidController extends Controller
                         // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
                         ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('penjadwalans.status_jadwal',0)
+                        ->where('penjadwalans.status_jadwal', '<', 2)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
                         ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
                         // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT

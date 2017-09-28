@@ -1,0 +1,1 @@
+<a href="{{ asset('/'.$foto->foto)}}" target="blank"><img src="{{ asset('/'.$foto->foto)}}"  style="width:50px; height: 50px" ></a>

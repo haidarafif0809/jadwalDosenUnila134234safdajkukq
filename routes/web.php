@@ -142,16 +142,32 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('setting_slide', 'SettingSlideController');
 	Route::resource('laporan_presensi_mahasiswa', 'LaporanRekapPresensiMahasiswaController'); 
 
-	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_presensi/{id_block}',[
+//DOWNLOAD EXCEL REKAP
+	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}',[
 	'middleware' => ['auth'],
 	'as' => 'laporan_presensi_mahasiswa.download_lap_rekap_presensi',
 	'uses' => 'LaporanRekapPresensiMahasiswaController@download_lap_rekap_presensi'
 	]);
 
+//DOWNLOAD EXCEL DETAIL
+	Route::get('/laporan_presensi_mahasiswa/download_lap_detail_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}',[
+	'middleware' => ['auth'],
+	'as' => 'laporan_presensi_mahasiswa.download_lap_detail_presensi',
+	'uses' => 'LaporanRekapPresensiMahasiswaController@download_lap_detail_presensi'
+	]);
+
+//PROSES LAPORAN REKAP
 	Route::post('laporan_presensi_mahasiswa/proses_laporan_rekap',[
 	'middleware' => ['auth'],
 	'as' => 'laporan_presensi_mahasiswa.proses_laporan_rekap',
 	'uses' => 'LaporanRekapPresensiMahasiswaController@proses_laporan_rekap'
+	]);
+
+//PROSES LAPORAN DETAIL
+	Route::post('laporan_presensi_mahasiswa/proses_laporan_detail',[
+	'middleware' => ['auth'],
+	'as' => 'laporan_presensi_mahasiswa.proses_laporan_detail',
+	'uses' => 'LaporanRekapPresensiMahasiswaController@proses_laporan_detail'
 	]);
 
 	Route::resource('laporan_rekap_presensi_dosen', 'LaporanPresensiDosenController'); 
