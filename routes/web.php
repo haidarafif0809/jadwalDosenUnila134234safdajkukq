@@ -141,6 +141,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('angkatan', 'AngkatanController'); 
 	Route::resource('setting_slide', 'SettingSlideController');
 	Route::resource('laporan_presensi_mahasiswa', 'LaporanRekapPresensiMahasiswaController'); 
+	Route::resource('laporan_rekap_presensi_dosen', 'LaporanPresensiDosenController'); 
 
 	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_presensi/{id_block}',[
 	'middleware' => ['auth'],
@@ -154,13 +155,25 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'uses' => 'LaporanRekapPresensiMahasiswaController@proses_laporan_rekap'
 	]);
 
-	Route::resource('laporan_rekap_presensi_dosen', 'LaporanPresensiDosenController'); 
 
 
-	Route::post('admin/laporan_rekap_presensi_dosen', [
+	Route::get('export_rekap_presensi_dosen/{dosen}/{id_block}/{tipe_jadwal}', [
   	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
     'as'   => 'laporan_rekap_presensi_dosen.export',
     'uses' => 'LaporanPresensiDosenController@export_excel'
+  	]);
+
+
+  	Route::post('admin/laporan_detail_presensi_dosen', [
+  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+    'as'   => 'laporan_rekap_presensi_dosen.detail',
+    'uses' => 'LaporanPresensiDosenController@detail'
+  	]);
+
+  	Route::get('export_detail_presensi_dosen/{dosen}/{id_block}/{tipe_jadwal}', [
+  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+    'as'   => 'export_detail_presensi_dosen.export',
+    'uses' => 'LaporanPresensiDosenController@export_detail'
   	]);
 
 	Route::get('master_users/filterkonfirmasi/{id}',[
