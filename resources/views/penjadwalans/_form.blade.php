@@ -18,6 +18,18 @@
 @endrole 
 <!-- //APABILA ADMIN YANG LOGIN MAKA INPUT DI BAWAH MUNCUL -->
 
+<!-- APABILA ADMIN YANG LOGIN MAKA INPUT DI BAWAH MUNCUL -->
+@role('dosen') 
+<div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
+	{!! Form::label('id_block', 'Block', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4">
+		{!! Form::select('id_block', []+App\Master_block::pluck('nama_block','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Block']) !!}
+		{!! $errors->first('id_block', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
+@endrole 
+<!-- //APABILA ADMIN YANG LOGIN MAKA INPUT DI BAWAH MUNCUL -->
+
 <!-- APABILA PJ DOSEN YANG LOGIN MAKA INPUT DI BAWAH MUNCUL -->
 @role('pj_dosen') 
 <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
@@ -57,10 +69,11 @@
 <div class="form-group{{ $errors->has('id_mata_kuliah') ? ' has-error' : '' }} kolom-mata-kuliah">
 	{!! Form::label('id_mata_kuliah', 'Mata Kuliah', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::select('id_mata_kuliah', ['' => 'Pilih Mata Kuliah']+App\Master_mata_kuliah::pluck('nama_mata_kuliah','id')->all(), null, ['class'=>'form-control js-selectize-reguler','id' => 'id_mata_kuliah']) !!}
+		{!! Form::select('id_mata_kuliah', []+App\Master_mata_kuliah::pluck('nama_mata_kuliah','id')->all(), null, ['class'=>'form-control js-selectize-reguler','id' => 'id_mata_kuliah', 'placeholder' => 'Pilih Mata Kuliah']) !!}
 		{!! $errors->first('id_mata_kuliah', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
+
 @if(isset($asal_input))
 <div class="form-group{{ $errors->has('tanggal') ? ' has-error' : '' }}">
 	{!! Form::label('tanggal', 'Tanggal', ['class'=>'col-md-2 control-label']) !!}

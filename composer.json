@@ -13,7 +13,8 @@
         "laravelcollective/html": "~5.3",
         "maatwebsite/excel": "^2.1",
         "santigarcor/laratrust": "3.0.*",
-        "yajra/laravel-datatables-oracle": "~6.0"
+        "yajra/laravel-datatables-oracle": "~6.0",
+        "yajra/laravel-auditable": "^1.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

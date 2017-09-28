@@ -26,6 +26,7 @@
 				<!-- APABILA ADMIN DAN PJ DOSEN YANG LOGIN MAKA MUNCUL TOMBOL DI BAWAH-->
 					@role('admin') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
 					@role('pj_dosen') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
+					@role('dosen') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
 				<!-- //APABILA ADMIN DAN PJ DOSEN YANG LOGIN MAKA MUNCUL TOMBOL DI BAWAH-->
 
 				<!-- MEMBUAT FILTER PENJADWALAN -->
