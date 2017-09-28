@@ -46,7 +46,7 @@
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
-                        <li><a href="https://anjungan.fk.unila.ac.id/">Anjungan</a></li> 
+                        <li><a href="https://anjungan.fk.unila.ac.id/">Agenda Pimpinan</a></li> 
 
                     @if (!Auth::guest())
                         <li><a href="{{ route('home') }}">Beranda</a></li>
