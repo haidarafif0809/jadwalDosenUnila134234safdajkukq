@@ -61,26 +61,45 @@ class LaporanPresensiDosenController extends Controller
      */ // proses lap rekap presensi dosen
     public function store(Request $request)
     {
-      // jika dosen == semua
-      if ($request->dosen == 'semua') {
+      // jika dosen == semua AND tipe jadwal == SEMUA
+      if ($request->dosen == 'semua' AND $request->tipe_jadwal == 'SEMUA') {
                 // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
 
-        $jadwal_dosens = Jadwal_dosen::select('users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+        $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                        ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                        ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                        ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
+
+        }else if ($request->dosen == 'semua' AND $request->tipe_jadwal != 'SEMUA') {
+                // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
+
+          $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
                         ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
                         ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
                         ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
                         ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
                         ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
-      }else{
 
-        $jadwal_dosens = Jadwal_dosen::select('users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+        }else if ($request->dosen != 'semua' AND $request->tipe_jadwal == 'SEMUA') {
+                // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
+
+          $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                        ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                        ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                        ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
+                        ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
+        }else{
+
+        $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
                         ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
                         ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
                         ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
                         ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
                         ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
                         ->groupBy('jadwal_dosens.id_dosen')->get(); // GROUP BY ID DOSEN
-      }
+        }
 
             return Datatables::of($jadwal_dosens)
                         // edit kolom nama dosen
@@ -91,65 +110,146 @@ class LaporanPresensiDosenController extends Controller
                                          // EDIT KOLOM JUMLAH JADWAL
                         ->editColumn('jumlah_jadwal', function ($jadwal_dosen) use ($request) {
                             // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen , id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
-                         return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                                             ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
-                                             ->where('jadwal_dosens.id_block',$request->id_block)
-                                             ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
-                                             ->count();
+
+                              if ($request->tipe_jadwal == 'SEMUA') {
+
+                                  return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                         ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                         ->where('jadwal_dosens.id_block',$request->id_block)
+                                         ->count();
+                              }else{
+
+                                  return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                         ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                         ->where('jadwal_dosens.id_block',$request->id_block)
+                                         ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                                         ->count();
+                              }
+
+
                         }) 
                                // edit kolom jumlah_hadir
                         ->editColumn('jumlah_hadir', function ($jadwal_dosen) use ($request) {
                             // SELECT COUNT PRESENSI DOSEN ,  WHERE ID DOSEN DAN ID BLOCK
-                         return Presensi::leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')
+
+                           if ($request->tipe_jadwal == 'SEMUA') {
+                                  
+                                  return Presensi::leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')
+                                          ->where('presensi.id_user',$jadwal_dosen['id_dosen'])
+                                          ->where('presensi.id_block',$request->id_block)
+                                          ->count();
+                            }else{
+                                  
+                                  return Presensi::leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')
                                           ->where('presensi.id_user',$jadwal_dosen['id_dosen'])
                                           ->where('presensi.id_block',$request->id_block)
                                           ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
-                                          ->count();
+                                          ->count();       
+                             }
+
                         })
                         // EDIT KOLOM JUMLAH JADWAL TERLAKSANA
                         ->editColumn('terlaksana', function ($jadwal_dosen) use ($request) {
                             // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 1(terlakasana) dan id block DAN TIPE JADWA, kemudian kita count untuk mendapatakan jumlah jadwal nya
-                        return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                                            ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
-                                            ->where('jadwal_dosens.status_jadwal',1)
-                                            ->where('jadwal_dosens.id_block',$request->id_block)
-                                            ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
-                                            ->count();
+                            if ($request->tipe_jadwal == 'SEMUA') {
+
+                              return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                     ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                     ->where('jadwal_dosens.status_jadwal',1)
+                                     ->where('jadwal_dosens.id_block',$request->id_block)
+                                     ->count();
+                             }else{
+
+                              return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                     ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                     ->where('jadwal_dosens.status_jadwal',1)
+                                     ->where('jadwal_dosens.id_block',$request->id_block)
+                                     ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                                     ->count();
+                              }
+                        
                         })
                         // EDIT KOLOM JUMLAH JADWAL BELUM TERLAKSANA
                         ->editColumn('belum_terlaksana', function ($jadwal_dosen) use ($request) {
                             // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 0(belum_terlakasana) dan id block DAN TIPE JADWA, kemudian kita count untuk mendapatakan jumlah jadwal nya
-                        return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                                            ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
-                                            ->where('jadwal_dosens.status_jadwal',0)
-                                            ->where('jadwal_dosens.id_block',$request->id_block)
-                                            ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
-                                            ->count();
+
+                               if($request->tipe_jadwal == 'SEMUA') {
+
+                                return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                  ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                  ->where('jadwal_dosens.status_jadwal',0)
+                                                  ->where('jadwal_dosens.id_block',$request->id_block)
+                                                  ->count();
+                              }else{
+
+                              return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                  ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                  ->where('jadwal_dosens.status_jadwal',0)
+                                                  ->where('jadwal_dosens.id_block',$request->id_block)
+                                                  ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                                                  ->count();
+                              }
+                        
                         })
                         // EDIT KOLOM JUMLAH JADWAL BATAL TERLAKSANA
                         ->editColumn('batal', function ($jadwal_dosen) use ($request) {
                             // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 2(BATAL) dan id block DAN TIPE JADWA, kemudian kita count untuk mendapatakan jumlah jadwal nya
-                        return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                             if($request->tipe_jadwal == 'SEMUA') {
+
+                              return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                            ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                            ->where('jadwal_dosens.status_jadwal',2)
+                                            ->where('jadwal_dosens.id_block',$request->id_block)
+                                            ->count();
+                            }else{
+
+                              return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
                                             ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
                                             ->where('jadwal_dosens.status_jadwal',2)
                                             ->where('jadwal_dosens.id_block',$request->id_block)
                                             ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
                                             ->count();
+                            }
                         })
                         // EDIT KOLOM JUMLAH JADWAL digantikan
                         ->editColumn('digantikan', function ($jadwal_dosen) use ($request) {
                             // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 3(digantikan) dan id block DAN TIPE JADWA, kemudian kita count untuk mendapatakan jumlah jadwal nya
-                        return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                            if($request->tipe_jadwal == 'SEMUA') {
+
+                              return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                            ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                            ->where('jadwal_dosens.status_jadwal',3)
+                                            ->where('jadwal_dosens.id_block',$request->id_block)
+                                            ->count();
+                            }else{
+
+                              return $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
                                             ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
                                             ->where('jadwal_dosens.status_jadwal',3)
                                             ->where('jadwal_dosens.id_block',$request->id_block)
                                             ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
                                             ->count();
+                            }
+
                         })
 
                         ->editColumn('presentasi', function ($jadwal_dosen) use ($request) {
 
                            // SELECT COUNT PRESENSI DOSEN ,  WHERE ID DOSEN DAN ID BLOCK
+                            if($request->tipe_jadwal == 'SEMUA') {
+
+                           $jumlah_hadir = Presensi::leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')
+                                          ->where('presensi.id_user',$jadwal_dosen['id_dosen'])
+                                          ->where('presensi.id_block',$request->id_block)
+                                          ->count();
+
+                            // $jadwal dosen kita tambahkan where id dosen dan id block, kemudian kita count untuk mendapatakan jumlah jadwal nya
+                           $jumlah_jadwal = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                        ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                        ->where('jadwal_dosens.id_block',$request->id_block)
+                                                        ->count();
+                            }else{
+
                            $jumlah_hadir = Presensi::leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')
                                           ->where('presensi.id_user',$jadwal_dosen['id_dosen'])
                                           ->where('presensi.id_block',$request->id_block)
@@ -162,6 +262,9 @@ class LaporanPresensiDosenController extends Controller
                                                         ->where('jadwal_dosens.id_block',$request->id_block)
                                                         ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
                                                         ->count();
+                            }
+
+
 
                            //cara hitung persentasi kehadiran = jumlah hadir * 100 / jumlahjadwal
                            $presentasi = ($jumlah_hadir * 100) / $jumlah_jadwal;
@@ -180,26 +283,45 @@ class LaporanPresensiDosenController extends Controller
     {
         $id_block = $request->id_block;
 
-      // jika dosen == semua
-      if ($request->dosen == 'semua') {
-                // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
+               if($request->dosen == 'semua' AND $request->tipe_jadwal == 'SEMUA') {
+                        // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
 
-        $jadwal_dosens = Jadwal_dosen::select('users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                        ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                        ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                        ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
-                        ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
-      }else{
+                $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                                ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
 
-        $jadwal_dosens = Jadwal_dosen::select('users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                        ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                        ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                        ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
-                        ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
-                        ->groupBy('jadwal_dosens.id_dosen')->get(); // GROUP BY ID DOSEN
-      }
+                }else if ($request->dosen == 'semua' AND $request->tipe_jadwal != 'SEMUA') {
+                        // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
+
+                  $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                                ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
+                                ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
+
+                }else if ($request->dosen != 'semua' AND $request->tipe_jadwal == 'SEMUA') {
+                        // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
+
+                  $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                                ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
+                                ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
+                }else{
+
+                $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                                ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
+                                ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
+                                ->groupBy('jadwal_dosens.id_dosen')->get(); // GROUP BY ID DOSEN
+                }
+
      
          Excel::create("LAPORAN REKAP PRESENSI DOSEN", function($excel) use ($id_block, $jadwal_dosens,$request) {
 
@@ -222,52 +344,98 @@ class LaporanPresensiDosenController extends Controller
 
 
                 foreach ($jadwal_dosens as $jadwal_dosen) {
-                               // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya       
-                    $jumlah_jadwal = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                                                  ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
-                                                  ->where('jadwal_dosens.id_block',$id_block)
-                                                  ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
-                                                  ->count();
+                               // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya    
 
-                     // SELECT COUNT PRESENSI DOSEN ,  WHERE ID DOSEN DAN ID BLOCK
-                    $jumlah_hadir = Presensi::leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')
-                                              ->where('presensi.id_user',$jadwal_dosen['id_dosen'])
-                                              ->where('presensi.id_block',$id_block)
-                                              ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
-                                              ->count();
-
-                          // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 1(terlakasana) dan id block,  DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal ny
-                    $jumlah_terlaksana = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                    if($request->tipe_jadwal == 'SEMUA') {
+      
+                        $jumlah_jadwal = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
                                                       ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
-                                                      ->where('jadwal_dosens.status_jadwal',1)
                                                       ->where('jadwal_dosens.id_block',$id_block)
-                                                      ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
                                                       ->count();
 
-                      // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 0(belum_terlakasana) dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
-                    $jumlah_belum_terlaksana = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                                                            ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
-                                                            ->where('jadwal_dosens.status_jadwal',0)
-                                                            ->where('jadwal_dosens.id_block',$id_block)
-                                                            ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
-                                                            ->count();
-
-                     // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 2(BATAL) dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
-                    $jumlah_batal = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                                                  ->where('.jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
-                                                  ->where('.jadwal_dosens.status_jadwal',2)
-                                                  ->where('.jadwal_dosens.id_block',$id_block)
-                                                  ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                         // SELECT COUNT PRESENSI DOSEN ,  WHERE ID DOSEN DAN ID BLOCK
+                        $jumlah_hadir = Presensi::leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')
+                                                  ->where('presensi.id_user',$jadwal_dosen['id_dosen'])
+                                                  ->where('presensi.id_block',$id_block)
                                                   ->count();
 
-                            // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN  where id dosen, status jadwal = 3(digantikan) dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
-                    $jumlah_digantikan = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                                                      ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
-                                                      ->where('jadwal_dosens.status_jadwal',3)
-                                                      ->where('jadwal_dosens.id_block',$id_block)
-                                                      ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                              // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 1(terlakasana) dan id block,  DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal ny
+                        $jumlah_terlaksana = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                          ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                          ->where('jadwal_dosens.status_jadwal',1)
+                                                          ->where('jadwal_dosens.id_block',$id_block)
+                                                          ->count();
+
+                          // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 0(belum_terlakasana) dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
+                        $jumlah_belum_terlaksana = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                                ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                                ->where('jadwal_dosens.status_jadwal',0)
+                                                                ->where('jadwal_dosens.id_block',$id_block)
+                                                                ->count();
+
+                         // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 2(BATAL) dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
+                        $jumlah_batal = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                      ->where('.jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                      ->where('.jadwal_dosens.status_jadwal',2)
+                                                      ->where('.jadwal_dosens.id_block',$id_block)
                                                       ->count();
-                                    //cara hitung persentasi kehadiran = jumlah hadir * 100 / jumlahjadwal
+
+                                // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN  where id dosen, status jadwal = 3(digantikan) dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
+                        $jumlah_digantikan = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                          ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                          ->where('jadwal_dosens.status_jadwal',3)
+                                                          ->where('jadwal_dosens.id_block',$id_block)
+                                                          ->count();
+                                        //cara hitung persentasi kehadiran = jumlah hadir * 100 / jumlahjadwal
+                    }else{
+
+                      $jumlah_jadwal = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                    ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                    ->where('jadwal_dosens.id_block',$id_block)
+                                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                                                    ->count();
+
+                       // SELECT COUNT PRESENSI DOSEN ,  WHERE ID DOSEN DAN ID BLOCK
+                      $jumlah_hadir = Presensi::leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')
+                                                ->where('presensi.id_user',$jadwal_dosen['id_dosen'])
+                                                ->where('presensi.id_block',$id_block)
+                                                ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                                                ->count();
+
+                            // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 1(terlakasana) dan id block,  DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal ny
+                      $jumlah_terlaksana = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                        ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                        ->where('jadwal_dosens.status_jadwal',1)
+                                                        ->where('jadwal_dosens.id_block',$id_block)
+                                                        ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                                                        ->count();
+
+                        // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 0(belum_terlakasana) dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
+                      $jumlah_belum_terlaksana = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                              ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                              ->where('jadwal_dosens.status_jadwal',0)
+                                                              ->where('jadwal_dosens.id_block',$id_block)
+                                                              ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                                                              ->count();
+
+                       // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN where id dosen, status jadwal = 2(BATAL) dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
+                      $jumlah_batal = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                    ->where('.jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                    ->where('.jadwal_dosens.status_jadwal',2)
+                                                    ->where('.jadwal_dosens.id_block',$id_block)
+                                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                                                    ->count();
+
+                              // $jadwal dosen kita tambahkan LEFT JOIN PENJADWALAN  where id dosen, status jadwal = 3(digantikan) dan id block, DAN TIPE JADWAL kemudian kita count untuk mendapatakan jumlah jadwal nya
+                      $jumlah_digantikan = $jadwal_dosen->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                                                        ->where('jadwal_dosens.id_dosen',$jadwal_dosen['id_dosen'])
+                                                        ->where('jadwal_dosens.status_jadwal',3)
+                                                        ->where('jadwal_dosens.id_block',$id_block)
+                                                        ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)
+                                                        ->count();
+                                      //cara hitung persentasi kehadiran = jumlah hadir * 100 / jumlahjadwal
+                      }
+ 
                     $presentasi = ($jumlah_hadir * 100) / $jumlah_jadwal;
 
                     // isi kolom                    
@@ -296,19 +464,43 @@ class LaporanPresensiDosenController extends Controller
 // DETAIL PRESENSI
      public function detail(Request $request)
     {
-        // JIKA DOSEN == SEMUA
-        if ($request->dosen == 'semua') {
+        // JIKA DOSEN == SEMUA AND TIPE JADWAL == SEMUA
+        if ($request->dosen == 'semua' AND $request->tipe_jadwal == 'SEMUA') {
+
                 $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
                 // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
                                     ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
                                     ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
                                     ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
                                     ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// WHERE TIPE JADWA;
                                     ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
                                     ->get();
 
-        }else{
+        }else if ($request->dosen == 'semua' AND $request->tipe_jadwal != 'SEMUA') {
+
+              $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
+                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
+                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
+                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
+                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
+                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
+                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
+                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL
+                                    ->get();
+
+        }else if ($request->dosen != 'semua' AND $request->tipe_jadwal == 'SEMUA') {
+          
+              $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
+                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
+                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
+                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
+                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
+                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
+                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
+                                    ->where('presensi.id_user',$request->dosen)// AND ID USER
+                                    ->get();
+        }
+        else{
                    
 
                 $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
@@ -360,20 +552,43 @@ class LaporanPresensiDosenController extends Controller
 
 
     public function export_detail(Request $request){
+       // JIKA DOSEN == SEMUA AND TIPE JADWAL == SEMUA
+        if ($request->dosen == 'semua' AND $request->tipe_jadwal == 'SEMUA') {
 
- // JIKA DOSEN == SEMUA
-        if ($request->dosen == 'semua') {
                 $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
                 // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
                                     ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
                                     ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
                                     ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
                                     ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// WHERE TIPE JADWA;
                                     ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
                                     ->get();
 
-        }else{
+        }else if ($request->dosen == 'semua' AND $request->tipe_jadwal != 'SEMUA') {
+
+              $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
+                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
+                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
+                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
+                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
+                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
+                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
+                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL
+                                    ->get();
+
+        }else if ($request->dosen != 'semua' AND $request->tipe_jadwal == 'SEMUA') {
+          
+              $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
+                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
+                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
+                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
+                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
+                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
+                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
+                                    ->where('presensi.id_user',$request->dosen)// AND ID USER
+                                    ->get();
+        }
+        else{
                    
 
                 $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
@@ -387,6 +602,7 @@ class LaporanPresensiDosenController extends Controller
                                     ->where('presensi.id_user',$request->dosen)// AND ID USER
                                     ->get();
         }
+
 
            Excel::create("LAPORAN DETAIL PRESENSI DOSEN", function($excel) use ($query_detail_presensi) {
 

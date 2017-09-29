@@ -33,18 +33,18 @@
 						    </div>
 
                 <div class="col-md-2">                  
-                  <div class="form-group{{ $errors->has('tipe_jadwal') ? ' has-error' : '' }}">
-                        {!! Form::select('tipe_jadwal', ['KULIAH'=>'KULIAH','PRAKTIKUM'=>'PRAKTIKUM','CSL'=>'CSL','PLENO'=>'PLENO','TUTORIAL'=>'TUTORIAL'], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'PILIH TIPE JADWAL','id' => 'tipe_jadwal']) !!}
-                        {!! $errors->first('tipe_jadwal', '<p class="help-block">:message</p>') !!}
-                  </div>
-                </div>
-
-                <div class="col-md-2">                  
                     <div class="form-group{{ $errors->has('jenis_laporan') ? ' has-error' : '' }} ">
                         {!! Form::select('jenis_laporan', ['1' => 'Rekap', '2' => 'Detail'], null, ['class'=>'form-control js-selectize-reguler', 'id' => 'jenis_laporan',
                          'placeholder' => 'Jenis Laporan']) !!}
                         {!! $errors->first('jenis_laporan', '<p class="help-block">:message</p>') !!}                    
                     </div>
+                </div>
+
+                <div class="col-md-2">                  
+                  <div class="form-group{{ $errors->has('tipe_jadwal') ? ' has-error' : '' }}">
+                        {!! Form::select('tipe_jadwal', ['SEMUA'=>'SEMUA','KULIAH'=>'KULIAH','PRAKTIKUM'=>'PRAKTIKUM','CSL'=>'CSL','PLENO'=>'PLENO','TUTORIAL'=>'TUTORIAL'], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'PILIH TIPE JADWAL','id' => 'tipe_jadwal']) !!}
+                        {!! $errors->first('tipe_jadwal', '<p class="help-block">:message</p>') !!}
+                  </div>
                 </div>
 
                 <div class="col-md-2">                  
