@@ -148,6 +148,10 @@
 <script src="{{ asset('js/selectize.min.js') }}"></script> 
 <script src="{{ asset('js/custom-v.1.0.1.js') }}"></script>
 <script src="{{ asset('js/main.js') }}"></script> 
+<script type="text/javascript">
+    
+        $.fn.dataTable.ext.errMode = 'throw';
+</script>
 
 @yield('scripts')
 </body>
