@@ -63,6 +63,7 @@
                             <li><a href="{{ route('master_mata_kuliahs.index') }}">Mata Kuliah</a></li> 
                             <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>   
                             <li><a href="{{ route('modul.index') }}">Modul</a></li>  
+                            <li><a href="{{ route('kelompok_mahasiswa.index') }}">Kelompok Mahasiswa</a></li>  
                           </ul>
                         </li>
                         <li class="dropdown">

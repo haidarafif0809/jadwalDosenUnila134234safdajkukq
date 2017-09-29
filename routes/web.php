@@ -142,6 +142,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('setting_slide', 'SettingSlideController');
 	Route::resource('laporan_presensi_mahasiswa', 'LaporanRekapPresensiMahasiswaController'); 
 	Route::resource('laporan_rekap_presensi_dosen', 'LaporanPresensiDosenController'); 
+	Route::resource('kelompok_mahasiswa', 'KelompokMahasiswaController'); 
 
 //DOWNLOAD EXCEL REKAP
 	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}',[
@@ -290,6 +291,26 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'middleware' => ['auth','role:admin'],
 	'as' => 'master_users.reset',
 	'uses' => 'MasterUserController@reset'
+	]);
+
+	//kelompok mahasiswa
+	Route::get('kelompok_mahasiswa/mahasiswa/{id}',[
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen'],
+	'as' => 'kelompok_mahasiswa.mahasiswa',
+	'uses' => 'KelompokMahasiswaController@createMahasiswa'
+	]);
+
+
+	Route::put('/proses-kait-list-kelompok-mahasiswa/{id}',[
+	'middleware' => ['auth','role:admin'],
+	'as' => 'kelompok_mahasiswa.proses_kait_list_kelompok_mahasiswa',
+	'uses' => 'KelompokMahasiswaController@proses_kait_list_kelompok_mahasiswa'
+	]);
+
+	Route::put('/hapus-list-kelompok-mahasiswa/{id}',[
+	'middleware' => ['auth','role:admin'],
+	'as' => 'list_kelompok_mahasiswa.destroy',
+	'uses' => 'KelompokMahasiswaController@hapus_list_kelompok_mahasiswa'
 	]);
 
 
