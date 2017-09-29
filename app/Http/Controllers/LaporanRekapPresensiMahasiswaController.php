@@ -321,7 +321,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                 ->where('role_user.role_id',3)
                 ->where('users.id', $request->mahasiswa)
                 ->where('master_blocks.id', $request->id_block)
-                ->orwhere('mahasiswa_block.id_block', $request->id_block)
+                ->orwhere('mahasiswa_block.id_mahasiswa', $request->mahasiswa)
                 ->groupBy('users.id')->get();
 
                 return Datatables::of($data_mahasiswa)
@@ -454,7 +454,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                 ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)
                 ->where('users.id', $request->mahasiswa)
                 ->where('master_blocks.id', $request->id_block)
-                ->orwhere('mahasiswa_block.id_block', $request->id_block)
+                ->orwhere('mahasiswa_block.id_mahasiswa', $request->mahasiswa)
                 ->groupBy('users.id')->get();
 
             return Datatables::of($data_mahasiswa)
@@ -643,7 +643,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                 ->where('role_user.role_id',3)
                 ->where('users.id', $request->mahasiswa)
                 ->where('master_blocks.id', $request->id_block)
-                ->orwhere('mahasiswa_block.id_block', $request->id_block)
+                ->orwhere('mahasiswa_block.id_mahasiswa', $request->mahasiswa)
                 ->groupBy('users.id')->get();
 
       }
@@ -660,7 +660,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                 ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)
                 ->where('users.id', $request->mahasiswa)
                 ->where('master_blocks.id', $request->id_block)
-                ->orwhere('mahasiswa_block.id_block', $request->id_block)
+                ->orwhere('mahasiswa_block.id_mahasiswa', $request->mahasiswa)
                 ->groupBy('users.id')->get();
       }
 
@@ -813,10 +813,10 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           //JUMLAH JADWAL DIHADIRI USER (MAHASISWA)              
               if ($data_mahasiswas->id_block != $request->id_block) {
-                $data_user_hadir = PresensiMahasiswa::where('id_user',$jumlah_hadir->id)->where('presensi_mahasiswas.id_block',$jumlah_hadir->id_block_mahasiswa)->count();
+                $data_user_hadir = PresensiMahasiswa::where('id_user',$data_mahasiswas->id)->where('presensi_mahasiswas.id_block',$data_mahasiswas->id_block_mahasiswa)->count();
               }
               else{
-                $data_user_hadir = PresensiMahasiswa::where('id_user',$jumlah_hadir->id)->where('presensi_mahasiswas.id_block',$jumlah_hadir->id_block)->count();
+                $data_user_hadir = PresensiMahasiswa::where('id_user',$data_mahasiswas->id)->where('presensi_mahasiswas.id_block',$data_mahasiswas->id_block)->count();
               }              
 
           //PRESENTASE KEHADIRAN USER (MAHASISWA)
