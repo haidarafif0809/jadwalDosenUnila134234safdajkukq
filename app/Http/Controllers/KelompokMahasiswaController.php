@@ -79,7 +79,6 @@ class KelompokMahasiswaController extends Controller
         //
          $this->validate($request, [
             'nama_kelompok_mahasiswa'   => 'required|unique:kelompok_mahasiswas,nama_kelompok_mahasiswa,',
-            'id_angkatan'     => 'required' 
             ]);
 
          $kelompok_mahasiswa = KelompokMahasiswa::create([ 
@@ -201,7 +200,6 @@ class KelompokMahasiswaController extends Controller
         //
          $this->validate($request, [
             'nama_kelompok_mahasiswa'   => 'required|unique:kelompok_mahasiswas,nama_kelompok_mahasiswa,',
-            'id_angkatan'     => 'required' 
             ]);
 
         KelompokMahasiswa::where('id', $id)->update([            
