@@ -22,13 +22,45 @@
 
 				<div class="panel-body">
 					<p>
-
+					<div class="row">
+					<div class="col-sm-1">
 				<!-- APABILA ADMIN DAN PJ DOSEN YANG LOGIN MAKA MUNCUL TOMBOL DI BAWAH-->
-					@role('admin') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
-					@role('pj_dosen') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
-					@role('dosen') <a class="btn btn-primary" href="{{ route('penjadwalans.create') }}"><span class="glyphicon glyphicon-plus"></span> Tambah Penjadwalan </a> @endrole
+					@role('admin') 
+					<div class="dropdown">
+	    				<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"> Tambah
+	    					<span class="caret"></span></button>
+	    					<ul class="dropdown-menu">
+	      					<li><a href="{{ route('penjadwalans.create') }}" class="btn-penjadwalan">Penjadwalan</a></li>
+	      					<li><a href="{{ route('csl.create_csl') }}" class="btn-csl" >CSL</a></li>
+	      					<li><a href="#" class="btn-tutorial" >TUTORIAL</a></li> 
+	    					</ul>
+						</div> 
+ 					@endrole
+					@role('pj_dosen') 
+					<div class="dropdown">
+	    				<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"> Tambah
+	    					<span class="caret"></span></button>
+	    					<ul class="dropdown-menu">
+	      					<li><a href="{{ route('penjadwalans.create') }}" class="btn-penjadwalan">Penjadwalan</a></li>
+	      					<li><a href="{{ route('penjadwalans.create_csl') }}" class="btn-csl" >CSL</a></li>
+	      					<li><a href="#" class="btn-tutorial" >TUTORIAL</a></li> 
+	    					</ul>
+						</div> 
+					 @endrole
+					@role('dosen') 
+					<div class="dropdown">
+	    				<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"> Tambah
+	    					<span class="caret"></span></button>
+	    					<ul class="dropdown-menu">
+	      					<li><a href="{{ route('penjadwalans.create') }}" class="btn-penjadwalan">Penjadwalan</a></li>
+	      					<li><a href="{{ route('penjadwalans.create_csl') }}" class="btn-csl" >CSL</a></li>
+	      					<li><a href="#" class="btn-tutorial" >TUTORIAL</a></li> 
+	    					</ul>
+						</div> 
+					 @endrole
 				<!-- //APABILA ADMIN DAN PJ DOSEN YANG LOGIN MAKA MUNCUL TOMBOL DI BAWAH-->
-
+				</div><!--div col sm 3-->
+				<div class="col-sm-11">
 				<!-- MEMBUAT FILTER PENJADWALAN -->
 					 <button data-toggle="collapse" data-target="#filter" id="button_filter" class="btn btn-primary"> <span class="glyphicon glyphicon-filter"></span> Filter</button> 
 					 <a class="btn btn-primary" href="{{ route('penjadwalans.index') }}"> <span class="glyphicon glyphicon-remove"></span>  Hapus Filter</a> 
@@ -57,7 +89,8 @@
 					{!! Form::close() !!}
 					</div> 
 				<!-- //MEMBUAT FILTER EXPORT PENJADWALAN -->
-
+					</div><!--div col sm 9-->
+					</div><!--div class row-->
 					 </p>
 					<br>
 

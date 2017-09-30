@@ -26,7 +26,7 @@ class PenjadwalanController extends Controller
     public function index(Request $request, Builder $htmlBuilder)
     {
         if ($request->ajax()) { 
-            $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul']);
+            $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul','materi','kelompok']);
             return Datatables::of($penjadwalans)
             //MENGONEKSIKAN TOMBOL HAPUS DAN EDIT
             ->addColumn('action', function($penjadwalan){ 
@@ -90,6 +90,24 @@ class PenjadwalanController extends Controller
                 else {
                     return $penjadwalan->mata_kuliah->nama_mata_kuliah;
                 }
+            })
+            ->addColumn('materi',function($penjadwalan){
+
+                if ($penjadwalan->id_materi == "-" OR $penjadwalan->id_materi == ""  OR $penjadwalan->id_materi == "0") {
+                    return "-";
+                }
+                else {
+                    return $penjadwalan->materi->nama_materi;
+                }
+            })
+            ->addColumn('kelompok',function($penjadwalan){
+
+                if ($penjadwalan->id_kelompok == "-" OR $penjadwalan->id_kelompok == ""  OR $penjadwalan->id_kelompok == "0") {
+                    return "-";
+                }
+                else {
+                    return $penjadwalan->kelompok->nama_kelompok_mahasiswa;
+                }
             })->make(true);
         }
 
@@ -101,7 +119,9 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
         ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
-        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
+        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])  
+        ->addColumn(['data' => 'materi', 'name' => 'materi', 'title' => 'Materi', 'orderable' => false, ]) 
+        ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, ])   
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
@@ -611,7 +631,6 @@ public function filter(Request $request, Builder $htmlBuilder)
         }
        
     }
-
 
        public function status_terlaksana($id){ 
         

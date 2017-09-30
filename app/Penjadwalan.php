@@ -8,7 +8,7 @@ use Yajra\Auditable\AuditableTrait;
 class Penjadwalan extends Model
 {
      use AuditableTrait;
-     protected $fillable = ['id_block','id_mata_kuliah','id_ruangan','tanggal','waktu_mulai','waktu_selesai','status_jadwal','id_modul','tipe_jadwal','created_by','updated_by'];
+     protected $fillable = ['id_block','id_mata_kuliah','id_ruangan','tanggal','waktu_mulai','waktu_selesai','status_jadwal','id_modul','tipe_jadwal','id_materi','id_kelompok','created_by','updated_by'];
 
     	public function block()
 		  {
@@ -28,6 +28,16 @@ class Penjadwalan extends Model
       public function modul()
       {
         return $this->hasOne('App\ModulBlok','id_modul_blok','id_modul');
+      } 
+
+      public function materi()
+      {
+        return $this->hasOne('App\Materi','id','id_materi');
+      } 
+
+      public function kelompok()
+      {
+        return $this->hasOne('App\KelompokMahasiswa','id','id_kelompok');
       } 
 
     //MENGECEK TAMBAH PENDAJWALAN, RUANGAN YANG SAMA DAN DI JADWAL YANG BERSMAAN
