@@ -341,6 +341,12 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'uses' => 'PenjadwalanLainController@store'
 	]);
 
+	Route::put('penjadwalans/edit-csl-tutorial/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.edit-csl-tutorial',
+	'uses' => 'PenjadwalanLainController@update'
+	]);
+
 
 
 });

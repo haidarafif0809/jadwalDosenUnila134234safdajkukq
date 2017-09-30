@@ -8,6 +8,7 @@ use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\DB;
 use App\KelompokMahasiswa;
 use App\ListKelompokMahasiswa;
+use App\Penjadwalan;
 use App\Angkatan;
 use Session;
 
@@ -229,7 +230,21 @@ class KelompokMahasiswaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        //menghapus data dengan pengecekan alert /peringatan
+        $penjadwalan = Penjadwalan::where('id_kelompok',$id); 
+ 
+        if ($penjadwalan->count() > 0) {
+        // menyiapkan pesan error
+        $html = 'Kelompok Mahasiswa tidak bisa dihapus karena masih memiliki Penjadwalan'; 
+        
+        Session::flash("flash_notification", [
+          "level"=>"danger",
+          "message"=>$html
+        ]); 
+
+        return redirect()->route('kelompok_mahasiswa.index');      
+        }
+        else{
         KelompokMahasiswa::destroy($id);
         ListKelompokMahasiswa::where('id_kelompok_mahasiswa', $id)->delete();
 
@@ -238,6 +253,6 @@ class KelompokMahasiswaController extends Controller
                 "message"   => "Master Data Kelompok Mahasiswa Berhasil Di Hapus"
             ]);
         return redirect()->route('kelompok_mahasiswa.index');
-        
+        }
     }
 }
