@@ -11,6 +11,7 @@ use App\Jadwal_dosen;
 use App\Presensi;
 use App\PresensiMahasiswa;
 use App\Master_block;
+use App\Materi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -189,7 +190,7 @@ class AndroidController extends Controller
         $result = array();// ARRAY RESULT
         $waktu = date("Y-m-d H:i:s");
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_mata_kuliah AS id_mata_kuliah','jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen','penjadwalans.tipe_jadwal AS tipe_jadwal')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH,  RUANGAN, LATITUDE , LONGITUDE, BATAS JARAK ABSEN , TIPE JADWAL
+        $penjadwalans = Jadwal_dosen::select('penjadwalans.id_materi AS id_materi','penjadwalans.tipe_jadwal AS tipe_jadwal','jadwal_dosens.id_mata_kuliah AS id_mata_kuliah','jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen','penjadwalans.tipe_jadwal AS tipe_jadwal')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH,  RUANGAN, LATITUDE , LONGITUDE, BATAS JARAK ABSEN , TIPE JADWAL
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
@@ -213,9 +214,13 @@ class AndroidController extends Controller
         $value = $value + 1;
 
           // jika tipe jadwal nya kosong atau null
-            if ($list_jadwal_dosen['id_mata_kuliah'] == "" OR $list_jadwal_dosen['id_mata_kuliah'] == NULL OR $list_jadwal_dosen['id_mata_kuliah'] == 0) {
+            if (($list_jadwal_dosen['id_mata_kuliah'] == "" OR $list_jadwal_dosen['id_mata_kuliah'] == NULL OR $list_jadwal_dosen['id_mata_kuliah'] == 0) AND ($list_jadwal_dosen['tipe_jadwal'] == "CSL" OR $list_jadwal_dosen['tipe_jadwal'] == 'TUTORIAL' )) {
               // maka tipe jadwal = -
-              $nama_mata_kuliah = "-";              
+
+              $materi = Materi::select('nama_materi')->where('id',$list_jadwal_dosen['id_materi'])->first();
+
+
+              $nama_mata_kuliah = $materi->nama_materi;              
 
             }else{ // jika tidak
               $nama_mata_kuliah = $list_jadwal_dosen['nama_mata_kuliah'];
@@ -256,13 +261,13 @@ class AndroidController extends Controller
 
         $result = array();// ARRAY RESULT
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_mata_kuliah AS id_mata_kuliah','jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen','penjadwalans.tipe_jadwal AS tipe_jadwal')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, RUANGAN, LATITUDE , LONGITUDE, TIPE JADWAL
+        $penjadwalans = Jadwal_dosen::select('penjadwalans.id_materi AS id_materi','penjadwalans.tipe_jadwal AS tipe_jadwal','jadwal_dosens.id_mata_kuliah AS id_mata_kuliah','jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen','penjadwalans.tipe_jadwal AS tipe_jadwal')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, RUANGAN, LATITUDE , LONGITUDE, TIPE JADWAL
 
                         ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
                         ->leftJoin('master_ruangans','jadwal_dosens.id_ruangan','=','master_ruangans.id')
                         // LEFT JOIN MASTER RUANGAN
-                         ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
+                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
                         // lEFT JOIN PENJADWALN
                         ->where('jadwal_dosens.id_dosen',$id_dosen->id)
                         //WHERE ID DOSEN = ID DOSEN LOGIN
@@ -286,14 +291,20 @@ class AndroidController extends Controller
 
       foreach ($penjadwalans as $list_jadwal_dosen) {// FOREACH
 
-       // jika id_mata_kuliah nya kosong atau null
-          if ($list_jadwal_dosen['id_mata_kuliah'] == "" OR $list_jadwal_dosen['id_mata_kuliah'] == NULL OR $list_jadwal_dosen['id_mata_kuliah'] == 0) {
-              // maka mata kuliah = -
-              $nama_mata_kuliah = "-";              
+
+          // jika tipe jadwal nya kosong atau null
+            if (($list_jadwal_dosen['id_mata_kuliah'] == "" OR $list_jadwal_dosen['id_mata_kuliah'] == NULL OR $list_jadwal_dosen['id_mata_kuliah'] == 0) AND ($list_jadwal_dosen['tipe_jadwal'] == "CSL" OR $list_jadwal_dosen['tipe_jadwal'] == 'TUTORIAL' )) {
+              // maka tipe jadwal = -
+
+              $materi = Materi::select('nama_materi')->where('id',$list_jadwal_dosen['id_materi'])->first();
+
+
+              $nama_mata_kuliah = $materi->nama_materi;              
 
             }else{ // jika tidak
               $nama_mata_kuliah = $list_jadwal_dosen['nama_mata_kuliah'];
             }
+
         //ARRAY PUSH
         array_push($result, 
                   array('tanggal' => $this->tanggal_terbalik($list_jadwal_dosen['tanggal']),
