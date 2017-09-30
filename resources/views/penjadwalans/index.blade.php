@@ -32,7 +32,7 @@
 	    					<ul class="dropdown-menu">
 	      					<li><a href="{{ route('penjadwalans.create') }}" class="btn-penjadwalan">Penjadwalan</a></li>
 	      					<li><a href="{{ route('csl.create_csl') }}" class="btn-csl" >CSL</a></li>
-	      					<li><a href="#" class="btn-tutorial" >TUTORIAL</a></li> 
+	      					<li><a href="{{ route('tutorial.create_tutorial') }}" class="btn-tutorial" >TUTORIAL</a></li> 
 	    					</ul>
 						</div> 
  					@endrole
@@ -43,7 +43,7 @@
 	    					<ul class="dropdown-menu">
 	      					<li><a href="{{ route('penjadwalans.create') }}" class="btn-penjadwalan">Penjadwalan</a></li>
 	      					<li><a href="{{ route('penjadwalans.create_csl') }}" class="btn-csl" >CSL</a></li>
-	      					<li><a href="#" class="btn-tutorial" >TUTORIAL</a></li> 
+	      					<li><a href="{{ route('tutorial.create_tutorial') }}" class="btn-tutorial" >TUTORIAL</a></li> 
 	    					</ul>
 						</div> 
 					 @endrole
@@ -54,7 +54,7 @@
 	    					<ul class="dropdown-menu">
 	      					<li><a href="{{ route('penjadwalans.create') }}" class="btn-penjadwalan">Penjadwalan</a></li>
 	      					<li><a href="{{ route('penjadwalans.create_csl') }}" class="btn-csl" >CSL</a></li>
-	      					<li><a href="#" class="btn-tutorial" >TUTORIAL</a></li> 
+	      					<li><a href="{{ route('tutorial.create_tutorial') }}" class="btn-tutorial" >TUTORIAL</a></li> 
 	    					</ul>
 						</div> 
 					 @endrole

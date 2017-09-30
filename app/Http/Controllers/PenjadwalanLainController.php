@@ -47,7 +47,32 @@ class PenjadwalanLainController extends Controller
         return view('penjadwalans_csl.create',['users' => $users,'data_block' => $data_block,'kelompoks' => $kelompoks]);
     }
 
-    public function store_csl(Request $request){
+    //PROSES KE HALAMAN TAMBAH PENJADWALANA TUTORIAL 
+    public function create_tutorial()
+    { 
+        //MENAMPILKAN USER YANG OTORITAS NYA DOSEN
+        $users = DB::table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->where('role_user.role_id',2)
+            ->pluck('name','id'); 
+
+        //MENAMPILKAN KELOMPOK YANG JENIS TUTORIAL 
+        $kelompoks = DB::table('kelompok_mahasiswas')
+            ->where('jenis_kelompok','TUTORIAL')
+            ->pluck('nama_kelompok_mahasiswa','id'); 
+    
+
+        //MENAMPILKAN BLOCK SESUAI DENGAN YANG LOGIN(APABILA PJ DOSEN YANG LOGIN MAKA BLOCK NYA YANG MUNCUL USER PJ DOSEN YANG ADA DI BLOK DAN APABILA ADMIN MAKA MUNCUL SEMUA BLOCK)
+        $pj_dosen = Auth::user()->id;
+        $data_block = DB::table('master_blocks')
+            ->leftJoin('user_pj_dosens', 'master_blocks.id', '=', 'user_pj_dosens.id_master_block')
+            ->where('user_pj_dosens.id_pj_dosen',$pj_dosen)
+            ->pluck('master_blocks.nama_block','master_blocks.id'); 
+ 
+        return view('penjadwalans_tutorial.create',['users' => $users,'data_block' => $data_block,'kelompoks' => $kelompoks]);
+    }
+
+    public function store(Request $request){
 
         $this->validate($request, [
             'tanggal'   => 'required',
@@ -61,6 +86,10 @@ class PenjadwalanLainController extends Controller
             'id_kelompok' => 'required'
         ]);   
 
+        //jenis kelompok 
+        $jenis_kelompok = $request->jenis_kelompok;
+        //jenis kelompok 
+        
 
         //MEMISAHKAN WAKTU MULAI DAN SELESAIA
         $data_setting_waktu = explode("-",$request->data_waktu);
@@ -131,7 +160,7 @@ class PenjadwalanLainController extends Controller
             'waktu_selesai'=>$data_setting_waktu[1],
             'id_block'=>$request->id_block,
             'id_materi'=>$request->id_materi,
-            'tipe_jadwal'=>"CSL",
+            'tipe_jadwal'=>$jenis_kelompok,
             'id_mata_kuliah'=>"-",
             'id_ruangan'=>$request->id_ruangan,
         	'id_kelompok'=>$request->id_kelompok]);
@@ -143,7 +172,7 @@ class PenjadwalanLainController extends Controller
             'waktu_selesai'=>$data_setting_waktu_2[1],
             'id_block'=>$request->id_block,
             'id_materi'=>$request->id_materi,
-            'tipe_jadwal'=>"CSL",
+            'tipe_jadwal'=>$jenis_kelompok,
             'id_mata_kuliah'=>"-",
             'id_ruangan'=>$request->id_ruangan,
         	'id_kelompok'=>$request->id_kelompok]);
