@@ -158,7 +158,7 @@
 </div>
 
 
-{!! Form::hidden('jenis_kelompok', 'CSL', ['class'=>'form-control','required','autocomplete'=>'off','readonly' => '', 'placeholder' => 'Pilih Tanggal','type'=>'hidden']) !!}
+{!! Form::hidden('jenis_kelompok', 'TUTORIAL', ['class'=>'form-control','required','autocomplete'=>'off','readonly' => '', 'placeholder' => 'Pilih Tanggal']) !!}
 
 <div class="form-group">
 	<div class="col-md-4 col-md-offset-2">

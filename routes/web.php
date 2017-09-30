@@ -315,7 +315,7 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	]);
 
 
-	//penjadwalan csl
+	//PENJADWALAN CSL
 	Route::get('csl',[
 	'middleware' => ['auth'],
 	'as' => 'csl.create_csl',
@@ -325,7 +325,20 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::post('penjadwalans/proses_csl',[
 	'middleware' => ['auth'],
 	'as' => 'penjadwalans.store_csl',
-	'uses' => 'PenjadwalanLainController@store_csl'
+	'uses' => 'PenjadwalanLainController@store'
+	]);
+
+	//PENJADWALAN TUTORIAL
+	Route::get('tutorial',[
+	'middleware' => ['auth'],
+	'as' => 'tutorial.create_tutorial',
+	'uses' => 'PenjadwalanLainController@create_tutorial'
+	]);
+
+	Route::post('penjadwalans/proses_tutorial',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.store_tutorial',
+	'uses' => 'PenjadwalanLainController@store'
 	]);
 
 
