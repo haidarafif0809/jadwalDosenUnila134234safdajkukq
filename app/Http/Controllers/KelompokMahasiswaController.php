@@ -49,6 +49,7 @@ class KelompokMahasiswaController extends Controller
         $html = $htmlBuilder
         ->addColumn(['data' => 'nama_kelompok_mahasiswa', 'name' => 'nama_kelompok_mahasiswa', 'title' => 'Nama Kelompok Mahasiswa'])
         ->addColumn(['data' => 'angkatan', 'name' => 'angkatan', 'title' => 'Angkatan','orderable' => false, 'searchable' => false])
+        ->addColumn(['data' => 'jenis_kelompok', 'name' => 'jenis_kelompok', 'title' => 'Jenis Kelompok','orderable' => false, 'searchable' => false])
         ->addColumn(['data' => 'mahasiswa', 'name' => 'mahasiswa', 'title' => 'Mahasiswa','orderable' => false, 'searchable' => false])
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => '', 'orderable' => false, 'searchable' => false]);
 
@@ -79,11 +80,14 @@ class KelompokMahasiswaController extends Controller
         //
          $this->validate($request, [
             'nama_kelompok_mahasiswa'   => 'required|unique:kelompok_mahasiswas,nama_kelompok_mahasiswa,',
+            'jenis_kelompok' => 'required'
             ]);
 
          $kelompok_mahasiswa = KelompokMahasiswa::create([ 
             'nama_kelompok_mahasiswa' =>$request->nama_kelompok_mahasiswa,
-            'id_angkatan'=>$request->id_angkatan]);
+            'id_angkatan'=>$request->id_angkatan,
+            'jenis_kelompok'=>$request->jenis_kelompok
+            ]);
 
         Session::flash("flash_notification", [
             "level"=>"success",
@@ -199,12 +203,14 @@ class KelompokMahasiswaController extends Controller
     {
         //
          $this->validate($request, [
-            'nama_kelompok_mahasiswa'   => 'required|unique:kelompok_mahasiswas,nama_kelompok_mahasiswa,',
+            'nama_kelompok_mahasiswa'   => 'required|unique:kelompok_mahasiswas,nama_kelompok_mahasiswa,'.$id,
+            'jenis_kelompok' => 'required'
             ]);
 
         KelompokMahasiswa::where('id', $id)->update([            
             'nama_kelompok_mahasiswa' =>$request->nama_kelompok_mahasiswa,
-            'id_angkatan'=>$request->id_angkatan
+            'id_angkatan'=>$request->id_angkatan,
+            'jenis_kelompok'=>$request->jenis_kelompok
         ]);
 
         Session::flash("flash_notification", [

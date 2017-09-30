@@ -14,6 +14,16 @@
 	</div>
 </div>
 
+
+<div class="form-group{{ $errors->has('jenis_kelompok') ? ' has-error' : '' }}">
+	{!! Form::label('jenis_kelompok', 'Jenis Kelompok', ['class'=>'col-md-2 control-label']) !!}
+	<div class="col-md-4">
+		{!! Form::select('jenis_kelompok', ['CSL'=>'CSL','TUTORIAL'=>'TUTORIAL'], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Jenis Kelompok','id' => 'jenis_kelompok']) !!}
+		{!! $errors->first('jenis_kelompok', '<p class="help-block">:message</p>') !!}
+	</div>
+</div>
+
+
 <div class="form-group">
 	<div class="col-md-4 col-md-offset-2">
 		{!! Form::submit('Simpan', ['class'=>'btn btn-primary']) !!}
