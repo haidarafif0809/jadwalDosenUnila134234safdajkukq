@@ -507,11 +507,17 @@ class HomeController extends Controller
                         ]);
                 })
             ->addColumn('tombol_status', function($data_status){  
+
+                $id_user_login =  Auth::user()->id;
+                $jadwal_dosens = Jadwal_dosen::where('id_dosen',$id_user_login)->where('id_jadwal',$data_status->id_jadwal)->count(); 
+                $penjadwalan = Penjadwalan::find($data_status->id_jadwal);
                     return view('penjadwalans._action_status', [ 
-                        'model'     => $data_status,
+                        'model'     => $penjadwalan,
+                        'model_user' => $jadwal_dosens,
                         'asal_input'     => 1,
-                        'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
-                        'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
+                         'ubah_dosen'  => route('penjadwalans.ubah_dosen', $data_status->id_jadwal),
+                        'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id_jadwal),
+                        'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id_jadwal),
                         'batal_url' => route('penjadwalans.batal_dosen'),
                         'terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Terlaksana ?',
                         'belum_terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Belum Terlaksana?',
@@ -556,7 +562,7 @@ class HomeController extends Controller
         ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
         ->addColumn(['data' => 'status_jadwal', 'name' => 'status_jadwal', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])
-        ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])
+        ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => 'Aksi Status', 'orderable' => false, 'searchable'=>false])
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
 
 

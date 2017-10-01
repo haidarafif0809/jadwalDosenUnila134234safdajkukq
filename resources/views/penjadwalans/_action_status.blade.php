@@ -1,5 +1,8 @@
 
 @if($model->status_jadwal == 0)
+
+
+
 @role('admin') 
 <div class="dropdown">
     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Konfirmasi
@@ -20,7 +23,9 @@
 @endrole	
 
 @role('dosen') 
+
 @if($model_user > 0)
+
 
 	<div class="dropdown">
 	    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Konfirmasi
@@ -36,9 +41,6 @@
 	 {!! Form::close()!!}
 
 	 {!! Form::model($model, ['url' => $batal_url, 'method' => 'get', 'class' => "form-inline js-confirm form-batal-jadwal-$model->id", 'data-confirm' => $batal_message]) !!}   
-
-
-@elseif($model_user == 0)
 
 @endif
 @endrole
@@ -69,4 +71,7 @@
 				{!! Form::close()!!}
 			@endif
 		@endrole
+
+	
 	@endif
+

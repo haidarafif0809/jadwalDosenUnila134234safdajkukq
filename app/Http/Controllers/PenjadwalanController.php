@@ -48,7 +48,7 @@ class PenjadwalanController extends Controller
             //MENGONEKSIKAN TOMBOL STATUS PENJADWALAN
             ->addColumn('tombol_status', function($data_status){  
               $id_user_login =  Auth::user()->id;
-                $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_dosen',$id_user_login)->count(); 
+                $jadwal_dosens = Jadwal_dosen::where('id_dosen',$id_user_login)->where('id_jadwal',$data_status->id)->count(); 
                     return view('penjadwalans._action_status', [ 
                         'model'     => $data_status,
                         'model_user'     => $jadwal_dosens,
