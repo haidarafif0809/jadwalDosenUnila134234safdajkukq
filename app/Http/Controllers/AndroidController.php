@@ -606,6 +606,7 @@ class AndroidController extends Controller
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
                         ->where('penjadwalans.status_jadwal', '<', 2)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
+                        ->where('id_kelompok',null)
                         ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
                         // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
                         ->get();
