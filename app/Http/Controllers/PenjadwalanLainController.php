@@ -101,7 +101,7 @@ class PenjadwalanLainController extends Controller
         $data_penjadwalan_2 = Penjadwalan::statusRuangan($request,$data_setting_waktu_2); 
 
         //APABILA $data_penjadwalan == 0 maka ngecek dosen
-        if ($data_penjadwalan->count() == 0 OR $data_penjadwalan_2 == 0) { 
+        if ($data_penjadwalan->count() == 0 OR $data_penjadwalan_2->count() == 0) { 
             //MENGECEK DOSEN DI JADWALAN YANG SAMA
             $dosen_punya_jadwal = array();
                 foreach ($request->id_user as $user_dosen) {
@@ -115,7 +115,15 @@ class PenjadwalanLainController extends Controller
                  $data_jadwal_dosen_2 = $jadwal_dosen_2->first(); 
 
                 if ($jadwal_dosen->count() > 0) {
-                    array_push($dosen_punya_jadwal, ['id_jadwal'=>$data_jadwal_dosen->id_jadwal,'id_dosen'=>$data_jadwal_dosen->id_dosen,'id_jadwal_2'=>$data_jadwal_dosen_2->id_jadwal,'id_dosen_2'=>$data_jadwal_dosen_2->id_dosen]);
+                    array_push($dosen_punya_jadwal,
+                     ['id_jadwal'=>$data_jadwal_dosen->id_jadwal,
+                     'id_dosen'=>$data_jadwal_dosen->id_dosen]);
+                }
+
+                if ($jadwal_dosen_2->count() > 0) {
+                      array_push($dosen_punya_jadwal,
+                     ['id_jadwal'=>$data_jadwal_dosen_2->id_jadwal,
+                     'id_dosen'=>$data_jadwal_dosen_2->id_dosen]);
                 }
             } 
             //APABILA JADWAL NYA SAMA MAKA MUNCUL PERINGATAN
