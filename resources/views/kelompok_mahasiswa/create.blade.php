@@ -6,7 +6,7 @@
 		<div class="col-md-12">
 			<ul class="breadcrumb">
 				<li><a href="{{ url('/home') }} ">Home</a></li>
-				<li><a href="{{ url('/admin/master_Kelompok Mahasiswas') }}">Kelompok Mahasiswa</a></li>
+				<li><a href="{{ route('kelompok_mahasiswa.index') }}">Kelompok Mahasiswa</a></li>
 				<li class="active">Tambah Kelompok Mahasiswa</li>
 			</ul>
 			<div class="panel panel-default">
