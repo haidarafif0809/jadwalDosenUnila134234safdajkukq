@@ -315,6 +315,39 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	]);
 
 
+	//PENJADWALAN CSL
+	Route::get('csl',[
+	'middleware' => ['auth'],
+	'as' => 'csl.create_csl',
+	'uses' => 'PenjadwalanLainController@create_csl'
+	]);
+
+	Route::post('penjadwalans/proses_csl',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.store_csl',
+	'uses' => 'PenjadwalanLainController@store'
+	]);
+
+	//PENJADWALAN TUTORIAL
+	Route::get('tutorial',[
+	'middleware' => ['auth'],
+	'as' => 'tutorial.create_tutorial',
+	'uses' => 'PenjadwalanLainController@create_tutorial'
+	]);
+
+	Route::post('penjadwalans/proses_tutorial',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.store_tutorial',
+	'uses' => 'PenjadwalanLainController@store'
+	]);
+
+	Route::put('penjadwalans/edit-csl-tutorial/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.edit-csl-tutorial',
+	'uses' => 'PenjadwalanLainController@update'
+	]);
+
+
 
 });
 
