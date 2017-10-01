@@ -760,7 +760,7 @@ class AndroidController extends Controller
                         // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
                         ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('penjadwalans.status_jadwal',0)
+                        ->where('penjadwalans.status_jadwal', '<', 2)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
                         ->where(function($query) use ($search){// search
                             $query->orWhere('penjadwalans.tanggal','LIKE',$search.'%')// OR LIKE TANGGAL
@@ -839,8 +839,9 @@ class AndroidController extends Controller
                         // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
                         ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('penjadwalans.status_jadwal',0)
+                        ->where('penjadwalans.status_jadwal', '<', 2)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
+                        ->where('id_kelompok',null)
                         ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
                         // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
                         ->get();
@@ -912,6 +913,7 @@ class AndroidController extends Controller
                         ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
                         ->where('penjadwalans.status_jadwal',0)
+                        ->where('id_kelompok',null)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
                         ->where(function($query) use ($search){// search
                             $query->orWhere('penjadwalans.tanggal','LIKE',$search.'%')// OR LIKE TANGGAL
@@ -992,6 +994,7 @@ class AndroidController extends Controller
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
                         ->where('penjadwalans.status_jadwal',0)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
+                        ->where('id_kelompok',null)
                         ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
                         // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
                         ->get();
@@ -1064,6 +1067,7 @@ class AndroidController extends Controller
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
                         ->where('penjadwalans.status_jadwal',0)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
+                        ->where('id_kelompok',null)
                         ->where(function($query) use ($search){// search
                             $query->orWhere('penjadwalans.tanggal','LIKE',$search.'%')// OR LIKE TANGGAL
                                   ->orWhere(DB::raw('DATE_FORMAT(penjadwalans.tanggal, "%d/%m/%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d/m/y
