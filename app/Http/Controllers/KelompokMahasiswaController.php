@@ -145,7 +145,7 @@ class KelompokMahasiswaController extends Controller
     {
 
          $this->validate($request, [
-            'mahasiswa'    => 'required|unique:list_kelompok_mahasiswas,id_kelompok_mahasiswa,NULL,id,id_kelompok_mahasiswa,'.$id
+            'mahasiswa'    => 'required|unique:list_kelompok_mahasiswas,id_mahasiswa,NULL,id,id_kelompok_mahasiswa,'.$id
             ]);   
 
          ListKelompokMahasiswa::create([

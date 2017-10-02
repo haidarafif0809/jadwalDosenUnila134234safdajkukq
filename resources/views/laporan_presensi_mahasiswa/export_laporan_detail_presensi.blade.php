@@ -6,7 +6,7 @@
         	<tr>
 				<th> NPM </th>
 				<th> Nama Mahasiswa </th>
-				<th> Mata Kuliah </th>
+				<th> Mata Kuliah / Materi </th>
 				<th> Ruangan </th>
 				<th> Waktu Absen </th>
 				<th> Jarak Absen</th>
