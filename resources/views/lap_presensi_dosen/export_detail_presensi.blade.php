@@ -22,7 +22,7 @@
            <td>{{$detail_presensi->nama_mata_kuliah}}</td>
            <td>{{$detail_presensi->ruangan}}</td>
            <td>{{$detail_presensi->waktu}}</td>
-           <td>{{$detail_presensi->jarak_absen}}</td>
+           <td>{{$detail_presensi->jarak_absen}} m</td>
            <td><img src="{{ public_path().'/'. ($detail_presensi->foto)}}"  ></td> 
         </tr>
         @endforeach
