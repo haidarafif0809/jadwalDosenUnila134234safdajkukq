@@ -742,7 +742,7 @@ class AndroidController extends Controller
         }
 
         //penjadwalan kuliah dan praktikum
-        $penjadwalans = Penjadwalan::searchJadwalBlockMahasiswa($array_block,$search)->get();
+        $penjadwalans = Penjadwalan::jadwalBlockMahasiswa($array_block)->searchJadwal($search)->get();
 
       foreach ($penjadwalans as $list_jadwal_mahasiswa) {// FOREACH
         if ($list_jadwal_mahasiswa['nama_mata_kuliah'] == "") {
@@ -773,8 +773,7 @@ class AndroidController extends Controller
       }// END FOREACH penjadwalan kuliah dan praktikum
 
       //penjadwalan csl dan tutor
-
-      $penjadwalans_csl_tutor = Penjadwalan::searchJadwalCslTutorMahasiswa($array_kelompok,$search)->get();
+      $penjadwalans_csl_tutor = Penjadwalan::jadwalCslTutorMahasiswa($array_kelompok)->searchJadwal($search)->get();
 
        foreach ($penjadwalans_csl_tutor as $list_jadwal_mahasiswa) {
 
