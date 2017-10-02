@@ -94,7 +94,7 @@ class Jadwal_dosen extends Model
 		
 		}
 
-// SCOE LIST JADWAL DOSEN => ANDROID 
+// SCOPE LIST JADWAL DOSEN => ANDROID 
     public function scopeListJadwalDosen($query_list_jadwal_dosen,$id_dosen){
 
       $waktu = date("Y-m-d H:i:s");// waktu sekarang
@@ -120,6 +120,7 @@ class Jadwal_dosen extends Model
                         return $query_list_jadwal_dosen;
     }	
 
+// SCOPE SEARCH JADWAL DOSEN
     public function scopeSearchJadwalDosen($query_search_jadwal_dosen,$id_dosen,$search){
 
       $waktu = date("Y-m-d H:i:s");// waktu sekarang
@@ -155,5 +156,50 @@ class Jadwal_dosen extends Model
                         return $query_search_jadwal_dosen;
     }	
 
+    // LAP. PRESENSI REKAP PRESENSI DOSEN
+    public function scopeRekapPresensiDosen($query_rekap_presensi,$request){
+
+               if($request->dosen == 'semua' AND $request->tipe_jadwal == 'SEMUA') {
+                        // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
+
+                $query_rekap_presensi->select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                                ->groupBy('jadwal_dosens.id_dosen');// GROUP BY ID DOSEN
+
+                }else if ($request->dosen == 'semua' AND $request->tipe_jadwal != 'SEMUA') {
+                        // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
+
+                  $query_rekap_presensi->select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                                ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
+                                ->groupBy('jadwal_dosens.id_dosen');// GROUP BY ID DOSEN
+
+                }else if ($request->dosen != 'semua' AND $request->tipe_jadwal == 'SEMUA') {
+                        // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
+
+                  $query_rekap_presensi->select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                                ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
+                                ->groupBy('jadwal_dosens.id_dosen');// GROUP BY ID DOSEN
+                }else{
+
+                $query_rekap_presensi->select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
+                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
+                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
+                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
+                                ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
+                                ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
+                                ->groupBy('jadwal_dosens.id_dosen'); // GROUP BY ID DOSEN
+                }
+
+              return $query_rekap_presensi;
+
+    }
 
 }
