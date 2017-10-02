@@ -185,29 +185,13 @@ class AndroidController extends Controller
     public function list_jadwal_dosen(Request $request){
 
         $dosen = $request->username;// DOSEN YANG LOGIN
-        $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+        $query_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+        $id_dosen = $query_dosen->id;
         $value = 0;
         $result = array();// ARRAY RESULT
-        $waktu = date("Y-m-d H:i:s");
 
-        $penjadwalans = Jadwal_dosen::select('penjadwalans.id_materi AS id_materi','penjadwalans.tipe_jadwal AS tipe_jadwal','jadwal_dosens.id_mata_kuliah AS id_mata_kuliah','jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen','penjadwalans.tipe_jadwal AS tipe_jadwal')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH,  RUANGAN, LATITUDE , LONGITUDE, BATAS JARAK ABSEN , TIPE JADWAL
-
-                        ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','jadwal_dosens.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                        // lEFT JOIN PENJADWALN
-                        ->where('jadwal_dosens.id_dosen',$id_dosen->id)
-                        //WHERE ID DOSEN = ID DOSEN LOGIN
-                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('jadwal_dosens.status_jadwal',0)
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
-                        ->orderBy(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->groupBy('jadwal_dosens.id_jadwal')// GROUP BY ID JADWAL
-                        ->get();
+        // QUERY LENGKAP NYA ADA DI MODEL JADWAL DOSEN , DISINI KITA MENGGUNAKAN SCOPE(ListJadwalDosen)  
+        $penjadwalans = Jadwal_dosen::ListJadwalDosen($id_dosen)->get();
 
 
       foreach ($penjadwalans as $list_jadwal_dosen) {// FOREACH
@@ -256,36 +240,13 @@ class AndroidController extends Controller
 
         $search = $request->search;// REQUEST SEARCH
         $dosen = $request->username;// DOSEN YANG LOGIN
-        $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
-        $waktu = date("Y-m-d H:i:s");
+        $query_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+        $id_dosen = $query_dosen->id;
 
         $result = array();// ARRAY RESULT
-
-        $penjadwalans = Jadwal_dosen::select('penjadwalans.id_materi AS id_materi','penjadwalans.tipe_jadwal AS tipe_jadwal','jadwal_dosens.id_mata_kuliah AS id_mata_kuliah','jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen','penjadwalans.tipe_jadwal AS tipe_jadwal')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, RUANGAN, LATITUDE , LONGITUDE, TIPE JADWAL
-
-                        ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','jadwal_dosens.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                        // lEFT JOIN PENJADWALN
-                        ->where('jadwal_dosens.id_dosen',$id_dosen->id)
-                        //WHERE ID DOSEN = ID DOSEN LOGIN
-                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('jadwal_dosens.status_jadwal',0)                        
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA  
-                        ->where(function($query) use ($search){// search
-                            $query->orWhere('jadwal_dosens.tanggal','LIKE',$search.'%')// OR LIKE TANGGAL
-                                  ->orWhere(DB::raw('DATE_FORMAT(jadwal_dosens.tanggal, "%d/%m/%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d/m/y
-                                  ->orWhere(DB::raw('DATE_FORMAT(jadwal_dosens.tanggal, "%d-%m-%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d-m-y
-                                  ->orWhere('jadwal_dosens.waktu_mulai','LIKE',$search.'%')// OR LIKE WAKTU MULAI
-                                  ->orWhere('master_mata_kuliahs.nama_mata_kuliah','LIKE',$search.'%')// OR LIKE NAMA MATA KULIAH
-                                  ->orWhere('master_ruangans.nama_ruangan','LIKE',$search.'%');  //OR LIKE NAMA RUANGAN
-                        })    // search  
-                        ->orderBy(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->groupBy('jadwal_dosens.id_jadwal')// GROUP BY ID JADWAL
+        
+        // QUERY LENGKAP NYA ADA DI MODEL JADWAL DOSEN , DISINI KITA MENGGUNAKAN SCOPE(ListJadwalDosen)  
+        $penjadwalans = Jadwal_dosen::SearchJadwalDosen($id_dosen,$search)
                         ->get();
 
 
