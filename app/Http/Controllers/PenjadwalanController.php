@@ -871,16 +871,32 @@ public function filter(Request $request, Builder $htmlBuilder)
         $modul = ModulBlok::leftJoin('moduls','moduls.id','=','modul_bloks.id_modul')->where('id_blok',$penjadwalans->id_block)->pluck('moduls.nama_modul','modul_bloks.id_modul_blok');
 
 
+        
+
+      
+      if ($penjadwalans->tipe_jadwal == 'CSL' ){
+
          //MENAMPILKAN KELOMPOK YANG JENIS CSL 
         $kelompoks = DB::table('kelompok_mahasiswas')
             ->where('jenis_kelompok','CSL')
             ->pluck('nama_kelompok_mahasiswa','id'); 
 
-      
-      if ($penjadwalans->tipe_jadwal == 'CSL' OR $penjadwalans->tipe_jadwal == 'TUTORIAL'){
           return view('penjadwalans_csl.edit',['users' => $users,'data_waktu' => $data_waktu,'data_block'=>$data_block,'kelompoks'=>$kelompoks])->with(compact('penjadwalans','data_dosen','modul','kelompoks')); 
       }
+      elseif ( $penjadwalans->tipe_jadwal == 'TUTORIAL') {
+
+    //MENAMPILKAN KELOMPOK YANG JENIS TUTOR 
+        $kelompoks = DB::table('kelompok_mahasiswas')
+            ->where('jenis_kelompok','TUTORIAL')
+            ->pluck('nama_kelompok_mahasiswa','id'); 
+
+          return view('penjadwalans_csl.edit',['users' => $users,'data_waktu' => $data_waktu,'data_block'=>$data_block,'kelompoks'=>$kelompoks])->with(compact('penjadwalans','data_dosen','modul','kelompoks')); 
+
+      }
       else{
+
+       
+
           return view('penjadwalans.edit',['users' => $users,'data_waktu' => $data_waktu,'data_block'=>$data_block])->with(compact('penjadwalans','data_dosen','modul'));
       }
     }
