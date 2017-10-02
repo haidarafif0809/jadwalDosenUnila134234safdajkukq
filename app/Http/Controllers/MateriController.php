@@ -128,14 +128,32 @@ class MateriController extends Controller
     public function destroy($id)
     {
 
-        Materi::destroy($id);
+        //menghapus data dengan pengecekan alert /peringatan
+        $penjadwalan = Penjadwalan::where('id_materi',$id); 
+ 
+        if ($penjadwalan->count() > 0) {
+            // menyiapkan pesan error
+            $html = 'Materi Tidak Bisa Dihapus Karena Sudah Dipakai Penjadwalan'; 
+        
+            Session::flash("flash_notification", [
+              "level"=>"danger",
+              "message"=>$html
+            ]); 
 
-        Session:: flash("flash_notification", [
-            "level"=>"success",
-            "message"=>"Materi Berhasil Di Hapus"
-        ]);
+            return redirect()->route('materi.index');      
+        }
+        else{
 
-        return redirect()->route('materi.index');
+            Materi::destroy($id);
+
+            Session:: flash("flash_notification", [
+                "level"=>"success",
+                "message"=>"Materi Berhasil Di Hapus"
+            ]);
+
+            return redirect()->route('materi.index');
+
+        }
 
     }
 }

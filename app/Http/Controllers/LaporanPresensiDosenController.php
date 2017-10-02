@@ -61,47 +61,11 @@ class LaporanPresensiDosenController extends Controller
      */ // proses lap rekap presensi dosen
     public function store(Request $request)
     {
-      // jika dosen == semua AND tipe jadwal == SEMUA
-      if ($request->dosen == 'semua' AND $request->tipe_jadwal == 'SEMUA') {
-                // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
+        //  QUERY LENGKAP NYA ADA DI MODEL JADWAL DOSEN, DISINI KITA MENGGUNAKAN SCOPE(RekapPresensiDosen)
+        $jadwal_dosens = Jadwal_dosen::RekapPresensiDosen($request)
+                         ->get();// GROUP BY ID DOSEN
 
-        $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                        ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                        ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                        ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
-
-        }else if ($request->dosen == 'semua' AND $request->tipe_jadwal != 'SEMUA') {
-                // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
-
-          $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                        ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                        ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                        ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
-                        ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
-
-        }else if ($request->dosen != 'semua' AND $request->tipe_jadwal == 'SEMUA') {
-                // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
-
-          $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                        ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                        ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                        ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
-                        ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
-        }else{
-
-        $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                        ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                        ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                        ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
-                        ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
-                        ->groupBy('jadwal_dosens.id_dosen')->get(); // GROUP BY ID DOSEN
-        }
-
-            return Datatables::of($jadwal_dosens)
+        return Datatables::of($jadwal_dosens)
                         // edit kolom nama dosen
                         ->editColumn('nama_dosen', function ($jadwal_dosen) use ($request) {
                         // ambil nama dosen
@@ -283,45 +247,9 @@ class LaporanPresensiDosenController extends Controller
     {
         $id_block = $request->id_block;
 
-               if($request->dosen == 'semua' AND $request->tipe_jadwal == 'SEMUA') {
-                        // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
-
-                $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                                ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
-
-                }else if ($request->dosen == 'semua' AND $request->tipe_jadwal != 'SEMUA') {
-                        // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
-
-                  $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                                ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
-                                ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
-
-                }else if ($request->dosen != 'semua' AND $request->tipe_jadwal == 'SEMUA') {
-                        // SELECT JADWAL DOSEN WHERE ID BLOCK = $request->id_block dan kita with dosen
-
-                  $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                                ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
-                                ->groupBy('jadwal_dosens.id_dosen')->get();// GROUP BY ID DOSEN
-                }else{
-
-                $jadwal_dosens = Jadwal_dosen::select('penjadwalans.tipe_jadwal AS tipe_jadwal','users.name AS nama_dosen','jadwal_dosens.id_dosen AS id_dosen')// SELECT NAMA DOSEN, ID DOSEN
-                                ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADWALAN ON ID JADWAL = ID
-                                ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID DOSEN = ID
-                                ->where('jadwal_dosens.id_block',$request->id_block)// WHERE ID BLOCK
-                                ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL 
-                                ->where('jadwal_dosens.id_dosen',$request->dosen)// AND ID DOSEN
-                                ->groupBy('jadwal_dosens.id_dosen')->get(); // GROUP BY ID DOSEN
-                }
-
+       //  QUERY LENGKAP NYA ADA DI MODEL JADWAL DOSEN, DISINI KITA MENGGUNAKAN SCOPE(RekapPresensiDosen)
+        $jadwal_dosens = Jadwal_dosen::RekapPresensiDosen($request)
+                         ->get();// GROUP BY ID DOSEN
      
          Excel::create("LAPORAN REKAP PRESENSI DOSEN", function($excel) use ($id_block, $jadwal_dosens,$request) {
 
@@ -464,56 +392,8 @@ class LaporanPresensiDosenController extends Controller
 // DETAIL PRESENSI
      public function detail(Request $request)
     {
-        // JIKA DOSEN == SEMUA AND TIPE JADWAL == SEMUA
-        if ($request->dosen == 'semua' AND $request->tipe_jadwal == 'SEMUA') {
 
-                $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
-                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
-                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
-                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
-                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
-                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
-                                    ->get();
-
-        }else if ($request->dosen == 'semua' AND $request->tipe_jadwal != 'SEMUA') {
-
-              $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
-                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
-                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
-                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
-                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
-                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
-                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL
-                                    ->get();
-
-        }else if ($request->dosen != 'semua' AND $request->tipe_jadwal == 'SEMUA') {
-          
-              $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
-                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
-                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
-                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
-                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
-                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
-                                    ->where('presensi.id_user',$request->dosen)// AND ID USER
-                                    ->get();
-        }
-        else{
-                   
-
-                $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
-                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
-                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
-                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
-                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
-                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// WHERE TIPE JADWAL;
-                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
-                                    ->where('presensi.id_user',$request->dosen)// AND ID USER
-                                    ->get();
-        }
+        $query_detail_presensi = Presensi::DetailPresensiDosen($request)->get();       
 
         return Datatables::of($query_detail_presensi)
                         // edit kolom nama dosen
@@ -552,57 +432,8 @@ class LaporanPresensiDosenController extends Controller
 
 
     public function export_detail(Request $request){
-       // JIKA DOSEN == SEMUA AND TIPE JADWAL == SEMUA
-        if ($request->dosen == 'semua' AND $request->tipe_jadwal == 'SEMUA') {
-
-                $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
-                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
-                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
-                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
-                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
-                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
-                                    ->get();
-
-        }else if ($request->dosen == 'semua' AND $request->tipe_jadwal != 'SEMUA') {
-
-              $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
-                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
-                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
-                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
-                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
-                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
-                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// AND TIPE JADWAL
-                                    ->get();
-
-        }else if ($request->dosen != 'semua' AND $request->tipe_jadwal == 'SEMUA') {
-          
-              $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
-                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
-                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
-                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
-                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
-                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
-                                    ->where('presensi.id_user',$request->dosen)// AND ID USER
-                                    ->get();
-        }
-        else{
-                   
-
-                $query_detail_presensi = Presensi::select('users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
-                // SELECT NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
-                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
-                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
-                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
-                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
-                                    ->where('penjadwalans.tipe_jadwal',$request->tipe_jadwal)// WHERE TIPE JADWAL;
-                                    ->where('presensi.id_block',$request->id_block)// AND ID BLOCK
-                                    ->where('presensi.id_user',$request->dosen)// AND ID USER
-                                    ->get();
-        }
-
+      
+           $query_detail_presensi = Presensi::DetailPresensiDosen($request)->get();       
 
            Excel::create("LAPORAN DETAIL PRESENSI DOSEN", function($excel) use ($query_detail_presensi) {
 

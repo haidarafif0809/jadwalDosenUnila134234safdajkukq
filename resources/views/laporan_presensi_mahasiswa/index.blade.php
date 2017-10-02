@@ -48,6 +48,11 @@
                         {!! $errors->first('tipe_jadwal', '<p class="help-block">:message</p>') !!}                            
                     </div>
                     
+                    <div class="form-group{{ $errors->has('id_kelompok') ? ' has-error' : '' }}" id="div_kelompok" style="display: none">
+                        {!! Form::select('id_kelompok', App\KelompokMahasiswa::pluck('nama_kelompok_mahasiswa','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => '--PILIH KELOMPOK--', 'id' => 'kelompok']) !!}
+                        {!! $errors->first('id_kelompok', '<p class="help-block">:message</p>') !!}                              
+                    </div>
+                    
                     <div class="form-group{{ $errors->has('mahasiswa') ? ' has-error' : '' }}">
                         {!! Form::select('mahasiswa', $mahasiswa, null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => '--MAHASISWA--', 'id' => 'mahasiswa']) !!}
                         {!! $errors->first('mahasiswa', '<p class="help-block">:message</p>') !!}                            
@@ -89,7 +94,7 @@
                                 <tr>
                                     <th>NPM</th>
                                     <th>Nama Mahasiswa</th>
-                                    <th>Mata Kuliah</th>
+                                    <th>Mata Kuliah / Materi</th>
                                     <th>Ruangan</th>
                                     <th>Waktu Absen</th>
                                     <th>Jarak Absen</th>
@@ -113,11 +118,26 @@
 @section('scripts')
 
 <script>
+$(document).on('change','#tipe_jadwal',function(){
+
+    var tipe_jadwal = $("#tipe_jadwal").val();
+
+    if (tipe_jadwal == "CSL" || tipe_jadwal == "TUTORIAL") {
+        $("#div_kelompok").show();
+    }
+    else{
+        $("#div_kelompok").hide();
+    }
+});
+</script>
+
+<script>
 $(document).on('click','#tampil_laporan',function(){
 
     var id_block = $("#block").val();
     var jenis_laporan = $("#jenis_laporan").val();
     var tipe_jadwal = $("#tipe_jadwal").val();
+    var id_kelompok = $("#kelompok").val();
     var mahasiswa = $("#mahasiswa").val();
 
     if (jenis_laporan == "") {
@@ -185,6 +205,7 @@ $(document).on('click','#tampil_laporan',function(){
                           d.id_block = $("#block").val();
                           d.jenis_laporan = $("#jenis_laporan").val();
                           d.tipe_jadwal = $("#tipe_jadwal").val();
+                          d.id_kelompok = $("#kelompok").val();
                           d.mahasiswa = $("#mahasiswa").val();
                           // d.custom = $('#myInput').val();
                           // etc
@@ -197,7 +218,7 @@ $(document).on('click','#tampil_laporan',function(){
             columns: [
                 { data: 'email', name: 'email' },
                 { data: 'name', name: 'name' },
-                { data: 'mata_kuliah', name: 'mata_kuliah' },
+                { data: 'nama_materi', name: 'nama_materi' },
                 { data: 'nama_ruangan', name: 'nama_ruangan' },
                 { data: 'waktu', name: 'waktu' },
                 { data: 'jarak_absen', name: 'jarak_absen' },
