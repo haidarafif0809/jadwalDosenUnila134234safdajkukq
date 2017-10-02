@@ -7,6 +7,7 @@ use App\Penjadwalan;
 use App\PresensiMahasiswa;
 use App\User;
 use App\Master_block;
+use App\Materi;;
 use App\MahasiswaBlock;
 use Auth;
 use Excel;
@@ -954,10 +955,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 //JIKA TIPE JADWAL DAN MAHASISWA KOSONG
       if ($request->tipe_jadwal == "" AND $request->mahasiswa == "") {
                   
-                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', DB::raw('IFNULL(master_mata_kuliahs.nama_mata_kuliah, "-") AS mata_kuliah'), DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
                 ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
                 ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
                 ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
                 ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
                 ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
                 ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
@@ -968,24 +970,70 @@ class LaporanRekapPresensiMahasiswaController extends Controller
   //JIKA MAHASISWA SAJA YG KOSONG
       elseif ($request->tipe_jadwal != "" AND $request->mahasiswa == "") {
 
-                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', DB::raw('IFNULL(master_mata_kuliahs.nama_mata_kuliah, "-") AS mata_kuliah'), DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+        //JIKA TIPE JADWAL YG DIPILIH CSL ATAU TUTORIAL
+        if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL") {
+
+          //JIKA KOLOM KELOMPOK TIDAK KOSONG (DIPILIH)
+          if ($request->id_kelompok != "") {
+
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
                 ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
                 ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
                 ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
+                ->leftJoin('kelompok_mahasiswas','presensi_mahasiswas.id_kelompok','=','kelompok_mahasiswas.id')
+                ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
+                ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
+                ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                ->where('role_user.role_id',3)
+                ->where('master_blocks.id', $request->id_block)
+                ->where('kelompok_mahasiswas.id', $request->id_kelompok)
+                ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->get();
+          }
+          //JIKA KOLOM KELOMPOK KOSONG (TIDAK DIPILIH)
+          else{
+
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+                ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
+                ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
+                ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
                 ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
                 ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
                 ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
                 ->where('role_user.role_id',3)
                 ->where('master_blocks.id', $request->id_block)
                 ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->get();
+
+          }
+
+        }
+        //JIKA TIPE JADWAL YG DIPILIH BUKAN CSL ATAU TUTORIAL
+        else{
+
+
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+                ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
+                ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
+                ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
+                ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
+                ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
+                ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                ->where('role_user.role_id',3)
+                ->where('master_blocks.id', $request->id_block)
+                ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->get();
+        }
+
       }
   //JIKA MAHASISWA SAJA YG KOSONG
       elseif ($request->tipe_jadwal == "" AND $request->mahasiswa != "") {
 
-                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', DB::raw('IFNULL(master_mata_kuliahs.nama_mata_kuliah, "-") AS mata_kuliah'), DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
                 ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
                 ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
                 ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
                 ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
                 ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
                 ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
@@ -996,10 +1044,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
   //JIKA SEMUA DIISI
       else{
 
-                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', DB::raw('IFNULL(master_mata_kuliahs.nama_mata_kuliah, "-") AS mata_kuliah'), DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
                 ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
                 ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
                 ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
                 ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
                 ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
                 ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
@@ -1010,7 +1059,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
       }
 
                       return Datatables::of($data_presensi)
- 
+
             //KETERANGAN UJIAN USER (MAHASISWA)
                     ->addColumn('keterangan', function($keterangan){                     
 
@@ -1065,38 +1114,85 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 //JIKA TIPE JADWAL DAN MAHASISWA KOSONG
       if ($request->tipe_jadwal == "0" AND $request->mahasiswa == "0") {
                   
-                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', DB::raw('IFNULL(master_mata_kuliahs.nama_mata_kuliah, "-") AS mata_kuliah'), DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
                 ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
                 ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
                 ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
                 ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
                 ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
                 ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
                 ->where('role_user.role_id',3)
                 ->where('master_blocks.id', $request->id_block)->get();
+                
 
       }
   //JIKA MAHASISWA SAJA YG KOSONG
       elseif ($request->tipe_jadwal != "0" AND $request->mahasiswa == "0") {
 
-                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', DB::raw('IFNULL(master_mata_kuliahs.nama_mata_kuliah, "-") AS mata_kuliah'), DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+        //JIKA TIPE JADWAL YG DIPILIH CSL ATAU TUTORIAL
+        if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL") {
+
+          //JIKA KOLOM KELOMPOK TIDAK KOSONG (DIPILIH)
+          if ($request->id_kelompok != "") {
+
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
                 ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
                 ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
                 ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
+                ->leftJoin('kelompok_mahasiswas','presensi_mahasiswas.id_kelompok','=','kelompok_mahasiswas.id')
+                ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
+                ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
+                ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                ->where('role_user.role_id',3)
+                ->where('master_blocks.id', $request->id_block)
+                ->where('kelompok_mahasiswas.id', $request->id_kelompok)
+                ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->get();
+          }
+          //JIKA KOLOM KELOMPOK KOSONG (TIDAK DIPILIH)
+          else{
+
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
+                ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
+                ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
+                ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
                 ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
                 ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
                 ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
                 ->where('role_user.role_id',3)
                 ->where('master_blocks.id', $request->id_block)
                 ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->get();
+
+          }
+
+        }
+        //JIKA TIPE JADWAL YG DIPILIH BUKAN CSL ATAU TUTORIAL
+        else{
+
+
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
+                ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
+                ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
+                ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
+                ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
+                ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
+                ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                ->where('role_user.role_id',3)
+                ->where('master_blocks.id', $request->id_block)
+                ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->get();
+        }
       }
   //JIKA MAHASISWA SAJA YG KOSONG
       elseif ($request->tipe_jadwal == "0" AND $request->mahasiswa != "0") {
 
-                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', DB::raw('IFNULL(master_mata_kuliahs.nama_mata_kuliah, "-") AS mata_kuliah'), DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
                 ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
                 ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
                 ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
                 ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
                 ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
                 ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
@@ -1107,10 +1203,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
   //JIKA SEMUA DIISI
       else{
 
-                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', DB::raw('IFNULL(master_mata_kuliahs.nama_mata_kuliah, "-") AS mata_kuliah'), DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
+                $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
                 ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
                 ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
                 ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
                 ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
                 ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
                 ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
@@ -1124,7 +1221,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
     Excel::create('Detail Presensi Mahasiswa', function($excel) use ($data_presensi) {
       // Set property
       $excel->sheet('Detail Presensi Mahasiswa', function($sheet) use ($data_presensi) {
-
+              
               $sheet->loadView('laporan_presensi_mahasiswa.export_laporan_detail_presensi', ['data_presensi' => $data_presensi ]);
            
       
