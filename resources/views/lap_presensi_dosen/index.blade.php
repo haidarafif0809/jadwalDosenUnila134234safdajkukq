@@ -17,6 +17,15 @@
 				<div class="panel-body">
 <br>
 					   <div class="row">
+
+                <div class="col-md-2">                  
+                    <div class="form-group{{ $errors->has('jenis_laporan') ? ' has-error' : '' }} ">
+                        {!! Form::select('jenis_laporan', ['1' => 'Rekap', '2' => 'Detail'], null, ['class'=>'form-control js-selectize-reguler', 'id' => 'jenis_laporan',
+                         'placeholder' => 'Jenis Laporan']) !!}
+                        {!! $errors->first('jenis_laporan', '<p class="help-block">:message</p>') !!}                    
+                    </div>
+                </div>
+
 						    <div class="col-md-2">
 						        <div class="form-group{{ $errors->has('id_block') ? ' has-error' : '' }}">
 
@@ -33,16 +42,8 @@
 						    </div>
 
                 <div class="col-md-2">                  
-                    <div class="form-group{{ $errors->has('jenis_laporan') ? ' has-error' : '' }} ">
-                        {!! Form::select('jenis_laporan', ['1' => 'Rekap', '2' => 'Detail'], null, ['class'=>'form-control js-selectize-reguler', 'id' => 'jenis_laporan',
-                         'placeholder' => 'Jenis Laporan']) !!}
-                        {!! $errors->first('jenis_laporan', '<p class="help-block">:message</p>') !!}                    
-                    </div>
-                </div>
-
-                <div class="col-md-2">                  
                   <div class="form-group{{ $errors->has('tipe_jadwal') ? ' has-error' : '' }}">
-                        {!! Form::select('tipe_jadwal', ['SEMUA'=>'SEMUA','KULIAH'=>'KULIAH','PRAKTIKUM'=>'PRAKTIKUM','CSL'=>'CSL','PLENO'=>'PLENO','TUTORIAL'=>'TUTORIAL'], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'PILIH TIPE JADWAL','id' => 'tipe_jadwal']) !!}
+                        {!! Form::select('tipe_jadwal', ['SEMUA'=>'- SEMUA -','KULIAH'=>'KULIAH','PRAKTIKUM'=>'PRAKTIKUM','CSL'=>'CSL','PLENO'=>'PLENO','TUTORIAL'=>'TUTORIAL'], null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'PILIH TIPE JADWAL','id' => 'tipe_jadwal']) !!}
                         {!! $errors->first('tipe_jadwal', '<p class="help-block">:message</p>') !!}
                   </div>
                 </div>
@@ -88,14 +89,14 @@
                                             <th>Belum Terlaksana</th>
                                             <th>Batal</th>
                                             <th>Digantikan</th>
-                                            <th>Presentasi Kehadiran (%)</th>
+                                            <th>Persentasi Kehadiran (%)</th>
                                
                                         </tr>
                                     </thead>
                                 </table>
                   </div>
 <br>
-                <h6 id="keterangan" style="text-align: left ; color: red ; display: none"><i> * Presentasi Kehadiran = (Jumlah Hadir * 100) / Jumlah Jadwal</i></h6>
+                <h6 id="keterangan" style="text-align: left ; color: red ; display: none"><i> * Persentasi Kehadiran = (Jumlah Hadir * 100) / Jumlah Jadwal</i></h6>
 
 
                 <span id="detail" style="display:none;">
@@ -107,7 +108,7 @@
 
                             <th>Nama Dosen</th>
                             <th>Tipe Jadwal</th>
-                            <th>Mata Kuliah</th>
+                            <th>Materi / Mata Kuliah</th>
                             <th>Ruangan</th>
                             <th>Waktu Absen</th>                                            
                             <th>Jarak Absen</th>
@@ -148,20 +149,18 @@ $(function() {
       var dosen = $("#dosen").val();
       var tipe_jadwal = $("#tipe_jadwal").val();
 
+      if (jenis_laporan == "") {
 
-      if (master_blocks == "") {
+        alert("Jenis Laporan belum dipilih!");
+        }
+      else if (master_blocks == "") {
 
         alert("Block belum dipilih!");
 
       }else if (tipe_jadwal == "") {
 
         alert("Tipe Jadwal belum dipilih!");
-
-      }else if (jenis_laporan == "") {
-
-        alert("Jenis Laporan belum dipilih!");
-
-      }else{
+    }else{
 
 
            if (jenis_laporan == 1) {
