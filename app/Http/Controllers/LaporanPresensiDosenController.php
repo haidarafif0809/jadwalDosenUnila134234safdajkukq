@@ -10,6 +10,7 @@ use App\Jadwal_dosen;
 use App\Presensi;
 use App\Master_block;
 use App\Master_mata_kuliah;
+use App\Materi;
 use Excel;
 use Illuminate\Support\Facades\DB;
 
@@ -405,9 +406,22 @@ class LaporanPresensiDosenController extends Controller
                                 // ambil TIPE  JADWAL
                         return $presensi_dosen['tipe_jadwal'];
                         })
-                        ->editColumn('mata_kuliah', function ($presensi_dosen) {
+                        ->editColumn('mata_kuliah', function ($presensi_dosen) use($request) {
                         // NAMA MATA KULIAH
-                        return $presensi_dosen['nama_mata_kuliah'];
+
+                          if ($presensi_dosen['tipe_jadwal'] == 'CSL' || $presensi_dosen['tipe_jadwal'] == 'TUTORIAL') {
+                            
+                          $materi = Materi::select('nama_materi')->where('id',$presensi_dosen['id_materi'])->first();
+
+
+                           return $materi->nama_materi;   
+
+                          }else{
+
+                          return $presensi_dosen['nama_mata_kuliah'];
+                          }
+
+
                         })
                         ->editColumn('ruangan', function ($presensi_dosen) {
                                 // ambil RUANGAN
@@ -432,7 +446,7 @@ class LaporanPresensiDosenController extends Controller
 
 
     public function export_detail(Request $request){
-      
+
            $query_detail_presensi = Presensi::DetailPresensiDosen($request)->get();       
 
            Excel::create("LAPORAN DETAIL PRESENSI DOSEN", function($excel) use ($query_detail_presensi) {

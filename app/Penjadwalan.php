@@ -91,9 +91,9 @@ class Penjadwalan extends Model
 		
 		}
 
-    public function scopeJadwalBlockMahasiswa($query,$array_block){
+    public function scopeJadwalBlockMahasiswa($query,$tanggal,$array_block){
       $waktu = date("Y-m-d H:i:s");
-      $hari_ini = date("Y-m-d");
+     
 
       $query->select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')
         // DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
@@ -105,7 +105,7 @@ class Penjadwalan extends Model
                         // LEFT JOIN MASTER RUANGAN
                         ->whereIn('penjadwalans.id_block', $array_block)
                         //WHERE ID BLOK = ID BLOK USER LOGIN
-                        ->where('penjadwalans.tanggal', '=', $hari_ini)
+                        ->where('penjadwalans.tanggal', '=', $tanggal)
                         // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
                         ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
@@ -118,9 +118,9 @@ class Penjadwalan extends Model
                         return $query;
     }
 
-    public function scopeJadwalCslTutorMahasiswa($query,$array_kelompok){
-  $waktu = date("Y-m-d H:i:s");
-      $hari_ini = date("Y-m-d");
+    public function scopeJadwalCslTutorMahasiswa($query,$tanggal,$array_kelompok){
+   $waktu = date("Y-m-d H:i:s");
+
 
       $query->select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'materis.nama_materi AS materi', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen') 
         // DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
@@ -132,7 +132,7 @@ class Penjadwalan extends Model
                         // LEFT JOIN MASTER RUANGAN
                         ->whereIn('penjadwalans.id_kelompok', $array_kelompok)
                         //WHERE ID BLOK = ID BLOK USER LOGIN
-                        ->where('penjadwalans.tanggal', '=', $hari_ini)
+                        ->where('penjadwalans.tanggal', '=', $tanggal)
                         // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
                         ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL

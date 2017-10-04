@@ -210,9 +210,12 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
           'Tanggal',
           'Mulai',
           'Selesai',
+          'Tipe Jadwal',
           'Block',
           'Mata Kuliah',
           'Ruangan',
+          'Materi',
+          'Kelompok Mahasiswa',
           'Dosen',
           'Status Jadwal'
 
@@ -259,7 +262,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                     $dosen_list.= ",".$jadwal_dosen->dosen->name;
                     }
                 }
-            if ($penjadwalan->id_mata_kuliah == "-") {
+            if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == 0 OR $penjadwalan->id_mata_kuliah == null) {
                 
                 $mata_kuliah = "-";
             }
@@ -267,14 +270,49 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                 $mata_kuliah =$penjadwalan->mata_kuliah->nama_mata_kuliah;
             }
 
+            //PENGAMBILAN tipe_jadwal di penjadwalan    
+                $penjadwalan_tipe = Penjadwalan::select('tipe_jadwal')->where('id',$id_jadwal)->get();
+                 foreach ($penjadwalan_tipe as $penjadwalan_tipes) {
+                  $tipe_jadwal = $penjadwalan_tipes->tipe_jadwal;
+                }
+
+            //PENGAMBILAN id materi di penjadwalan    
+                $penjadwalan_materi = Penjadwalan::with(['materi'])->where('id',$id_jadwal)->get();
+                    foreach ($penjadwalan_materi as $penjadwalan_materis) {
+                      # code...
+                        if ($penjadwalan_materis->id_materi == "-" OR $penjadwalan_materis->id_materi == null  OR $penjadwalan_materis->id_materi == "0") {
+                           $materi = "-";
+                        }
+                        else{
+                           $materi =  $penjadwalan_materis->materi->nama_materi;
+                        }
+                    }
+
+            //PENGAMBILAN id kelompok di penjadwalan    
+                $penjadwalan_kelompok = Penjadwalan::with(['kelompok'])->where('id',$id_jadwal)->get();
+                    foreach ($penjadwalan_kelompok as $penjadwalan_kelompoks) {
+                      # code...
+                       if ($penjadwalan_kelompoks->id_kelompok == "-" OR $penjadwalan_kelompoks->id_kelompok == null  OR $penjadwalan_kelompoks->id_kelompok == "0") {
+                          $kelompok = "-";
+                        }
+                        else{
+                          $kelompok =  $penjadwalan_kelompoks->kelompok->nama_kelompok_mahasiswa;
+                        }
+                    }
+                
+
+
 
              $sheet->row(++$row, [
             $penjadwalan->tanggal,
             $penjadwalan->waktu_mulai,
             $penjadwalan->waktu_selesai,
+            $tipe_jadwal,
             $penjadwalan->block->nama_block,
             $mata_kuliah,
             $penjadwalan->ruangan->nama_ruangan,
+            $materi,
+            $kelompok,
             $dosen_list,
             $status,
             ]); 
@@ -316,7 +354,7 @@ public function filter(Request $request, Builder $htmlBuilder)
 
             if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
                 
-                $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal);
+                $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal);
 
                 $jenis_id_jadwal = 1;
       
@@ -332,7 +370,7 @@ public function filter(Request $request, Builder $htmlBuilder)
 
             elseif ($request->id_ruangan == 'semua' && $request->id_dosen != 'semua' && $request->id_block == 'semua' ) {
 
-                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$request->id_dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal);
+                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$request->id_dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
 
                  $jenis_id_jadwal = 0;      
 
@@ -383,8 +421,22 @@ public function filter(Request $request, Builder $htmlBuilder)
                         'edit_url'  => route('penjadwalans.edit', $id_jadwal),
                         'confirm_message'   => 'Yakin Mau Menghapus Jadwal ?'
                         ]);
-                })
-            ->addColumn('jadwal_dosen', function($penjadwalan) use ($jenis_id_jadwal) {
+                })->addColumn('tipe_jadwal',function($penjadwalanss) use ($jenis_id_jadwal){
+                    if ($jenis_id_jadwal == 0) {
+                        $id_jadwal = $penjadwalanss->id_jadwal; 
+                    } else {
+                        $id_jadwal = $penjadwalanss->id;
+                    }
+
+                //PENGAMBILAN id materi di penjadwalan    
+                $penjadwalan_tipe = Penjadwalan::select('tipe_jadwal')->where('id',$id_jadwal)->get();
+                    foreach ($penjadwalan_tipe as $penjadwalan_tipes) {
+                      # code...
+                      return $penjadwalan_tipes->tipe_jadwal;
+                    }
+                
+
+            })->addColumn('jadwal_dosen', function($penjadwalan) use ($jenis_id_jadwal) {
                    if ($jenis_id_jadwal == 0) {
 
                         $id_jadwal = $penjadwalan->id_jadwal;  
@@ -441,18 +493,61 @@ public function filter(Request $request, Builder $htmlBuilder)
                     return "-";
                 }
                 else {
+
                     return $penjadwalan->mata_kuliah->nama_mata_kuliah;
                 }
+            })->addColumn('materi',function($penjadwalanss) use ($jenis_id_jadwal){
+                    if ($jenis_id_jadwal == 0) {
+                        $id_jadwal = $penjadwalanss->id_jadwal; 
+                    } else {
+                        $id_jadwal = $penjadwalanss->id;
+                    }
+
+                //PENGAMBILAN id materi di penjadwalan    
+                $penjadwalan_materi = Penjadwalan::with(['materi'])->where('id',$id_jadwal)->get();
+                    foreach ($penjadwalan_materi as $penjadwalan_materis) {
+                      # code...
+                        if ($penjadwalan_materis->id_materi == "-" OR $penjadwalan_materis->id_materi == null  OR $penjadwalan_materis->id_materi == "0") {
+                          return "-";
+                        }
+                        else{
+                          return $penjadwalan_materis->materi->nama_materi;
+                        }
+                    }
+                
+            })
+            ->addColumn('kelompok',function($penjadwalanss) use ($jenis_id_jadwal){
+                    if ($jenis_id_jadwal == 0) {
+                        $id_jadwal = $penjadwalanss->id_jadwal; 
+                    } else {
+                        $id_jadwal = $penjadwalanss->id;
+                    }
+
+                //PENGAMBILAN id kelompok di penjadwalan    
+                $penjadwalan_kelompok = Penjadwalan::with(['kelompok'])->where('id',$id_jadwal)->get();
+                    foreach ($penjadwalan_kelompok as $penjadwalan_kelompoks) {
+                      # code...
+                       if ($penjadwalan_kelompoks->id_kelompok == "-" OR $penjadwalan_kelompoks->id_kelompok == null  OR $penjadwalan_kelompoks->id_kelompok == "0") {
+                          return "-";
+                        }
+                        else{
+                          return $penjadwalan_kelompoks->kelompok->nama_kelompok_mahasiswa;
+                        }
+                    }
+                
+
             })->make(true);
         }
         $html = $htmlBuilder
         ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
         ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
-        ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
-        ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
+        ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])  
+        ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal', 'orderable' => false, ])       
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
         ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
-        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
+        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ]) 
+        ->addColumn(['data' => 'materi', 'name' => 'materi', 'title' => 'Materi', 'orderable' => false, ])
+        ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, ]) 
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
