@@ -353,6 +353,17 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 
 // ROTE ANDROID
 
+Route::get('/versi-absen-dosen',function(){
+
+	return env('APP_ABSEN_DOSEN_VERSION');
+
+});
+Route::get('/versi-absen-mahasiswa',function(){
+
+	return env('APP_ABSEN_MAHASISWA_VERSION');
+
+});
+
 Route::get('/list_ruangan', "AndroidController@list_ruangan");
 	//DOSEN
 
