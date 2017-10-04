@@ -145,21 +145,42 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	Route::resource('kelompok_mahasiswa', 'KelompokMahasiswaController');
 	Route::resource('materi', 'MateriController'); 
 
+//DOWNLOAD EXCEL REKAP TIPE JADWAL CSL DAN TUTORIAL
+	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_csl_tutor_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}/{id_kelompok}',[
+	'middleware' => ['auth'],
+	'as' => 'laporan_presensi_mahasiswa.download_lap_rekap_csl_tutor_presensi',
+	'uses' => 'LaporanRekapPresensiMahasiswaController@download_lap_rekap_csl_tutor_presensi'
+	]);
+
+//DOWNLOAD EXCEL REKAP SEMUA TIPE JADWAL
+	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_semua_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}/{id_kelompok}',[
+	'middleware' => ['auth'],
+	'as' => 'laporan_presensi_mahasiswa.download_lap_rekap_semua_presensi',
+	'uses' => 'LaporanRekapPresensiMahasiswaController@download_lap_rekap_semua_presensi'
+	]);
+
 //DOWNLOAD EXCEL REKAP
-	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}',[
+	Route::get('/laporan_presensi_mahasiswa/download_lap_rekap_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}/{id_kelompok}',[
 	'middleware' => ['auth'],
 	'as' => 'laporan_presensi_mahasiswa.download_lap_rekap_presensi',
 	'uses' => 'LaporanRekapPresensiMahasiswaController@download_lap_rekap_presensi'
 	]);
 
 //DOWNLOAD EXCEL DETAIL
-	Route::get('/laporan_presensi_mahasiswa/download_lap_detail_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}',[
+	Route::get('/laporan_presensi_mahasiswa/download_lap_detail_presensi/{id_block}/{jenis_laporan}/{tipe_jadwal}/{mahasiswa}/{id_kelompok}',[
 	'middleware' => ['auth'],
 	'as' => 'laporan_presensi_mahasiswa.download_lap_detail_presensi',
 	'uses' => 'LaporanRekapPresensiMahasiswaController@download_lap_detail_presensi'
 	]);
 
-//PROSES LAPORAN REKAP
+//PROSES LAPORAN REKAP CSL DAN TUTORIAL
+	Route::post('laporan_presensi_mahasiswa/proses_laporan_rekap_csl_tutor',[
+	'middleware' => ['auth'],
+	'as' => 'laporan_presensi_mahasiswa.proses_laporan_rekap_csl_tutor',
+	'uses' => 'LaporanRekapPresensiMahasiswaController@proses_laporan_rekap_csl_tutor'
+	]);
+
+//PROSES LAPORAN REKAP KULIAH< PLENO DA PRAKTIKUM
 	Route::post('laporan_presensi_mahasiswa/proses_laporan_rekap',[
 	'middleware' => ['auth'],
 	'as' => 'laporan_presensi_mahasiswa.proses_laporan_rekap',
@@ -171,6 +192,13 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'middleware' => ['auth'],
 	'as' => 'laporan_presensi_mahasiswa.proses_laporan_detail',
 	'uses' => 'LaporanRekapPresensiMahasiswaController@proses_laporan_detail'
+	]);
+
+//PROSES LAPORAN REKAP SEMUA TIPE JADWAL
+	Route::post('laporan_presensi_mahasiswa/proses_laporan_rekap_semua',[
+	'middleware' => ['auth'],
+	'as' => 'laporan_presensi_mahasiswa.proses_laporan_rekap_semua',
+	'uses' => 'LaporanRekapPresensiMahasiswaController@proses_laporan_rekap_semua'
 	]);
 
 	Route::resource('laporan_rekap_presensi_dosen', 'LaporanPresensiDosenController'); 

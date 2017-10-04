@@ -67,6 +67,7 @@
 
                 {!! Form::close() !!}
 
+<!--LAPORAN REKAP KULIAH, PLENO, PRAKTIKUM -->
                 <div class="col-md-12" style="display: none" id="laporan_presensi"><hr>
                 <center><h1>REKAP DAFTAR HADIR MAHASISWA</h1></center><br>
                     <div class="table-responsive">
@@ -77,7 +78,7 @@
                                     <th>Nama Mahasiswa</th>
                                     <th>Jumlah Jadwal</th>
                                     <th>Jumlah Hadir</th>
-                                    <th>Presentase</th>
+                                    <th>Persentase</th>
                                     <th>Keterangan</th>
 
                                 </tr>
@@ -86,6 +87,27 @@
                     </div>
                 </div>
 
+<!--LAPORAN REKAP CSL DAN TUTORIAL -->
+                <div class="col-md-12" style="display: none" id="laporan_presensi_csl_tutor"><hr>
+                <center><h1>REKAP DAFTAR HADIR MAHASISWA</h1></center><br>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm" id="table-laporan-csl-tutor">
+                            <thead>
+                                <tr>
+                                    <th>NPM</th>
+                                    <th>Nama Mahasiswa</th>
+                                    <th>Jumlah Jadwal</th>
+                                    <th>Jumlah Hadir</th>
+                                    <th>Persentase</th>
+                                    <th>Keterangan</th>
+
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+
+<!--LAPORAN DETAIL -->
                 <div class="col-md-12" style="display: none" id="laporan_presensi_detail"><hr>
                 <center><h1>DETAIL DAFTAR HADIR MAHASISWA</h1></center><br>
                     <div class="table-responsive">
@@ -99,6 +121,28 @@
                                     <th>Waktu Absen</th>
                                     <th>Jarak Absen</th>
                                     <th>Foto</th>
+                                    <th>Keterangan</th>
+
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+
+<!--LAPORAN REKAP SEMUA TANPA TIPE JADWAL  -->
+                <div class="col-md-12" style="display: none" id="laporan_presensi_rekap_semua"><hr>
+                <center><h1>DETAIL DAFTAR HADIR MAHASISWA</h1></center><br>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm" id="table-laporan-rekap-semua">
+                            <thead>
+                                <tr>
+                                    <th>NPM</th>
+                                    <th>Nama Mahasiswa</th>
+                                    <th>Csl</th>
+                                    <th>Kuliah</th>
+                                    <th>Pleno</th>
+                                    <th>Praktikum</th>
+                                    <th>Tutorial</th>
                                     <th>Keterangan</th>
 
                                 </tr>
@@ -150,47 +194,167 @@ $(document).on('click','#tampil_laporan',function(){
     }
     else if(jenis_laporan == 1){
 
-    //LAPORAN REKAP
-        $('#table-laporan').DataTable().destroy();
-        $('#table-laporan').DataTable({
-            processing: true,
-            serverSide: true,
-                     "ajax": {
-                url: '{{ route("laporan_presensi_mahasiswa.proses_laporan_rekap") }}', "data": function ( d ) {
-                          d.id_block = $("#block").val();
-                          d.jenis_laporan = $("#jenis_laporan").val();
-                          d.tipe_jadwal = $("#tipe_jadwal").val();
-                          d.mahasiswa = $("#mahasiswa").val();
-                          // d.custom = $('#myInput').val();
-                          // etc
+    //FILTER REKAP SEMUA TIPE JADWAL
+        if(tipe_jadwal == "" && id_kelompok == "" && mahasiswa == ""){
+            
+            //LAPORAN DETAIL
+            $('#table-laporan-rekap-semua').DataTable().destroy();
+            $('#table-laporan-rekap-semua').DataTable({
+                processing: true,
+                serverSide: true,
+                         "ajax": {
+                    url: '{{ route("laporan_presensi_mahasiswa.proses_laporan_rekap_semua") }}', "data": function ( d ) {
+                              d.id_block = $("#block").val();
+                              d.jenis_laporan = $("#jenis_laporan").val();
+                              d.tipe_jadwal = $("#tipe_jadwal").val();
+                              d.id_kelompok = $("#kelompok").val();
+                              d.mahasiswa = $("#mahasiswa").val();
+                              // d.custom = $('#myInput').val();
+                              // etc
+                          },
+                    type:'POST',
+                      'headers': {
+                          'X-CSRF-TOKEN': '{{ csrf_token() }}'
                       },
-                type:'POST',
-                  'headers': {
-                      'X-CSRF-TOKEN': '{{ csrf_token() }}'
                   },
-              },
-            columns: [
-                { data: 'email', name: 'email' },
-                { data: 'name', name: 'name' },
-                { data: 'jumlah_jadwal', name: 'jumlah_jadwal', class: 'angka' },
-                { data: 'jumlah_hadir', name: 'jumlah_hadir', class: 'angka' },
-                { data: 'presentase', name: 'presentase', class: 'angka' },
-                { data: 'keterangan', name: 'keterangan' }
-            ]
-        });
+                columns: [
+                    { data: 'email', name: 'email' },
+                    { data: 'name', name: 'name' },
+                    { data: 'persentase_csl', name: 'persentase_csl', class: 'angka' },
+                    { data: 'persentase_kuliah', name: 'persentase_kuliah', class: 'angka' },
+                    { data: 'persentase_pleno', name: 'persentase_pleno', class: 'angka' },
+                    { data: 'persentase_praktikum', name: 'persentase_praktikum', class: 'angka' },
+                    { data: 'persentase_tutorial', name: 'persentase_tutorial', class: 'angka' },
+                    { data: 'keterangan', name: 'keterangan' }
+                ]
+            });
 
-    $("#laporan_presensi").show();
-    $("#laporan_presensi_detail").hide();
-    $("#btnExcel").show();
-    
-    if (tipe_jadwal == "") {
-        tipe_jadwal = 0;
-    };
-    if (mahasiswa == "") {
-        mahasiswa = 0;
-    };
+            $("#laporan_presensi_rekap_semua").show();
+            $("#laporan_presensi_csl_tutor").hide();
+            $("#laporan_presensi_detail").hide();
+            $("#laporan_presensi").hide();
+            $("#btnExcel").show();
 
-    $("#btnExcel").attr("href", "laporan_presensi_mahasiswa/download_lap_rekap_presensi/"+id_block+"/"+jenis_laporan+"/"+tipe_jadwal+"/"+mahasiswa+"");
+            if (tipe_jadwal == "") {
+                tipe_jadwal = 0;
+            };
+            if (mahasiswa == "") {
+                mahasiswa = 0;
+            };
+            if (id_kelompok == "") {
+                id_kelompok = 0;
+            };
+
+            $("#btnExcel").attr("href", "laporan_presensi_mahasiswa/download_lap_rekap_semua_presensi/"+id_block+"/"+jenis_laporan+"/"+tipe_jadwal+"/"+mahasiswa+"/"+id_kelompok+"");
+
+        }
+    //JIKA ADA TIPE JADWAL YG DIPILIH
+        else{
+
+            if (tipe_jadwal == "CSL" || tipe_jadwal == "TUTORIAL") {
+
+
+        //LAPORAN REKAP CSL DAN TUTORIAL
+                $('#table-laporan-csl-tutor').DataTable().destroy();
+                $('#table-laporan-csl-tutor').DataTable({
+                    processing: true,
+                    serverSide: true,
+                             "ajax": {
+                        url: '{{ route("laporan_presensi_mahasiswa.proses_laporan_rekap_csl_tutor") }}', "data": function ( d ) {
+                                  d.id_block = $("#block").val();
+                                  d.jenis_laporan = $("#jenis_laporan").val();
+                                  d.tipe_jadwal = $("#tipe_jadwal").val();
+                                  d.id_kelompok = $("#kelompok").val();
+                                  d.mahasiswa = $("#mahasiswa").val();
+                                  // d.custom = $('#myInput').val();
+                                  // etc
+                              },
+                        type:'POST',
+                          'headers': {
+                              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                          },
+                      },
+                    columns: [
+                        { data: 'email', name: 'email' },
+                        { data: 'name', name: 'name' },
+                        { data: 'jumlah_jadwal', name: 'jumlah_jadwal', class: 'angka' },
+                        { data: 'jumlah_hadir', name: 'jumlah_hadir', class: 'angka' },
+                        { data: 'presentase', name: 'presentase', class: 'angka' },
+                        { data: 'keterangan', name: 'keterangan' }
+                    ]
+                });
+
+                $("#laporan_presensi_rekap_semua").hide();
+                $("#laporan_presensi_csl_tutor").show();
+                $("#laporan_presensi").hide();
+                $("#laporan_presensi_detail").hide();
+                $("#btnExcel").show();
+                
+                if (tipe_jadwal == "") {
+                    tipe_jadwal = 0;
+                };
+                if (mahasiswa == "") {
+                    mahasiswa = 0;
+                };
+                if (id_kelompok == "") {
+                    id_kelompok = 0;
+                };
+
+                $("#btnExcel").attr("href", "laporan_presensi_mahasiswa/download_lap_rekap_csl_tutor_presensi/"+id_block+"/"+jenis_laporan+"/"+tipe_jadwal+"/"+mahasiswa+"/"+id_kelompok+"");
+
+            }
+            else{
+
+        //LAPORAN REKAP KULIAH, PLENO DAN PRAKTIKUM
+                $('#table-laporan').DataTable().destroy();
+                $('#table-laporan').DataTable({
+                    processing: true,
+                    serverSide: true,
+                             "ajax": {
+                        url: '{{ route("laporan_presensi_mahasiswa.proses_laporan_rekap") }}', "data": function ( d ) {
+                                  d.id_block = $("#block").val();
+                                  d.jenis_laporan = $("#jenis_laporan").val();
+                                  d.tipe_jadwal = $("#tipe_jadwal").val();
+                                  d.id_kelompok = $("#kelompok").val();
+                                  d.mahasiswa = $("#mahasiswa").val();
+                                  // d.custom = $('#myInput').val();
+                                  // etc
+                              },
+                        type:'POST',
+                          'headers': {
+                              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                          },
+                      },
+                    columns: [
+                        { data: 'email', name: 'email' },
+                        { data: 'name', name: 'name' },
+                        { data: 'jumlah_jadwal', name: 'jumlah_jadwal', class: 'angka' },
+                        { data: 'jumlah_hadir', name: 'jumlah_hadir', class: 'angka' },
+                        { data: 'presentase', name: 'presentase', class: 'angka' },
+                        { data: 'keterangan', name: 'keterangan' }
+                    ]
+                });
+
+                $("#laporan_presensi_rekap_semua").hide();
+                $("#laporan_presensi_csl_tutor").hide();
+                $("#laporan_presensi").show();
+                $("#laporan_presensi_detail").hide();
+                $("#btnExcel").show();
+                
+                if (tipe_jadwal == "") {
+                    tipe_jadwal = 0;
+                };
+                if (mahasiswa == "") {
+                    mahasiswa = 0;
+                };
+                if (id_kelompok == "") {
+                    id_kelompok = 0;
+                };
+
+                $("#btnExcel").attr("href", "laporan_presensi_mahasiswa/download_lap_rekap_presensi/"+id_block+"/"+jenis_laporan+"/"+tipe_jadwal+"/"+mahasiswa+"/"+id_kelompok+"");
+            }
+
+        }
 
     }
     else if(jenis_laporan == 0){
@@ -227,18 +391,23 @@ $(document).on('click','#tampil_laporan',function(){
             ]
         });
 
-    $("#laporan_presensi_detail").show();
-    $("#laporan_presensi").hide();
-    $("#btnExcel").show();
+        $("#laporan_presensi_rekap_semua").hide();
+        $("#laporan_presensi_csl_tutor").hide();
+        $("#laporan_presensi_detail").show();
+        $("#laporan_presensi").hide();
+        $("#btnExcel").show();
 
-    if (tipe_jadwal == "") {
-        tipe_jadwal = 0;
-    };
-    if (mahasiswa == "") {
-        mahasiswa = 0;
-    };
+        if (tipe_jadwal == "") {
+            tipe_jadwal = 0;
+        };
+        if (mahasiswa == "") {
+            mahasiswa = 0;
+        };
+        if (id_kelompok == "") {
+            id_kelompok = 0;
+        };
 
-    $("#btnExcel").attr("href", "laporan_presensi_mahasiswa/download_lap_detail_presensi/"+id_block+"/"+jenis_laporan+"/"+tipe_jadwal+"/"+mahasiswa+"");
+        $("#btnExcel").attr("href", "laporan_presensi_mahasiswa/download_lap_detail_presensi/"+id_block+"/"+jenis_laporan+"/"+tipe_jadwal+"/"+mahasiswa+"/"+id_kelompok+"");
 
     }
 
