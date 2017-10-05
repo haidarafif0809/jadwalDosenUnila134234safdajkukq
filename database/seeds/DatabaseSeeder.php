@@ -25,5 +25,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingSlideSeeder::class);
         $this->call(PresensiMahasiswaSeeder::class);
         $this->call(PresensiDosenSeeder::class);
+        $this->call(MateriSeeder::class);
     }
 }

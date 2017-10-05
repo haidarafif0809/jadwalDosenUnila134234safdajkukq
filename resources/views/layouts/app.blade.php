@@ -62,7 +62,9 @@
                             <li><a href="{{ route('master_users.index') }}">User</a></li><li><a href="{{ route('angkatan.index') }}">Angkatan</a></li>
                             <li><a href="{{ route('master_mata_kuliahs.index') }}">Mata Kuliah</a></li> 
                             <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>   
+                            <li><a href="{{ route('materi.index') }}">Materi</a></li>  
                             <li><a href="{{ route('modul.index') }}">Modul</a></li>  
+                            <li><a href="{{ route('kelompok_mahasiswa.index') }}">Kelompok Mahasiswa</a></li>  
                           </ul>
                         </li>
                         <li class="dropdown">
@@ -82,7 +84,7 @@
                                 </a>
                           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">                           
                             <li><a href="{{ route('laporan_rekap_presensi_dosen.index') }}">Laporan Presensi Dosen</a></li>    
-                            <li><a href="{{ route('laporan_presensi_mahasiswa.index') }}">Laporan Rekap Presensi Mahasiswa</a></li>             
+                            <li><a href="{{ route('laporan_presensi_mahasiswa.index') }}">Laporan Presensi Mahasiswa</a></li>             
                           </ul>
                         </li>
                         <!-- DROPDOWN LAPORAN -->
@@ -148,6 +150,10 @@
 <script src="{{ asset('js/selectize.min.js') }}"></script> 
 <script src="{{ asset('js/custom-v.1.0.1.js') }}"></script>
 <script src="{{ asset('js/main.js') }}"></script> 
+<script type="text/javascript">
+    
+        $.fn.dataTable.ext.errMode = 'throw';
+</script>
 
 @yield('scripts')
 </body>

@@ -11,10 +11,11 @@ use App\Jadwal_dosen;
 use App\Presensi;
 use App\PresensiMahasiswa;
 use App\Master_block;
+use App\Materi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
-
+use App\ListKelompokMahasiswa;
 
 class AndroidController extends Controller
 {
@@ -137,6 +138,32 @@ class AndroidController extends Controller
         return  json_encode($response);
     }
 
+// CARI RUANGAN 
+    public function cari_ruangan(Request $request){ 
+ 
+        $search = $request->search;// REQUEST SEARCH 
+ 
+        $cari_ruangan =  Master_ruangan::select(['id','kode_ruangan','nama_ruangan','lokasi_ruangan','batas_jarak_absen','longitude','latitude'])->where(function($query) use ($search){// SEARCH 
+                              $query->orWhere('kode_ruangan','LIKE',$search.'%')// OR LIKE KODE RUANGAN 
+                                    ->orWhere('nama_ruangan','LIKE',$search.'%')// OR LIKE NAMA RUANGAN 
+                                    ->orWhere('lokasi_ruangan','LIKE',$search.'%')// OR LIKE LOKASI 
+                                    ->orWhere('batas_jarak_absen','LIKE',$search.'%');  //OR LIKE BATAS 
+ 
+                          })->orderBy('id', 'ASC')->get(); 
+        $result = array(); 
+ 
+        foreach ($cari_ruangan as $row ) {        
+          array_push($result, array('id'=>$row['id'], 'kode_ruangan'=>$row['kode_ruangan'], 'nama_ruangan'=>$row['nama_ruangan'], 'lokasi_ruangan' => $row['lokasi_ruangan'], 'latitude' => $row['latitude'], 'longitude' => $row['longitude'], 'batas_jarak_absen' => $row['batas_jarak_absen'])); 
+        } 
+ 
+ 
+      // DATA YANG DIKEMBALIKAN  BERUPA JSON 
+      return json_encode(array('value' => '1' , 'result'=>$result)); 
+ 
+ 
+    } 
+// END CARI RUANGAN 
+
 
 // function tanggal terbalik
     function tanggal_terbalik($tanggal){
@@ -158,38 +185,26 @@ class AndroidController extends Controller
     public function list_jadwal_dosen(Request $request){
 
         $dosen = $request->username;// DOSEN YANG LOGIN
-        $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+        $query_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+        $id_dosen = $query_dosen->id;
         $value = 0;
         $result = array();// ARRAY RESULT
-        $waktu = date("Y-m-d H:i:s");
 
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_mata_kuliah AS id_mata_kuliah','jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen','penjadwalans.tipe_jadwal AS tipe_jadwal')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH,  RUANGAN, LATITUDE , LONGITUDE, BATAS JARAK ABSEN , TIPE JADWAL
-
-                        ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','jadwal_dosens.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                        ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                        // lEFT JOIN PENJADWALN
-                        ->where('jadwal_dosens.id_dosen',$id_dosen->id)
-                        //WHERE ID DOSEN = ID DOSEN LOGIN
-                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('jadwal_dosens.status_jadwal',0)
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
-                        ->orderBy(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->groupBy('jadwal_dosens.id_jadwal')// GROUP BY ID JADWAL
-                        ->get();
+        // QUERY LENGKAP NYA ADA DI MODEL JADWAL DOSEN , DISINI KITA MENGGUNAKAN SCOPE(ListJadwalDosen)  
+        $penjadwalans = Jadwal_dosen::ListJadwalDosen($id_dosen)->get();
 
 
       foreach ($penjadwalans as $list_jadwal_dosen) {// FOREACH
         $value = $value + 1;
 
           // jika tipe jadwal nya kosong atau null
-            if ($list_jadwal_dosen['id_mata_kuliah'] == "" OR $list_jadwal_dosen['id_mata_kuliah'] == NULL OR $list_jadwal_dosen['id_mata_kuliah'] == 0) {
+            if (($list_jadwal_dosen['id_mata_kuliah'] == "" OR $list_jadwal_dosen['id_mata_kuliah'] == NULL OR $list_jadwal_dosen['id_mata_kuliah'] == 0) AND ($list_jadwal_dosen['tipe_jadwal'] == "CSL" OR $list_jadwal_dosen['tipe_jadwal'] == 'TUTORIAL' )) {
               // maka tipe jadwal = -
-              $nama_mata_kuliah = "-";              
+
+              $materi = Materi::select('nama_materi')->where('id',$list_jadwal_dosen['id_materi'])->first();
+
+
+              $nama_mata_kuliah = $materi->nama_materi;              
 
             }else{ // jika tidak
               $nama_mata_kuliah = $list_jadwal_dosen['nama_mata_kuliah'];
@@ -225,49 +240,32 @@ class AndroidController extends Controller
 
         $search = $request->search;// REQUEST SEARCH
         $dosen = $request->username;// DOSEN YANG LOGIN
-        $id_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
-        $waktu = date("Y-m-d H:i:s");
+        $query_dosen = User::select('id')->where('email',$dosen)->first();//  AMBIL ID DOSEN
+        $id_dosen = $query_dosen->id;
 
         $result = array();// ARRAY RESULT
-
-        $penjadwalans = Jadwal_dosen::select('jadwal_dosens.id_mata_kuliah AS id_mata_kuliah','jadwal_dosens.id_jadwal AS id_jadwal','jadwal_dosens.id_ruangan AS id_ruangan','jadwal_dosens.tanggal AS tanggal', 'jadwal_dosens.waktu_mulai AS waktu_mulai', 'jadwal_dosens.waktu_selesai AS waktu_selesai','master_mata_kuliahs.nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','master_ruangans.longitude AS longitude','master_ruangans.latitude AS latitude','master_ruangans.batas_jarak_absen AS batas_jarak_absen','penjadwalans.tipe_jadwal AS tipe_jadwal')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, RUANGAN, LATITUDE , LONGITUDE, TIPE JADWAL
-
-                        ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','jadwal_dosens.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                         ->leftJoin('penjadwalans','jadwal_dosens.id_jadwal','=','penjadwalans.id')
-                        // lEFT JOIN PENJADWALN
-                        ->where('jadwal_dosens.id_dosen',$id_dosen->id)
-                        //WHERE ID DOSEN = ID DOSEN LOGIN
-                        ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('jadwal_dosens.status_jadwal',0)                        
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA  
-                        ->where(function($query) use ($search){// search
-                            $query->orWhere('jadwal_dosens.tanggal','LIKE',$search.'%')// OR LIKE TANGGAL
-                                  ->orWhere(DB::raw('DATE_FORMAT(jadwal_dosens.tanggal, "%d/%m/%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d/m/y
-                                  ->orWhere(DB::raw('DATE_FORMAT(jadwal_dosens.tanggal, "%d-%m-%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d-m-y
-                                  ->orWhere('jadwal_dosens.waktu_mulai','LIKE',$search.'%')// OR LIKE WAKTU MULAI
-                                  ->orWhere('master_mata_kuliahs.nama_mata_kuliah','LIKE',$search.'%')// OR LIKE NAMA MATA KULIAH
-                                  ->orWhere('master_ruangans.nama_ruangan','LIKE',$search.'%');  //OR LIKE NAMA RUANGAN
-                        })    // search  
-                        ->orderBy(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->groupBy('jadwal_dosens.id_jadwal')// GROUP BY ID JADWAL
+        
+        // QUERY LENGKAP NYA ADA DI MODEL JADWAL DOSEN , DISINI KITA MENGGUNAKAN SCOPE(ListJadwalDosen)  
+        $penjadwalans = Jadwal_dosen::SearchJadwalDosen($id_dosen,$search)
                         ->get();
 
 
       foreach ($penjadwalans as $list_jadwal_dosen) {// FOREACH
 
-       // jika id_mata_kuliah nya kosong atau null
-          if ($list_jadwal_dosen['id_mata_kuliah'] == "" OR $list_jadwal_dosen['id_mata_kuliah'] == NULL OR $list_jadwal_dosen['id_mata_kuliah'] == 0) {
-              // maka mata kuliah = -
-              $nama_mata_kuliah = "-";              
+
+          // jika tipe jadwal nya kosong atau null
+            if (($list_jadwal_dosen['id_mata_kuliah'] == "" OR $list_jadwal_dosen['id_mata_kuliah'] == NULL OR $list_jadwal_dosen['id_mata_kuliah'] == 0) AND ($list_jadwal_dosen['tipe_jadwal'] == "CSL" OR $list_jadwal_dosen['tipe_jadwal'] == 'TUTORIAL' )) {
+              // maka tipe jadwal = -
+
+              $materi = Materi::select('nama_materi')->where('id',$list_jadwal_dosen['id_materi'])->first();
+
+
+              $nama_mata_kuliah = $materi->nama_materi;              
 
             }else{ // jika tidak
               $nama_mata_kuliah = $list_jadwal_dosen['nama_mata_kuliah'];
             }
+
         //ARRAY PUSH
         array_push($result, 
                   array('tanggal' => $this->tanggal_terbalik($list_jadwal_dosen['tanggal']),
@@ -535,9 +533,9 @@ class AndroidController extends Controller
     //DAFTAR JADWAL MAHASISWA
     public function list_jadwal_mahasiswa(Request $request){
 
-        $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
+        $mahasiswa =  $request->username;// MAHASISWA YANG LOGIN
         $data_mahasiswa = User::select(['id', 'id_angkatan'])->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA dan ANGKATAN
-
+        $data_kelompok = ListKelompokMahasiswa::where('id_mahasiswa',$data_mahasiswa->id)->get();
 //SELECT SEMUA ID BLOCK BERDASARKAN ANGKATAN USER LOGIN
         $data_block = Master_block::select('master_blocks.id')
         ->leftJoin('mahasiswa_block', 'mahasiswa_block.id_block', '=', 'master_blocks.id')
@@ -546,34 +544,26 @@ class AndroidController extends Controller
 
         $value = 0;
         $result = array();// ARRAY RESULT
-        $waktu = date("Y-m-d H:i:s");
-        $hari_ini = date("Y-m-d");
-
         $array_block = array();
         foreach($data_block as $data_blocks) {
           array_push($array_block, $data_blocks->id);
         }
 
+        /*untuk mendapatkan jadwal yang csl dan tutor 
+          karena csl & tutor itu mahasiswa nya per kelompok bukan perangkatan seperti block
+        */
+        $array_kelompok = array();      
+        foreach($data_kelompok as $data_kelompoks) {
+          array_push($array_kelompok, $data_kelompoks->id_kelompok_mahasiswa);
+        }
 
-        $penjadwalans = Penjadwalan::select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+        $hari_ini = date("Y-m-d");
 
-                        ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','penjadwalans.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                        ->whereIn('penjadwalans.id_block', $array_block)
-                        //WHERE ID BLOK = ID BLOK USER LOGIN
-                        ->where('penjadwalans.tanggal', '=', $hari_ini)
-                        // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
-                        ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('penjadwalans.status_jadwal',0)
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
-                        ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
+        //penjadwalan kuliah dan praktikum
+        $penjadwalans = Penjadwalan::jadwalBlockMahasiswa($hari_ini,$array_block)
                         ->get();
 
-      
+      //mata kuliah 
       foreach ($penjadwalans as $list_jadwal_mahasiswa) {// FOREACH
         if ($list_jadwal_mahasiswa['nama_mata_kuliah'] == "") {
           $mata_kuliah = "-";
@@ -583,7 +573,7 @@ class AndroidController extends Controller
         }
 
         $value = $value + 1;
-        //ARRAY PUSH
+        //array push penjadwalan kuliah dan praktikum
         array_push($result, 
                   array('tanggal' => $this->tanggal_terbalik($list_jadwal_mahasiswa['tanggal']),// TANGGAL DI FORMAT=> Y/M/D
                         'waktu' => $list_jadwal_mahasiswa['waktu_mulai'] ." - " . $list_jadwal_mahasiswa['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
@@ -600,7 +590,40 @@ class AndroidController extends Controller
                         )// ARRAY
                   );// ARRAY PUSH
 
-      }// END FOREACH
+      }// endforeach penjadwalan kuliah praktikum
+
+      //penjadwalan csl dan tutor
+      $penjadwalans_csl_tutor = Penjadwalan::jadwalCslTutorMahasiswa($hari_ini,$array_kelompok)->get();
+
+      foreach ($penjadwalans_csl_tutor as $list_jadwal_mahasiswa) {
+
+        if ($list_jadwal_mahasiswa['materi'] == "") {
+          $materi = "-";
+        }
+        else{
+          $materi = $list_jadwal_mahasiswa['materi'];
+        }
+
+        $value = $value + 1;
+        //array push penjadwalan kuliah dan praktikum
+        array_push($result, 
+                  array('tanggal' => $this->tanggal_terbalik($list_jadwal_mahasiswa['tanggal']),// TANGGAL DI FORMAT=> Y/M/D
+                        'waktu' => $list_jadwal_mahasiswa['waktu_mulai'] ." - " . $list_jadwal_mahasiswa['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
+                        'mata_kuliah' => $materi,// MATA KULIAH
+                        'tipe_jadwal' => $list_jadwal_mahasiswa['tipe_jadwal'],// MATA KULIAH
+                        'nama_ruangan' => $list_jadwal_mahasiswa['ruangan'], // NAMA RUANGAN
+                        'id_jadwal' => $list_jadwal_mahasiswa['id_jadwal'], // ID JADWAL
+                        'id_ruangan' => $list_jadwal_mahasiswa['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_mahasiswa['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_mahasiswa['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_mahasiswa['batas_jarak_absen'] // LONGITUDE
+
+
+                        )// ARRAY
+                  );// ARRAY PUSH
+     
+      } // endforeach penjadwalan csl dan tutor
+
 
      // DATA YANG DIKIRIM BERUPA JSON
       return json_encode(array('value' => $value , 'result'=>$result));
@@ -700,6 +723,15 @@ class AndroidController extends Controller
         ->where('mahasiswa_block.id_mahasiswa',$data_mahasiswa->id)
         ->orWhere('master_blocks.id_angkatan',$data_mahasiswa->id_angkatan)->get();
 
+         $data_kelompok = ListKelompokMahasiswa::where('id_mahasiswa',$data_mahasiswa->id)->get();
+    /*untuk mendapatkan jadwal yang csl dan tutor 
+          karena csl & tutor itu mahasiswa nya per kelompok bukan perangkatan seperti block
+        */
+        $array_kelompok = array();      
+        foreach($data_kelompok as $data_kelompoks) {
+          array_push($array_kelompok, $data_kelompoks->id_kelompok_mahasiswa);
+        }
+
         $value = 0;
         $result = array();// ARRAY RESULT
         $waktu = date("Y-m-d H:i:s");
@@ -710,32 +742,8 @@ class AndroidController extends Controller
           array_push($array_block, $data_blocks->id);
         }
 
-        $penjadwalans = Penjadwalan::select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
-
-                        ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','penjadwalans.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                        ->whereIn('penjadwalans.id_block', $array_block)
-                        //WHERE ID BLOK = ID BLOK USER LOGIN
-                        ->where('penjadwalans.tanggal', '=', $hari_ini)
-                        // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
-                        ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('penjadwalans.status_jadwal',0)
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
-                        ->where(function($query) use ($search){// search
-                            $query->orWhere('penjadwalans.tanggal','LIKE',$search.'%')// OR LIKE TANGGAL
-                                  ->orWhere(DB::raw('DATE_FORMAT(penjadwalans.tanggal, "%d/%m/%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d/m/y
-                                  ->orWhere(DB::raw('DATE_FORMAT(penjadwalans.tanggal, "%d-%m-%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d-m-y
-                                  ->orWhere('penjadwalans.waktu_mulai','LIKE',$search.'%')// OR LIKE WAKTU MULAI
-                                  ->orWhere('penjadwalans.tipe_jadwal','LIKE',$search.'%')// OR LIKE WAKTU MULAI
-                                  ->orWhere('master_mata_kuliahs.nama_mata_kuliah','LIKE',$search.'%')// OR LIKE NAMA MATA KULIAH
-                                  ->orWhere('master_ruangans.nama_ruangan','LIKE',$search.'%');  //OR LIKE NAMA RUANGAN
-                        }) 
-                        ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->get();
+        //penjadwalan kuliah dan praktikum
+        $penjadwalans = Penjadwalan::jadwalBlockMahasiswa($hari_ini,$array_block)->searchJadwal($search)->get();
 
       foreach ($penjadwalans as $list_jadwal_mahasiswa) {// FOREACH
         if ($list_jadwal_mahasiswa['nama_mata_kuliah'] == "") {
@@ -763,7 +771,42 @@ class AndroidController extends Controller
                         )// ARRAY
                   );// ARRAY PUSH
 
-      }// END FOREACH
+      }// END FOREACH penjadwalan kuliah dan praktikum
+
+      //penjadwalan csl dan tutor
+      $penjadwalans_csl_tutor = Penjadwalan::jadwalCslTutorMahasiswa($hari_ini,$array_kelompok)->searchJadwal($search)->get();
+
+       foreach ($penjadwalans_csl_tutor as $list_jadwal_mahasiswa) {
+
+        if ($list_jadwal_mahasiswa['materi'] == "") {
+          $materi = "-";
+        }
+        else{
+          $materi = $list_jadwal_mahasiswa['materi'];
+        }
+
+        $value = $value + 1;
+        //array push penjadwalan kuliah dan praktikum
+        array_push($result, 
+                  array('tanggal' => $this->tanggal_terbalik($list_jadwal_mahasiswa['tanggal']),// TANGGAL DI FORMAT=> Y/M/D
+                        'waktu' => $list_jadwal_mahasiswa['waktu_mulai'] ." - " . $list_jadwal_mahasiswa['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
+                        'mata_kuliah' => $materi,// MATA KULIAH
+                        'tipe_jadwal' => $list_jadwal_mahasiswa['tipe_jadwal'],// MATA KULIAH
+                        'nama_ruangan' => $list_jadwal_mahasiswa['ruangan'], // NAMA RUANGAN
+                        'id_jadwal' => $list_jadwal_mahasiswa['id_jadwal'], // ID JADWAL
+                        'id_ruangan' => $list_jadwal_mahasiswa['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_mahasiswa['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_mahasiswa['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_mahasiswa['batas_jarak_absen'] // LONGITUDE
+
+
+                        )// ARRAY
+                  );// ARRAY PUSH
+     
+      } // endforeach penjadwalan csl dan tutor
+
+
+
 
       // DATA YANG DIKEMBALIKAN  BERUPA JSON
       return json_encode(array('value' => '1' , 'result'=>$result));
@@ -789,23 +832,8 @@ class AndroidController extends Controller
           array_push($array_block, $data_blocks->id);
         }
 
-        $penjadwalans = Penjadwalan::select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
-
-                        ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','penjadwalans.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                        ->whereIn('penjadwalans.id_block', $array_block)
-                        //WHERE ID BLOK = ID BLOK USER LOGIN
-                        ->where('penjadwalans.tanggal', '=', $tanggal_besok)
-                        // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
-                        ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('penjadwalans.status_jadwal',0)
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
-                        ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->get();
+      //penjadwalan kuliah praktikum pleno
+      $penjadwalans = Penjadwalan::jadwalBlockMahasiswa($tanggal_besok,$array_block)->get();
 
       
       foreach ($penjadwalans as $list_jadwal_mahasiswa) {// FOREACH
@@ -836,6 +864,48 @@ class AndroidController extends Controller
 
       }// END FOREACH
 
+      $data_kelompok = ListKelompokMahasiswa::where('id_mahasiswa',$data_mahasiswa->id)->get();
+    /*untuk mendapatkan jadwal yang csl dan tutor 
+          karena csl & tutor itu mahasiswa nya per kelompok bukan perangkatan seperti block
+        */
+        $array_kelompok = array();      
+        foreach($data_kelompok as $data_kelompoks) {
+          array_push($array_kelompok, $data_kelompoks->id_kelompok_mahasiswa);
+        }
+
+
+      //penjadwalan csl dan tutor
+      $penjadwalans_csl_tutor = Penjadwalan::jadwalCslTutorMahasiswa($tanggal_besok,$array_kelompok)->get();
+
+      foreach ($penjadwalans_csl_tutor as $list_jadwal_mahasiswa) {
+
+        if ($list_jadwal_mahasiswa['materi'] == "") {
+          $materi = "-";
+        }
+        else{
+          $materi = $list_jadwal_mahasiswa['materi'];
+        }
+
+        $value = $value + 1;
+        //array push penjadwalan kuliah dan praktikum
+        array_push($result, 
+                  array('tanggal' => $this->tanggal_terbalik($list_jadwal_mahasiswa['tanggal']),// TANGGAL DI FORMAT=> Y/M/D
+                        'waktu' => $list_jadwal_mahasiswa['waktu_mulai'] ." - " . $list_jadwal_mahasiswa['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
+                        'mata_kuliah' => $materi,// MATA KULIAH
+                        'tipe_jadwal' => $list_jadwal_mahasiswa['tipe_jadwal'],// MATA KULIAH
+                        'nama_ruangan' => $list_jadwal_mahasiswa['ruangan'], // NAMA RUANGAN
+                        'id_jadwal' => $list_jadwal_mahasiswa['id_jadwal'], // ID JADWAL
+                        'id_ruangan' => $list_jadwal_mahasiswa['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_mahasiswa['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_mahasiswa['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_mahasiswa['batas_jarak_absen'] // LONGITUDE
+
+
+                        )// ARRAY
+                  );// ARRAY PUSH
+     
+      } // endforeach penjadwalan csl dan tutor
+
      // DATA YANG DIKIRIM BERUPA JSON
       return json_encode(array('value' => $value , 'result'=>$result));
 
@@ -850,6 +920,7 @@ class AndroidController extends Controller
         $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
         $data_mahasiswa = User::select(['id', 'id_angkatan'])->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA
         $data_block = Master_block::select('id')->where('id_angkatan',$data_mahasiswa->id_angkatan)->get();
+
         $value = 0;
         $result = array();// ARRAY RESULT
         $waktu = date("Y-m-d H:i:s");
@@ -861,32 +932,9 @@ class AndroidController extends Controller
           array_push($array_block, $data_blocks->id);
         }
 
-        $penjadwalans = Penjadwalan::select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
+      //penjadwalan kuliah praktikum pleno
+      $penjadwalans = Penjadwalan::jadwalBlockMahasiswa($tanggal_besok,$array_block)->searchJadwal($search)->get();
 
-                        ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','penjadwalans.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                        ->whereIn('penjadwalans.id_block', $array_block)
-                        //WHERE ID BLOK = ID BLOK USER LOGIN
-                        ->where('penjadwalans.tanggal', '=', $tanggal_besok)
-                        // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
-                        ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('penjadwalans.status_jadwal',0)
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
-                        ->where(function($query) use ($search){// search
-                            $query->orWhere('penjadwalans.tanggal','LIKE',$search.'%')// OR LIKE TANGGAL
-                                  ->orWhere(DB::raw('DATE_FORMAT(penjadwalans.tanggal, "%d/%m/%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d/m/y
-                                  ->orWhere(DB::raw('DATE_FORMAT(penjadwalans.tanggal, "%d-%m-%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d-m-y
-                                  ->orWhere('penjadwalans.waktu_mulai','LIKE',$search.'%')// OR LIKE WAKTU MULAI
-                                  ->orWhere('penjadwalans.tipe_jadwal','LIKE',$search.'%')// OR LIKE WAKTU MULAI
-                                  ->orWhere('master_mata_kuliahs.nama_mata_kuliah','LIKE',$search.'%')// OR LIKE NAMA MATA KULIAH
-                                  ->orWhere('master_ruangans.nama_ruangan','LIKE',$search.'%');  //OR LIKE NAMA RUANGAN
-                        }) 
-                        ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->get();
 
       foreach ($penjadwalans as $list_jadwal_mahasiswa) {// FOREACH
         if ($list_jadwal_mahasiswa['nama_mata_kuliah'] == "") {
@@ -914,7 +962,50 @@ class AndroidController extends Controller
                         )// ARRAY
                   );// ARRAY PUSH
 
-      }// END FOREACH
+      }// END FOREACH penjadwalan kuliah praktikum pleno
+
+   $data_kelompok = ListKelompokMahasiswa::where('id_mahasiswa',$data_mahasiswa->id)->get();
+    /*untuk mendapatkan jadwal yang csl dan tutor 
+          karena csl & tutor itu mahasiswa nya per kelompok bukan perangkatan seperti block
+        */
+        $array_kelompok = array();      
+        foreach($data_kelompok as $data_kelompoks) {
+          array_push($array_kelompok, $data_kelompoks->id_kelompok_mahasiswa);
+        }
+
+
+      //penjadwalan csl dan tutor
+      $penjadwalans_csl_tutor = Penjadwalan::jadwalCslTutorMahasiswa($tanggal_besok,$array_kelompok)->searchJadwal($search)->get();
+
+       foreach ($penjadwalans_csl_tutor as $list_jadwal_mahasiswa) {
+
+        if ($list_jadwal_mahasiswa['materi'] == "") {
+          $materi = "-";
+        }
+        else{
+          $materi = $list_jadwal_mahasiswa['materi'];
+        }
+
+        $value = $value + 1;
+        //array push penjadwalan kuliah dan praktikum
+        array_push($result, 
+                  array('tanggal' => $this->tanggal_terbalik($list_jadwal_mahasiswa['tanggal']),// TANGGAL DI FORMAT=> Y/M/D
+                        'waktu' => $list_jadwal_mahasiswa['waktu_mulai'] ." - " . $list_jadwal_mahasiswa['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
+                        'mata_kuliah' => $materi,// MATA KULIAH
+                        'tipe_jadwal' => $list_jadwal_mahasiswa['tipe_jadwal'],// MATA KULIAH
+                        'nama_ruangan' => $list_jadwal_mahasiswa['ruangan'], // NAMA RUANGAN
+                        'id_jadwal' => $list_jadwal_mahasiswa['id_jadwal'], // ID JADWAL
+                        'id_ruangan' => $list_jadwal_mahasiswa['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_mahasiswa['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_mahasiswa['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_mahasiswa['batas_jarak_absen'] // LONGITUDE
+
+
+                        )// ARRAY
+                  );// ARRAY PUSH
+     
+      } // endforeach penjadwalan csl dan tutor
+
 
       // DATA YANG DIKEMBALIKAN  BERUPA JSON
       return json_encode(array('value' => '1' , 'result'=>$result));
@@ -932,31 +1023,16 @@ class AndroidController extends Controller
         $value = 0;
         $result = array();// ARRAY RESULT
         $waktu = date("Y-m-d H:i:s");
-        $hari_besok = mktime (0,0,0, date("m"), date("d")+2,date("Y"));
-        $tanggal_besok = date('Y-m-d',$hari_besok );// TANGGAL LUSA
+        $hari_lusa = mktime (0,0,0, date("m"), date("d")+2,date("Y"));
+        $tanggal_lusa = date('Y-m-d',$hari_lusa );// TANGGAL LUSA
 
         $array_block = array();
         foreach ($data_block as $data_blocks) {
           array_push($array_block, $data_blocks->id);
         }
 
-        $penjadwalans = Penjadwalan::select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
-
-                        ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','penjadwalans.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                        ->whereIn('penjadwalans.id_block', $array_block)
-                        //WHERE ID BLOK = ID BLOK USER LOGIN
-                        ->where('penjadwalans.tanggal', '=', $tanggal_besok)
-                        // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
-                        ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('penjadwalans.status_jadwal',0)
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
-                        ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->get();
+         //penjadwalan kuliah praktikum pleno
+      $penjadwalans = Penjadwalan::jadwalBlockMahasiswa($tanggal_lusa,$array_block)->get();
 
       
       foreach ($penjadwalans as $list_jadwal_mahasiswa) {// FOREACH
@@ -985,7 +1061,52 @@ class AndroidController extends Controller
                         )// ARRAY
                   );// ARRAY PUSH
 
-      }// END FOREACH
+      }// END FOREACH penjadwalan kuliah , praktikum dan pleno
+
+   $data_kelompok = ListKelompokMahasiswa::where('id_mahasiswa',$data_mahasiswa->id)->get();
+    /*untuk mendapatkan jadwal yang csl dan tutor 
+          karena csl & tutor itu mahasiswa nya per kelompok bukan perangkatan seperti block
+        */
+        $array_kelompok = array();      
+        foreach($data_kelompok as $data_kelompoks) {
+          array_push($array_kelompok, $data_kelompoks->id_kelompok_mahasiswa);
+        }
+
+
+      //penjadwalan csl dan tutor
+      $penjadwalans_csl_tutor = Penjadwalan::jadwalCslTutorMahasiswa($tanggal_lusa,$array_kelompok)->get();
+
+       foreach ($penjadwalans_csl_tutor as $list_jadwal_mahasiswa) {
+
+        if ($list_jadwal_mahasiswa['materi'] == "") {
+          $materi = "-";
+        }
+        else{
+          $materi = $list_jadwal_mahasiswa['materi'];
+        }
+
+        $value = $value + 1;
+        //array push penjadwalan kuliah dan praktikum
+        array_push($result, 
+                  array('tanggal' => $this->tanggal_terbalik($list_jadwal_mahasiswa['tanggal']),// TANGGAL DI FORMAT=> Y/M/D
+                        'waktu' => $list_jadwal_mahasiswa['waktu_mulai'] ." - " . $list_jadwal_mahasiswa['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
+                        'mata_kuliah' => $materi,// MATA KULIAH
+                        'tipe_jadwal' => $list_jadwal_mahasiswa['tipe_jadwal'],// MATA KULIAH
+                        'nama_ruangan' => $list_jadwal_mahasiswa['ruangan'], // NAMA RUANGAN
+                        'id_jadwal' => $list_jadwal_mahasiswa['id_jadwal'], // ID JADWAL
+                        'id_ruangan' => $list_jadwal_mahasiswa['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_mahasiswa['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_mahasiswa['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_mahasiswa['batas_jarak_absen'] // LONGITUDE
+
+
+                        )// ARRAY
+                  );// ARRAY PUSH
+     
+      } // endforeach penjadwalan csl dan tutor
+
+
+
 
      // DATA YANG DIKIRIM BERUPA JSON
       return json_encode(array('value' => $value , 'result'=>$result));
@@ -1004,40 +1125,16 @@ class AndroidController extends Controller
         $value = 0;
         $result = array();// ARRAY RESULT
         $waktu = date("Y-m-d H:i:s");
-        $hari_besok = mktime (0,0,0, date("m"), date("d")+2,date("Y"));
-        $tanggal_besok = date('Y-m-d',$hari_besok );// TANGGAL LUSA
+        $hari_lusa = mktime (0,0,0, date("m"), date("d")+2,date("Y"));
+        $tanggal_lusa = date('Y-m-d',$hari_lusa );// TANGGAL LUSA
 
         $array_block = array();
         foreach ($data_block as $data_blocks) {
           array_push($array_block, $data_blocks->id);
         }
 
-        $penjadwalans = Penjadwalan::select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')// DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
-
-                        ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')
-                        //LEFT JOIN KE TABLE MATA KULIAH
-                        ->leftJoin('master_ruangans','penjadwalans.id_ruangan','=','master_ruangans.id')
-                        // LEFT JOIN MASTER RUANGAN
-                        ->whereIn('penjadwalans.id_block', $array_block)
-                        //WHERE ID BLOK = ID BLOK USER LOGIN
-                        ->where('penjadwalans.tanggal', '=', $tanggal_besok)
-                        // JADWAL YANG TAMPIL ADALAH JADWAL HARI INI
-                        ->where(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_selesai)'),'>=',$waktu)
-                        // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('penjadwalans.status_jadwal',0)
-                        // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
-                        ->where(function($query) use ($search){// search
-                            $query->orWhere('penjadwalans.tanggal','LIKE',$search.'%')// OR LIKE TANGGAL
-                                  ->orWhere(DB::raw('DATE_FORMAT(penjadwalans.tanggal, "%d/%m/%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d/m/y
-                                  ->orWhere(DB::raw('DATE_FORMAT(penjadwalans.tanggal, "%d-%m-%Y")'),'LIKE',$search.'%')// OR LIKE FORMAT TANGGAL d-m-y
-                                  ->orWhere('penjadwalans.waktu_mulai','LIKE',$search.'%')// OR LIKE WAKTU MULAI
-                                  ->orWhere('penjadwalans.tipe_jadwal','LIKE',$search.'%')// OR LIKE WAKTU MULAI
-                                  ->orWhere('master_mata_kuliahs.nama_mata_kuliah','LIKE',$search.'%')// OR LIKE NAMA MATA KULIAH
-                                  ->orWhere('master_ruangans.nama_ruangan','LIKE',$search.'%');  //OR LIKE NAMA RUANGAN
-                        }) 
-                        ->orderBy(DB::raw('CONCAT(penjadwalans.tanggal, " ", penjadwalans.waktu_mulai)', 'ASC'))
-                        // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
-                        ->get();
+             //penjadwalan kuliah praktikum pleno
+      $penjadwalans = Penjadwalan::jadwalBlockMahasiswa($tanggal_lusa,$array_block)->searchJadwal($search)->get();
 
       foreach ($penjadwalans as $list_jadwal_mahasiswa) {// FOREACH
         if ($list_jadwal_mahasiswa['nama_mata_kuliah'] == "") {
@@ -1065,7 +1162,49 @@ class AndroidController extends Controller
                         )// ARRAY
                   );// ARRAY PUSH
 
-      }// END FOREACH
+      }// END FOREACH penjadwalan kuliah , praktikum dan pleno
+
+
+   $data_kelompok = ListKelompokMahasiswa::where('id_mahasiswa',$data_mahasiswa->id)->get();
+    /*untuk mendapatkan jadwal yang csl dan tutor 
+          karena csl & tutor itu mahasiswa nya per kelompok bukan perangkatan seperti block
+        */
+        $array_kelompok = array();      
+        foreach($data_kelompok as $data_kelompoks) {
+          array_push($array_kelompok, $data_kelompoks->id_kelompok_mahasiswa);
+        }
+
+       //penjadwalan csl dan tutor
+      $penjadwalans_csl_tutor = Penjadwalan::jadwalCslTutorMahasiswa($tanggal_lusa,$array_kelompok)->searchJadwal($search)->get();
+
+       foreach ($penjadwalans_csl_tutor as $list_jadwal_mahasiswa) {
+
+        if ($list_jadwal_mahasiswa['materi'] == "") {
+          $materi = "-";
+        }
+        else{
+          $materi = $list_jadwal_mahasiswa['materi'];
+        }
+
+        $value = $value + 1;
+        //array push penjadwalan kuliah dan praktikum
+        array_push($result, 
+                  array('tanggal' => $this->tanggal_terbalik($list_jadwal_mahasiswa['tanggal']),// TANGGAL DI FORMAT=> Y/M/D
+                        'waktu' => $list_jadwal_mahasiswa['waktu_mulai'] ." - " . $list_jadwal_mahasiswa['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
+                        'mata_kuliah' => $materi,// MATA KULIAH
+                        'tipe_jadwal' => $list_jadwal_mahasiswa['tipe_jadwal'],// MATA KULIAH
+                        'nama_ruangan' => $list_jadwal_mahasiswa['ruangan'], // NAMA RUANGAN
+                        'id_jadwal' => $list_jadwal_mahasiswa['id_jadwal'], // ID JADWAL
+                        'id_ruangan' => $list_jadwal_mahasiswa['id_ruangan'], // ID RUANGAN
+                        'latitude' => $list_jadwal_mahasiswa['latitude'], // LATITUDE
+                        'longitude' => $list_jadwal_mahasiswa['longitude'], // LONGITUDE
+                        'batas_jarak_absen' => $list_jadwal_mahasiswa['batas_jarak_absen'] // LONGITUDE
+
+
+                        )// ARRAY
+                  );// ARRAY PUSH
+     
+      } // endforeach penjadwalan csl dan tutor
 
       // DATA YANG DIKEMBALIKAN  BERUPA JSON
       return json_encode(array('value' => '1' , 'result'=>$result));
