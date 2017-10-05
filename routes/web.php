@@ -407,6 +407,7 @@ Route::get('/list_ruangan', "AndroidController@list_ruangan");
 	Route::post('/batal_jadwal_dosen', "AndroidController@batal_jadwal_dosen");
 	Route::post('/presensi_dosen', "AndroidController@presensi_dosen");
 	Route::post('/ubah_password_dosen', "AndroidController@ubah_password_dosen");
+	Route::post('/cek_profile_dosen', "AndroidController@cek_profile_dosen");
 
 
 	//MAHASISWA

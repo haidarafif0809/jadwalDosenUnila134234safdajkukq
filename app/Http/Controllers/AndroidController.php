@@ -377,17 +377,7 @@ class AndroidController extends Controller
                           // INSERT FOTO KE TABLE PRSENSI   
                           $presensi->foto = $filename;     
                           $presensi->save();  
-
-                          // CEK ADA BERAPA DOSEN UNTUK JADWAL INI 
-                          $count_jadwal_dosen = Jadwal_dosen::where('id_jadwal',$id_jadwal)->count();
-                          
-                          // CEK ADA BERAPA DOSEN YANG SUDAH HADIR UNTUK JADWAL INI       
-                          $count_presensi = Presensi::where('id_jadwal',$id_jadwal)->count(); 
-
-                                // JIKA SAMA
-                                if ($count_jadwal_dosen == $count_presensi) {                  
-
-                                  // MAKA JADWAL AKAN DIUPDATE STATUSNYA MENJADI TERLAKSANA
+             
 
                                   $penjadwalan_terlaksana = Penjadwalan::where("id",$id_jadwal)->update(["status_jadwal" => 1]);
                                    // update Penjadwalan (status jadwal di set = 1 atau "TERLAKSANA") where id_jadwal dosen = $id jadwal dosen
@@ -395,7 +385,7 @@ class AndroidController extends Controller
                                   $jadwal_dosen_terlaksana = Jadwal_dosen::where("id_jadwal",$id_jadwal)->update(["status_jadwal" => 1]);
                                   // update jadwal dosen (status jadwal di set = 1 atau "TERLAKSANA") where id_jadwal dosen = $id jadwal dosen
 
-                                }
+                         
 
                           $response["value"] = 1;// RESPONSE VALUE 1
                           $response["message"] = "Berhasil Absen";// RESPONSE BERHASIL ABSEN
@@ -501,6 +491,26 @@ class AndroidController extends Controller
                     }
         }
   
+    }
+
+    public function cek_profile_dosen(Request $request){
+
+      $dosen = User::select('foto_profil')->where('email',$request->user)->first();//  AMBIL ID DOSEN
+
+      if ($dosen->foto_profil == '' || $dosen->foto_profil == "NULL") {
+
+            $response["value"] = 0;// value = 1
+            $response["message"] = "Belum ada Foto Profile"; // login berhasil
+
+      }else{
+
+            $response["value"] = 1;// value = 1
+            $response["message"] = $dosen->foto_profil; // login berhasil
+
+      }
+       
+       return json_encode($response);
+
     }
 
     //LOGIN ABSEN MAHASISWA
