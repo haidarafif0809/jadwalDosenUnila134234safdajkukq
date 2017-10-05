@@ -1772,7 +1772,8 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               $data_persentase_csl = 0;
             }
             elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_csl = 100;
+              $data_persentase_csl =  "-";
+              return $data_persentase_csl;
             }
             else{
               $data_persentase_csl = ($data_user_hadir / $data_jadwal) * 100;
@@ -1825,7 +1826,8 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               $data_persentase_kuliah = 0;
             }
             elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_kuliah = 100;
+              $data_persentase_kuliah = "-";
+                return $data_persentase_kuliah;
             }
             else{
               $data_persentase_kuliah = ($data_user_hadir / $data_jadwal) * 100;
@@ -1880,7 +1882,8 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               $data_persentase_pleno = 0;
             }
             elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_pleno = 100;
+              $data_persentase_kuliah = "-";
+              return $data_persentase_kuliah;
             }
             else{
               $data_persentase_pleno = ($data_user_hadir / $data_jadwal) * 100;
@@ -1929,12 +1932,14 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               else{
                 $data_persentase_praktikum =  100;
               }
+
             }
             elseif ($data_jadwal != "" AND $data_user_hadir =="") {
               $data_persentase_praktikum = 0;
             }
-            elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_praktikum = 100;
+            elseif ($data_jadwal == "" AND $data_user_hadir !="") { //JIKA STATUS JADWAL KOSONG ATAU BELUM TERLAKSANA MAKA PERSENTASE "-"
+              $data_persentase_praktikum =  "-";
+              return $data_persentase_praktikum;
             }
             else{
               $data_persentase_praktikum = ($data_user_hadir / $data_jadwal) * 100;
@@ -1988,7 +1993,8 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               $data_persentase_tutorial = 0;
             }
             elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_tutorial = 100;
+              $data_persentase_kuliah = "-";
+              return $data_persentase_kuliah;
             }
             else{
               $data_persentase_tutorial = ($data_user_hadir / $data_jadwal) * 100;
@@ -2092,16 +2098,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
       
     //PAKAI SCOPE YG ADA DI MODEL USER
     //DOWNLOAD SEMUA TIPE JADWAL
-      $data_mahasiswa = User::select(['users.email AS email','users.id_angkatan AS angkatan', 'users.name AS name', 'users.id AS id', 'master_blocks.id AS id_block',
-        DB::raw('IFNULL(mahasiswa_block.id_block, master_blocks.id) AS id_block_mahasiswa')])
-
-                            ->leftJoin('mahasiswa_block','users.id','=','mahasiswa_block.id_mahasiswa')
-                            ->leftJoin('master_blocks','users.id_angkatan','=','master_blocks.id_angkatan')
-                            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-                            ->where('role_user.role_id',3)
-                            ->where('master_blocks.id', $request->id_block)
-                            ->orwhere('mahasiswa_block.id_block', $request->id_block)
-                            ->groupBy('users.id')->get();
+      $data_mahasiswa = User::laporanRekapSemua($request)->get();
 
 
         Excel::create('Rekap Presensi Mahasiswa', function($excel) use ($data_mahasiswa, $request) {
@@ -2165,7 +2162,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               $data_persentase_csl = 0;
             }
             elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_csl = 100;
+              $data_persentase_csl = 0;
             }
             else{
               $data_persentase_csl = ($data_user_hadir / $data_jadwal) * 100;
@@ -2213,7 +2210,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               $data_persentase_kuliah = 0;
             }
             elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_kuliah = 100;
+              $data_persentase_kuliah = 0;
             }
             else{
               $data_persentase_kuliah = ($data_user_hadir / $data_jadwal) * 100;
@@ -2263,7 +2260,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               $data_persentase_pleno = 0;
             }
             elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_pleno = 100;
+              $data_persentase_pleno = 0;
             }
             else{
               $data_persentase_pleno = ($data_user_hadir / $data_jadwal) * 100;
@@ -2312,7 +2309,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               $data_persentase_praktikum = 0;
             }
             elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_praktikum = 100;
+              $data_persentase_praktikum = 0;
             }
             else{
               $data_persentase_praktikum = ($data_user_hadir / $data_jadwal) * 100;
@@ -2362,7 +2359,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
               $data_persentase_tutorial = 0;
             }
             elseif ($data_jadwal == "" AND $data_user_hadir !="") {
-              $data_persentase_tutorial = 100;
+              $data_persentase_tutorial = 0;
             }
             else{
               $data_persentase_tutorial = ($data_user_hadir / $data_jadwal) * 100;
