@@ -149,6 +149,7 @@
                             </thead>
                         </table>
                     </div>
+                    <h6 style="text-align: left ; color: red; font-style: italic;">**Note : (-) Artinya Tipe Jadwal Tersebut Belum Ada Penjadwalan Atau Penjadwalan Belum Terlaksana</h6>
                 </div>
 
                 </div><!-- PANEL-BODY -->
