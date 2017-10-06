@@ -388,7 +388,9 @@ Route::get('/versi-absen-dosen',function(){
 });
 Route::get('/versi-absen-mahasiswa',function(){
 
-	return env('APP_ABSEN_MAHASISWA_VERSION');
+	$response["value"] = env('APP_ABSEN_MAHASISWA_VERSION');
+
+	return  json_encode($response);
 
 });
 
