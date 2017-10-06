@@ -111,7 +111,7 @@ class Jadwal_dosen extends Model
                         //WHERE ID DOSEN = ID DOSEN LOGIN
                         ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('jadwal_dosens.status_jadwal',0)
+                        ->where('jadwal_dosens.status_jadwal','<',2)
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA
                         ->orderBy(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_mulai)', 'ASC'))
                         // DITAMPILKAN BERDASARKAN WAKTU TERDEKAT
@@ -137,7 +137,7 @@ class Jadwal_dosen extends Model
                         //WHERE ID DOSEN = ID DOSEN LOGIN
                         ->where(DB::raw('CONCAT(jadwal_dosens.tanggal, " ", jadwal_dosens.waktu_selesai)'),'>=',$waktu)
                         // JADWAL YANG DIAMBIL ADALAH JADWAL YANG AKAN DATANG, JADWAL YANG SUDAH LEWAT TIDAK AKAN TAMPIL
-                        ->where('jadwal_dosens.status_jadwal',0)                        
+                        ->where('jadwal_dosens.status_jadwal','<',2)                        
                         // YANG DITAMPILKAN HANYA JADWAL YANG BELUM TERLAKSANA  
                         ->where(function($query_search_jadwal_dosen) use ($search){// search
                             $query_search_jadwal_dosen
