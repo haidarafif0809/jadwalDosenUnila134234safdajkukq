@@ -383,7 +383,9 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 
 Route::get('/versi-absen-dosen',function(){
 
-	return env('APP_ABSEN_DOSEN_VERSION');
+	$response['value'] = env('APP_ABSEN_DOSEN_VERSION');
+
+	return  json_encode($response);
 
 });
 Route::get('/versi-absen-mahasiswa',function(){
