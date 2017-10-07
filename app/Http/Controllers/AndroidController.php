@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\ListKelompokMahasiswa;
+use File;
+
 
 class AndroidController extends Controller
 {
@@ -495,21 +497,66 @@ class AndroidController extends Controller
 
     public function cek_profile_dosen(Request $request){
 
-      $dosen = User::select('foto_profil')->where('email',$request->user)->first();//  AMBIL ID DOSEN
+      $dosen = User::select('foto_profil','name','no_hp')->where('email',$request->user)->first();//  AMBIL ID DOSEN
+      $result = array();
 
       if ($dosen->foto_profil == '' || $dosen->foto_profil == "NULL") {
 
-            $response["value"] = 0;// value = 1
-            $response["message"] = "Belum ada Foto Profile"; // login berhasil
+            $value = 0;// value = 0
+
 
       }else{
 
-            $response["value"] = 1;// value = 1
-            $response["message"] = $dosen->foto_profil; // login berhasil
+            $value = 1;// value = 1
 
-      }
+          }
+
+            array_push($result,array('foto_profile' => $dosen->foto_profil, 'nama_dosen'=> $dosen->name , 'no_telp' => $dosen->no_hp));
+   
+
+            return json_encode(array('value' => $value , 'result'=>$result));
+
+
+      
        
        return json_encode($response);
+
+    }
+
+    public function update_profile_dosen(Request $request)
+    {
+
+        $image = $request->image; // FOTO PROFILE
+
+        $dosen = User::select('foto_profil')->where('email',$request->user)->first();//  AMBIL FOTO PROFILE
+        $filepath = $dosen->foto_profil;          
+
+                // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 
+        $filename = 'image' . DIRECTORY_SEPARATOR . str_random(40) . '.png';
+
+                              // UPLOAD FOTO
+        file_put_contents($filename,base64_decode($image));
+              // UPDATE FOTO
+        $user = User::where('email',$request->user)->update(["foto_profil" => $filename]);
+
+        // JIKA QUERY BERHASIL DI EKSKUSI
+          if ($user == TRUE) {
+
+                    try {// hapus foto lama
+                    File::delete($filepath);
+                    } catch (FileNotFoundException $e) {
+                    // File sudah dihapus/tidak ada
+                    }
+
+            $response["value"] = 1;// value = 1
+            $response["message"] = "Berhasil"; //  berhasil
+          }else{
+            $response["value"] = 0;// value = 1
+            $response["message"] = "Foto Gagal Di Ubah"; // GAGAL
+          }
+
+                return  json_encode($response);// data yang dikembalikan berupa json
+
 
     }
 
