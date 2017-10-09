@@ -61,6 +61,13 @@ class PenjadwalanController extends Controller
                         'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
                         ]);
                 })
+            // MEMBUAT TOMBOL DROPDOWN REKAP PRESENSI DOSEN DAN MAHASISWA
+            ->addColumn('rekap_kehadiran', function($jadwal){
+              
+              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id]);
+
+            })
+
             //MENAMPILKAN STATUS PENJADWALAN
             ->addColumn('status',function($status_penjadwalan){
                 $status = "status_jadwal";
@@ -124,7 +131,8 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
-        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
+        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])   
+        ->addColumn(['data' => 'rekap_kehadiran', 'name' => 'rekap_kehadiran', 'title' => 'Rekap', 'orderable' => false, 'searchable'=>false])     
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => 'Ubah & Hapus', 'orderable' => false, 'searchable'=>false]);
 
         //MENAMPILKAN DOSEN DI FILTER
@@ -1127,6 +1135,72 @@ public function filter(Request $request, Builder $htmlBuilder)
             ]);
         return redirect()->route('penjadwalans.index');
             }
+    }
+
+
+    public function rekap_kehadiran_dosen($id, Builder $htmlBuilder){
+
+        $jadwal_dosen = Jadwal_dosen::with(['dosen','jadwal','ruangan','presensi','mata_kuliah'])->where('id_jadwal',$id);              
+
+        return Datatables::of($jadwal_dosen)
+                        // edit kolom nama dosen
+                        ->editColumn('nama_dosen', function ($presensi_dosen) {
+                                // ambil nama dosen
+                        return $jadwal_dosen->dosen->name;
+                        })
+                        ->editColumn('tipe_jadwal', function ($presensi_dosen) {
+                                // ambil TIPE  JADWAL
+                        return $jadwal_dosen->jadwal->tipe_jadwal;
+                        })
+                        ->editColumn('mata_kuliah', function ($presensi_dosen) use($request) {
+                        // NAMA MATA KULIAH
+                        return $jadwal_dosen->mata_kuliah->nama_mata_kuliah;
+
+                        })
+                        ->editColumn('ruangan', function ($presensi_dosen) {
+                                // ambil RUANGAN
+                        return $jadwal_dosen->ruangan->nama_ruangan;
+                        })                             
+                        ->editColumn('waktu', function ($presensi_dosen) {
+                      // WAKTU
+                        return $jadwal_dosen->presensi->waktu;                              
+                        }) 
+                        ->editColumn('jarak_ke_lokasi_absen', function ($presensi_dosen) {
+                        // JARAK ABSEN
+                         return $jadwal_dosen->presensi->jarak_absen. " m"; 
+                        })
+
+                        ->editColumn('foto', function ($presensi_dosen) {  
+                          // RETURN VIEW KE BLASDE FOTO
+                         return view('lap_presensi_dosen.foto',[
+                           'foto' => $jadwal_dosen->presensi->foto ]);
+
+                        })->make(true);
+
+
+        //MENAMPILKAN COLUM PENJADWALAN
+        $html = $htmlBuilder
+        ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
+        ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
+        ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
+        ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
+        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>false])  
+        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])  
+        ->addColumn(['data' => 'materi', 'name' => 'materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>false])  
+        ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>false])   
+        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
+        ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
+        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])   
+        ->addColumn(['data' => 'rekap_kehadiran', 'name' => 'rekap_kehadiran', 'title' => 'Rekap', 'orderable' => false, 'searchable'=>false])     
+        ->addColumn(['data' => 'action', 'name' => 'action', 'title' => 'Ubah & Hapus', 'orderable' => false, 'searchable'=>false]);
+
+        return view('penjadwalans.rekap_doosen')->with(compact('html'));
+
+    }
+
+    public function rekap_kehadiran_mahasiswa($id){
+      
     }
 
 
