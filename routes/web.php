@@ -375,6 +375,20 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'uses' => 'PenjadwalanLainController@update'
 	]);
 
+// REKAP KEHADIRAN DOSEN
+	Route::get('penjadwalans/rekap_kehadiran_dosen/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.rekap_kehadiran_dosen',
+	'uses' => 'PenjadwalanController@rekap_kehadiran_dosen'
+	]);
+
+// REKAP KEHADIRAN MAHASISWA
+	Route::get('penjadwalans/rekap_kehadiran_mahasiswa/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.rekap_kehadiran_mahasiswa',
+	'uses' => 'PenjadwalanController@rekap_kehadiran_mahasiswa'
+	]);
+
 
 
 });
@@ -412,6 +426,7 @@ Route::get('/list_ruangan', "AndroidController@list_ruangan");
 	Route::post('/presensi_dosen', "AndroidController@presensi_dosen");
 	Route::post('/ubah_password_dosen', "AndroidController@ubah_password_dosen");
 	Route::post('/cek_profile_dosen', "AndroidController@cek_profile_dosen");
+	Route::post('/update_profile_dosen', "AndroidController@update_profile_dosen");
 
 
 	//MAHASISWA
