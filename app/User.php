@@ -302,4 +302,54 @@ class User extends Authenticatable
 
     }
 
+   // LAP. PRESENSI MAHASISWA BELUM ABSEN
+    public function scopeMahasiswaTidakHadir($mahasiswa_belum_absen, $request){
+
+
+        if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL") {
+
+                $data_jadwal =Penjadwalan::select('id_kelompok')->where('id', $request->id)->first();
+
+                $mahasiswa_belum_absen->select(['users.email AS email', 'users.name AS name', 'users.id AS id', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'penjadwalans.tipe_jadwal AS tipe_jadwal'])
+                ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                ->leftJoin('master_blocks','users.id_angkatan','=','master_blocks.id_angkatan')
+                ->leftJoin('penjadwalans','master_blocks.id','=','penjadwalans.id_block')
+                ->leftJoin('list_kelompok_mahasiswas','users.id','=','list_kelompok_mahasiswas.id_mahasiswa')
+                ->leftJoin('presensi_mahasiswas', function($leftJoin){
+                  $leftJoin->on('penjadwalans.id','=','presensi_mahasiswas.id_jadwal');
+                  $leftJoin->on('list_kelompok_mahasiswas.id_mahasiswa','=','presensi_mahasiswas.id_user');
+                })                
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
+                ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
+                ->leftJoin('master_ruangans', 'penjadwalans.id_ruangan', '=', 'master_ruangans.id')
+                ->where('role_user.role_id',3)
+                ->where('list_kelompok_mahasiswas.id_kelompok_mahasiswa', $data_jadwal->id_kelompok)
+                ->where('penjadwalans.id',$request->id)
+                ->where('presensi_mahasiswas.id', NULL)
+                ->get();
+        }
+        //JIKA TIPE JADWAL BUKAN CSL ATAU TUTORIAL
+        else{
+
+                $mahasiswa_belum_absen->select(['users.email AS email', 'users.name AS name', 'users.id AS id', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'penjadwalans.tipe_jadwal AS tipe_jadwal'])
+                ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                ->leftJoin('master_blocks','users.id_angkatan','=','master_blocks.id_angkatan')
+                ->leftJoin('penjadwalans','master_blocks.id','=','penjadwalans.id_block')
+                ->leftJoin('presensi_mahasiswas', function($leftJoin){
+                  $leftJoin->on('penjadwalans.id','=','presensi_mahasiswas.id_jadwal');
+                  $leftJoin->on('users.id','=','presensi_mahasiswas.id_user');
+                })
+                ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
+                ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
+                ->leftJoin('master_ruangans', 'penjadwalans.id_ruangan', '=', 'master_ruangans.id')
+                ->where('role_user.role_id',3)
+                ->where('penjadwalans.id',$request->id)
+                ->where('presensi_mahasiswas.id', NULL)
+                ->get();
+        }        
+
+        return $mahasiswa_belum_absen;
+
+    }
+
 }

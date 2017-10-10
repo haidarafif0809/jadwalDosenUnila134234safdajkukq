@@ -15,6 +15,7 @@ use App\Master_block;
 use App\Master_mata_kuliah;
 use App\SettingWaktu;
 use App\ModulBlok;
+use App\PresensiMahasiswa;
 use Session;
 use Auth;
 use Excel;
@@ -64,7 +65,7 @@ class PenjadwalanController extends Controller
             // MEMBUAT TOMBOL DROPDOWN REKAP PRESENSI DOSEN DAN MAHASISWA
             ->addColumn('rekap_kehadiran', function($jadwal){
               
-              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id]);
+              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
 
             })
 
@@ -1199,10 +1200,171 @@ public function filter(Request $request, Builder $htmlBuilder)
 
     }
 
-    public function rekap_kehadiran_mahasiswa($id){
+//MAHASISWA SUDAH ABSEN
+    public function kehadiran_mahasiswa(Request $request){
       
+         $data_presensi = PresensiMahasiswa::mahasiswaHadir($request)->get();
+
+         return Datatables::of($data_presensi)
+
+            //KETERANGAN UJIAN USER (MAHASISWA)
+                  ->addColumn('keterangan', function($keterangan){                     
+
+                    //LOGIKA KETERNAGAN UJIAN / BOLEH UJIAN
+                      $data_hadir = PresensiMahasiswa::where('id',$keterangan->id_presensi)->where('id_block',$keterangan->id_block)->count();
+
+                      $data_keterangan = '<b style="color:green"> <span class="glyphicon glyphicon-ok-sign"></span> MASUK </b>';
+                      return $data_keterangan;
+                })
+ 
+            //MATERI ? MATA KULIAH 
+                ->editColumn('materi_kuliah',function($materi_kuliah){
+                  if ($materi_kuliah->tipe_jadwal == "CSL" OR $materi_kuliah->tipe_jadwal == "TUTORIAL" ) {
+                     return $materi_kuliah = $materi_kuliah->nama_materi;
+                   } 
+                   else{
+                     return $materi_kuliah = $materi_kuliah->mata_kuliah;
+                   }
+                })
+ 
+            //WAKTU ABSEN
+                ->editColumn('waktu',function($waktu){
+                  if ($waktu->waktu == "" ) {
+                     return "-";
+                   } 
+                   else{
+                    return $waktu->waktu; 
+                   }
+                })
+ 
+            //JARAK ABSEN
+                ->editColumn('jarak_absen',function($jarak){                  
+                    return $jarak->jarak_absen." m";
+                })
+ 
+            //FOTO ABSEN
+                ->addColumn('foto',function($foto){
+                  if ($foto->foto == "") {
+                    return "";
+                  }
+                  else{
+                    return view('laporan_presensi_mahasiswa._foto_absen', ['foto'=> $foto]);
+                  }                
+                })->make(true);
     }
 
+//MAHASISWA BELUM ABSEN
+    public function kehadiran_mahasiswa_absen(Request $request){
+
+        $data_user = User::mahasiswaTidakHadir($request)->get();   
+
+          return Datatables::of($data_user)
+
+          //KETERANGAN UJIAN USER (MAHASISWA)
+                ->addColumn('keterangan', function($keterangan){
+
+                  $data_keterangan = '<b style="color:red"> <span class="glyphicon glyphicon-remove-sign"></span> BELUM MASUK </b>';
+                  return $data_keterangan;
+                })
+ 
+            //MATERI ? MATA KULIAH 
+                ->editColumn('materi_kuliah',function($materi_kuliah){
+                  if ($materi_kuliah->tipe_jadwal == "CSL" OR $materi_kuliah->tipe_jadwal == "TUTORIAL" ) {
+                     return $materi_kuliah = $materi_kuliah->nama_materi;
+                   } 
+                   else{
+                     return $materi_kuliah = $materi_kuliah->mata_kuliah;
+                   }
+                })
+ 
+            //WAKTU ABSEN
+                ->editColumn('waktu',function($waktu){
+                     return "-";
+                })
+ 
+            //JARAK ABSEN
+                ->editColumn('jarak_absen',function($jarak){                  
+                    return "-";
+                })
+ 
+            //FOTO ABSEN
+                ->addColumn('foto',function($foto){
+                    return "-";               
+                })->make(true);
+        }
+
+//DONWLOAD MAHASISWA SUDAH ABSEN
+    public function download_mahasiswa_hadir(Request $request){
+
+      $data_presensi = PresensiMahasiswa::mahasiswaHadir($request)->get();
+
+      Excel::create('Mahasiswa Hadir', function($excel) use ($data_presensi, $request) {
+        // Set property
+        $excel->sheet('Mahasiswa Hadir', function($sheet) use ($data_presensi, $request) {
+          $sheet->loadView('penjadwalans.export_rekap_mahasiswa_hadir', ['data_presensi' => $data_presensi ]);
+        });
+
+      })->export('xls');  
+    }
+
+//DONWLOAD MAHASISWA SUDAH ABSEN
+    public function download_mahasiswa_tidak_hadir(Request $request){
+
+      $data_presensi = User::mahasiswaTidakHadir($request)->get();  
+
+      Excel::create('Mahasiswa Tidak Hadir', function($excel) use ($data_presensi, $request) {
+        // Set property
+        $excel->sheet('Mahasiswa Tidak Hadir', function($sheet) use ($data_presensi, $request) {
+          $row = 1;
+          $sheet->row($row, [
+
+                'NPM',
+                'Nama Mahasiswa',
+                'Mata Kuliah / Materi',
+                'Ruangan',
+                'Waktu Absen',
+                'Jarak Absen',
+                'Foto',
+                'Keterangan',
+
+              ]);
+
+               
+          foreach ($data_presensi as $data_presensis){
+
+              if ($data_presensis->tipe_jadwal == "CSL" OR $data_presensis->tipe_jadwal == "TUTORIAL" ) {
+                $materi_kuliah = $data_presensis->nama_materi;
+              } 
+              else{
+                $materi_kuliah = $data_presensis->mata_kuliah;
+              }
+
+                $waktu_absen = "-";
+                $jarak_absen = "-";
+                $foto = "-";
+                $keterangan = "BELUM MASUK";
+
+              $sheet->row(++$row, [
+                  $data_presensis->email,
+                  $data_presensis->name,
+                  $materi_kuliah,
+                  $data_presensis->nama_ruangan,
+                  $waktu_absen,
+                  $jarak_absen,
+                  $foto,
+                  $keterangan,
+              ]); 
+
+            }
+        
+        });
+
+      })->export('xls');
+    }
+//VIEW REKAP MAHASISWA
+    public function rekap_kehadiran_mahasiswa($id, $id_block, $tipe_jadwal){
+      return view('penjadwalans.rekap_mahasiswa', ['id'=>$id, 'id_block'=>$id_block, 'tipe_jadwal'=>$tipe_jadwal]);
+    }
 
     
 }

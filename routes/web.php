@@ -376,20 +376,46 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	]);
 
 // REKAP KEHADIRAN DOSEN
-	Route::get('penjadwalans/rekap_kehadiran_dosen/{id}',[
+	Route::get('penjadwalans/rekap_kehadiran_dosen/{id}/{id_block}/{tipe_jadwal}',[
 	'middleware' => ['auth'],
 	'as' => 'penjadwalans.rekap_kehadiran_dosen',
 	'uses' => 'PenjadwalanController@rekap_kehadiran_dosen'
 	]);
 
-// REKAP KEHADIRAN MAHASISWA
-	Route::get('penjadwalans/rekap_kehadiran_mahasiswa/{id}',[
+// VIEW KEHADIRAN MAHASISWA
+	Route::get('penjadwalans/rekap_kehadiran_mahasiswa/{id}/{id_block}/{tipe_jadwal}',[
 	'middleware' => ['auth'],
 	'as' => 'penjadwalans.rekap_kehadiran_mahasiswa',
 	'uses' => 'PenjadwalanController@rekap_kehadiran_mahasiswa'
 	]);
 
+//PROSES KEHADIRAN MAHASISWA (SUDAH ABSEN)
+	Route::get('penjadwalans/kehadiran_mahasiswa/{id}/{id_block}/{tipe_jadwal}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.kehadiran_mahasiswa',
+	'uses' => 'PenjadwalanController@kehadiran_mahasiswa'
+	]);
 
+//DOWNLOAD KEHADIRAN MAHASISWA (SUDAH ABSEN)
+	Route::get('penjadwalans/download_mahasiswa_hadir/{id}/{id_block}/{tipe_jadwal}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.download_mahasiswa_hadir',
+	'uses' => 'PenjadwalanController@download_mahasiswa_hadir'
+	]);
+
+//PROSES KEHADIRAN MAHASISWA (BELUM ABSEN)
+	Route::get('penjadwalans/kehadiran_mahasiswa_absen/{id}/{id_block}/{tipe_jadwal}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.kehadiran_mahasiswa_absen',
+	'uses' => 'PenjadwalanController@kehadiran_mahasiswa_absen'
+	]);
+
+//DOWNLOAD KEHADIRAN MAHASISWA (BELUM ABSEN)
+	Route::get('penjadwalans/download_mahasiswa_tidak_hadir/{id}/{id_block}/{tipe_jadwal}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.download_mahasiswa_tidak_hadir',
+	'uses' => 'PenjadwalanController@download_mahasiswa_tidak_hadir'
+	]);
 
 });
 
