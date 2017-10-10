@@ -470,11 +470,11 @@ class PenjadwalanLainController extends Controller
             else{ 
             //APABILA RUANGAN SUDAH DI PAKAI MAKA MUNCUL PERINGATAN 
                 $data_ruangan =  Master_ruangan::find($request->id_ruangan);
-                $data_block = Master_block::find($request->id_block);
+                $data_block = Master_block::find($data_penjadwalan->first()->id_block);
 
                     Session::flash("flash_notification", [
                         "level"=>"danger",
-                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block Mata Kuliah $data_mata_kuliah->nama_mata_kuliah"
+                        "message"=>"Ruangan $data_ruangan->nama_ruangan Sudah Di Pakai Block $data_block->nama_block "
                         ]);
                 return redirect()->back()->withInput();
             } 

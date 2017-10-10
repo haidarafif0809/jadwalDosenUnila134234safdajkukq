@@ -15,7 +15,8 @@ use App\Master_block;
 use App\Master_mata_kuliah;
 use App\SettingWaktu;
 use App\ModulBlok;
-use App\PresensiMahasiswa;
+use App\Presensi;
+use App\Materi;
 use Session;
 use Auth;
 use Excel;
@@ -65,7 +66,7 @@ class PenjadwalanController extends Controller
             // MEMBUAT TOMBOL DROPDOWN REKAP PRESENSI DOSEN DAN MAHASISWA
             ->addColumn('rekap_kehadiran', function($jadwal){
               
-              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
 
             })
 
@@ -1138,70 +1139,235 @@ public function filter(Request $request, Builder $htmlBuilder)
             }
     }
 
+    // rekap kehadiran dosen
+    public function rekap_kehadiran_dosen($id,$tipe_jadwal){
 
-    public function rekap_kehadiran_dosen($id, Builder $htmlBuilder){
+        return view('penjadwalans.rekap_dosen',['id'=> $id, 'tipe_jadwal' => $tipe_jadwal]);
 
-        $jadwal_dosen = Jadwal_dosen::with(['dosen','jadwal','ruangan','presensi','mata_kuliah'])->where('id_jadwal',$id);              
+    }
 
-        return Datatables::of($jadwal_dosen)
+    // Datatable dosen yang sudah Hadir
+    public function datatable_dosen_hadir(Request $request){
+        
+
+       $query_detail_presensi = Presensi::select('penjadwalans.id_materi AS id_materi','users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
+                // SELECT ID MATERI,NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
+                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
+                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
+                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
+                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
+                                    ->where('penjadwalans.id',$request->id)// WHERE ID JADWAL;    
+                                    ->get();       
+
+        return Datatables::of($query_detail_presensi)
                         // edit kolom nama dosen
                         ->editColumn('nama_dosen', function ($presensi_dosen) {
                                 // ambil nama dosen
-                        return $jadwal_dosen->dosen->name;
+                        return $presensi_dosen['nama_dosen'];
                         })
                         ->editColumn('tipe_jadwal', function ($presensi_dosen) {
                                 // ambil TIPE  JADWAL
-                        return $jadwal_dosen->jadwal->tipe_jadwal;
+                        return $presensi_dosen['tipe_jadwal'];
                         })
                         ->editColumn('mata_kuliah', function ($presensi_dosen) use($request) {
                         // NAMA MATA KULIAH
-                        return $jadwal_dosen->mata_kuliah->nama_mata_kuliah;
+
+                          // JHIKA TIPE JADWAL NYA CSL ATAU TUTORIAL
+                          if ($presensi_dosen['tipe_jadwal'] == 'CSL' || $presensi_dosen['tipe_jadwal'] == 'TUTORIAL') {
+                          
+                          // KITA AMBIL NAMA MATERI     
+                          $materi = Materi::select('nama_materi')->where('id',$presensi_dosen['id_materi'])->first();
+                           return $materi->nama_materi;   
+
+                          }else{
+                            // JIKA TIDAK , KITA AMBIL NAMA MATA KULIAH
+                          return $presensi_dosen['nama_mata_kuliah'];
+                          }
+
 
                         })
                         ->editColumn('ruangan', function ($presensi_dosen) {
                                 // ambil RUANGAN
-                        return $jadwal_dosen->ruangan->nama_ruangan;
+                        return $presensi_dosen['ruangan'];
                         })                             
                         ->editColumn('waktu', function ($presensi_dosen) {
-                      // WAKTU
-                        return $jadwal_dosen->presensi->waktu;                              
+                      // WAKTU ABSEN
+                        return $presensi_dosen['waktu'];                              
                         }) 
                         ->editColumn('jarak_ke_lokasi_absen', function ($presensi_dosen) {
                         // JARAK ABSEN
-                         return $jadwal_dosen->presensi->jarak_absen. " m"; 
+                         return $presensi_dosen['jarak_absen'] . " m"; 
                         })
 
                         ->editColumn('foto', function ($presensi_dosen) {  
                           // RETURN VIEW KE BLASDE FOTO
                          return view('lap_presensi_dosen.foto',[
-                           'foto' => $jadwal_dosen->presensi->foto ]);
+                           'foto' => $presensi_dosen['foto'] ]);
 
                         })->make(true);
-
-
-        //MENAMPILKAN COLUM PENJADWALAN
-        $html = $htmlBuilder
-        ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
-        ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
-        ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
-        ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
-        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>false])  
-        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])  
-        ->addColumn(['data' => 'materi', 'name' => 'materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>false])  
-        ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>false])   
-        ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
-        ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
-        ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])   
-        ->addColumn(['data' => 'rekap_kehadiran', 'name' => 'rekap_kehadiran', 'title' => 'Rekap', 'orderable' => false, 'searchable'=>false])     
-        ->addColumn(['data' => 'action', 'name' => 'action', 'title' => 'Ubah & Hapus', 'orderable' => false, 'searchable'=>false]);
-
-        return view('penjadwalans.rekap_doosen')->with(compact('html'));
-
     }
 
-//MAHASISWA SUDAH ABSEN
-    public function kehadiran_mahasiswa(Request $request){
+    public function export_rekap_dosen_hadir($id){
+
+          
+        $query_detail_presensi = Presensi::select('penjadwalans.id_materi AS id_materi','users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
+                // SELECT ID MATERI ,NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
+                                    ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
+                                    ->leftJoin('master_ruangans','presensi.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
+                                    ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
+                                    ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
+                                    ->where('penjadwalans.id',$id)// WHERE TIPE JADWAL;    
+                                    ->get();                    
+       
+           Excel::create("REKAP DOSEN YANG SUDAH HADIR", function($excel) use ($query_detail_presensi) {
+
+            $excel->sheet("REKAP DOSEN YANG SUDAH HADIR", function ($sheet) use ($query_detail_presensi) {
+
+                  $sheet->loadView('lap_presensi_dosen.export_detail_presensi',['presensi'=>$query_detail_presensi]);
+  
+            });
+
+         })->export('xls');
+    }
+
+    public function datatable_dosen_belum_hadir(Request $request){
+
+
+        $jadwal_dosen = Jadwal_dosen::select('presensi.id_user AS id_user','jadwal_dosens.id_dosen AS id_dosen','users.name as nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS nama_ruangan')// SELECET ID USER, ID DOSEN, NAMA DOSEN, MATA KULIAH, RUANGAN FROM JADWAL DOSEN
+                      ->leftJoin('presensi', function($leftJoin){ // LEFT JOIN PRESENSI
+                          $leftJoin->on('jadwal_dosens.id_jadwal','=','presensi.id_jadwal');    // ON JADWAL_DOSEN.ID_JADWAL = PPRESENSI.ID_JADWAL   AND                   
+                          $leftJoin->on('jadwal_dosens.id_dosen','=','presensi.id_user');//  // ON JADWAL_DOSEN.ID_DOSEN = PPRESENSI.ID_USER        
+                      })
+                      ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
+                      ->leftJoin('master_ruangans','jadwal_dosens.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
+                      ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
+                      ->where('jadwal_dosens.id_jadwal',$request->id)->where('presensi.id_user', NULL)// WHERE ID JADWAL = $request->id AND PRESENSI.ID_USER IS NULL
+                      ->get();  
+      
+        return Datatables::of($jadwal_dosen)
+                        // edit kolom nama dosen
+                        ->editColumn('nama_dosen', function ($jadwal_dosen) {
+                                // ambil nama dosen
+                              return $jadwal_dosen['nama_dosen'];
+                        })
+                        ->editColumn('tipe_jadwal', function ($jadwal_dosen) use ($request) {
+                                // ambil TIPE  JADWAL
+                              return $request->tipe_jadwal;
+                        })
+                        ->editColumn('mata_kuliah', function ($jadwal_dosen) use($request) {
+                        // NAMA MATA KULIAH
+                        
+                        // JIKA TIPE JADWAL == CSL ATAU TUTORIAL
+                          if ($request->tipe_jadwal == 'CSL' || $request->tipe_jadwal == 'TUTORIAL') {
+                              
+                              // KITA AMBIL ID MATERI DARI TABLE PENJADAWALAN
+                              $penjadwalans = Penjadwalan::select('id_materi')->where('id',$request->id)->first();
+                               // KITA AMBIL NAMA MATERI  DARI TABLE METERI
+                              $materi = Materi::select('nama_materi')->where('id',$penjadwalans->id_materi)->first();
+
+                              return $materi->nama_materi;   
+
+                              }else{
+                            // NAMA MATA KULIAH
+                              return $jadwal_dosen['nama_mata_kuliah']; 
+                            }
+
+                        })
+                        ->editColumn('ruangan', function ($jadwal_dosen) {
+                                // ambil RUANGAN
+                         return $jadwal_dosen['nama_ruangan'];
+
+                        })                             
+                        ->editColumn('waktu', function ($jadwal_dosen) use ($request) {
+                          // WAKTU ABSEN
+                            return "-";
+                                             
+
+                        }) 
+                        ->editColumn('jarak_ke_lokasi_absen', function ($jadwal_dosen) use ($request){
+                        // JARAK ABSEN
+                          return "-";                      
+
+                        })
+
+                        ->editColumn('foto', function ($jadwal_dosen) use ($request){  
+                          // RETURN VIEW KE BLASDE FOTO                        
+                          return "-";
+      
+                        })->make(true);
+      }
+
+      public function export_rekap_dosen_belum_hadir(Request $request){
+
+        $jadwal_dosens = Jadwal_dosen::select('presensi.id_user AS id_user','jadwal_dosens.id_dosen AS id_dosen','users.name as nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS nama_ruangan')// SELECET ID USER, ID DOSEN, NAMA DOSEN, MATA KULIAH, RUANGAN FROM JADWAL DOSEN
+                      ->leftJoin('presensi', function($leftJoin){ // LEFT JOIN PRESENSI
+                          $leftJoin->on('jadwal_dosens.id_jadwal','=','presensi.id_jadwal');    // ON JADWAL_DOSEN.ID_JADWAL = PPRESENSI.ID_JADWAL   AND                   
+                          $leftJoin->on('jadwal_dosens.id_dosen','=','presensi.id_user');//  // ON JADWAL_DOSEN.ID_DOSEN = PPRESENSI.ID_USER        
+                      })
+                      ->leftJoin('users','jadwal_dosens.id_dosen','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
+                      ->leftJoin('master_ruangans','jadwal_dosens.id_ruangan','=','master_ruangans.id')// LEFT JOIN MASTER RUANGAN ON ID RUANGAN = RUANGAN.ID
+                      ->leftJoin('master_mata_kuliahs','jadwal_dosens.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
+                      ->where('jadwal_dosens.id_jadwal',$request->id)->where('presensi.id_user', NULL)// WHERE ID JADWAL = $request->id AND PRESENSI.ID_USER IS NULL
+                      ->get();  
+
+           Excel::create("REKAP DOSEN YANG BELUM HADIR", function($excel) use ($jadwal_dosens,$request) {
+
+            $excel->sheet("REKAP DOSEN YANG BELUM HADIR", function ($sheet) use ($jadwal_dosens,$request) {
+
+                                // judul kolom
+                $row = 1;
+                $sheet->row($row,[
+              
+                'Nama Dosen',
+                'Tipe Jadwal',                
+                'Materi/Mata Kuliah',
+                'Ruangan',
+                'Waktu Absen',
+                'Jarak Absen',
+                'Foto'
+
+                ]);
+
+
+                foreach ($jadwal_dosens as $jadwal_dosen) {
+                        // JIKA TIPE JADWAL == CSL ATAU TUTORIAL
+                          if ($request->tipe_jadwal == 'CSL' || $request->tipe_jadwal == 'TUTORIAL') {
+                              
+                              // KITA AMBIL ID MATERI DARI TABLE PENJADAWALAN
+                              $penjadwalans = Penjadwalan::select('id_materi')->where('id',$request->id)->first();
+                               // KITA AMBIL NAMA MATERI  DARI TABLE METERI
+                              $materi = Materi::select('nama_materi')->where('id',$penjadwalans->id_materi)->first();
+
+                              $nama_mata_kuliah = $materi->nama_materi;   
+
+                              }else{
+                            // NAMA MATA KULIAH
+                              $nama_mata_kuliah = $jadwal_dosen['nama_mata_kuliah']; 
+                            }
+
+                    // isi kolom                    
+                    $sheet->row(++$row,[
+                        $jadwal_dosen['nama_dosen'],                        
+                        $request->tipe_jadwal,
+                        $nama_mata_kuliah,
+                        $jadwal_dosen['nama_ruangan'],
+                        "-",
+                        "-",
+                        "-",                   
+
+                    ]);
+
+                }
+
+            });
+
+         })->export('xls');
+
+      }
+
+         
+
+    public function rekap_kehadiran_mahasiswa($id){
       
          $data_presensi = PresensiMahasiswa::mahasiswaHadir($request)->get();
 
