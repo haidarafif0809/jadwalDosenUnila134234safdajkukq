@@ -376,10 +376,40 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	]);
 
 // REKAP KEHADIRAN DOSEN
-	Route::get('penjadwalans/rekap_kehadiran_dosen/{id}',[
+	Route::get('penjadwalans/rekap_kehadiran_dosen/{id}/{tipe_jadwal}',[
 	'middleware' => ['auth'],
 	'as' => 'penjadwalans.rekap_kehadiran_dosen',
 	'uses' => 'PenjadwalanController@rekap_kehadiran_dosen'
+	]);
+
+// DATATABLE REKAP KEHADIRAN DOSEN
+	Route::get('penjadwalans/datatable_dosen_hadir/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.datatable_dosen_hadir',
+	'uses' => 'PenjadwalanController@datatable_dosen_hadir'
+	]);
+
+// EXPORT REKAP KEHADIRAN DOSEN
+	Route::get('penjadwalans/export_rekap_dosen_hadir/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.export_rekap_dosen_hadir',
+	'uses' => 'PenjadwalanController@export_rekap_dosen_hadir'
+	]);
+
+
+// belum hadir
+// DATATABLE REKAP KEHADIRAN DOSEN
+	Route::get('penjadwalans/datatable_dosen_belum_hadir/{id}/{tipe_jadwal}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.datatable_dosen_belum_hadir',
+	'uses' => 'PenjadwalanController@datatable_dosen_belum_hadir'
+	]);
+
+// EXPORT REKAP KEHADIRAN DOSEN
+	Route::get('penjadwalans/export_rekap_dosen_belum_hadir/{id}/{tipe_jadwal}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.export_rekap_dosen_belum_hadir',
+	'uses' => 'PenjadwalanController@export_rekap_dosen_belum_hadir'
 	]);
 
 // REKAP KEHADIRAN MAHASISWA
