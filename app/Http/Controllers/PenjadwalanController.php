@@ -15,6 +15,7 @@ use App\Master_block;
 use App\Master_mata_kuliah;
 use App\SettingWaktu;
 use App\ModulBlok;
+use App\PresensiMahasiswa;
 use App\Presensi;
 use App\Materi;
 use Session;
@@ -66,7 +67,7 @@ class PenjadwalanController extends Controller
             // MEMBUAT TOMBOL DROPDOWN REKAP PRESENSI DOSEN DAN MAHASISWA
             ->addColumn('rekap_kehadiran', function($jadwal){
               
-              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
 
             })
 
@@ -1367,7 +1368,9 @@ public function filter(Request $request, Builder $htmlBuilder)
 
          
 
-    public function rekap_kehadiran_mahasiswa($id){
+//MAHASISWA
+//MAHASISWA SUDAH ABSEN
+    public function kehadiran_mahasiswa(Request $request){
       
          $data_presensi = PresensiMahasiswa::mahasiswaHadir($request)->get();
 
@@ -1473,7 +1476,7 @@ public function filter(Request $request, Builder $htmlBuilder)
       })->export('xls');  
     }
 
-//DONWLOAD MAHASISWA SUDAH ABSEN
+//DONWLOAD MAHASISWA BELUM ABSEN
     public function download_mahasiswa_tidak_hadir(Request $request){
 
       $data_presensi = User::mahasiswaTidakHadir($request)->get();  

@@ -412,8 +412,8 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'uses' => 'PenjadwalanController@export_rekap_dosen_belum_hadir'
 	]);
 
-// REKAP KEHADIRAN MAHASISWA
-	Route::get('penjadwalans/rekap_kehadiran_mahasiswa/{id}',[
+// VIEW KEHADIRAN MAHASISWA
+	Route::get('penjadwalans/rekap_kehadiran_mahasiswa/{id}/{id_block}/{tipe_jadwal}',[
 	'middleware' => ['auth'],
 	'as' => 'penjadwalans.rekap_kehadiran_mahasiswa',
 	'uses' => 'PenjadwalanController@rekap_kehadiran_mahasiswa'
