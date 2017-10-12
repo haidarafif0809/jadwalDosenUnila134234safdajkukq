@@ -42,8 +42,15 @@ class AndroidController extends Controller
     public function login_dosen_android(Request $request){
 
 
-        if (Auth::attempt(['email' => $request->username, 'password' => $request->password]) && Auth::user()->status) {
-            // Authentication passed...
+        if (Auth::attempt(['email' => $request->username, 'password' => $request->password])) {
+
+           // Authentication passed...
+
+          //status nya sudah di konfirmasi 
+          if ( Auth::user()->status == 1) {
+            
+         
+           
 
             $user_otoritas = Auth::user()->roles->first()->name;
             // cek otoritas
@@ -54,7 +61,7 @@ class AndroidController extends Controller
                                 $response["value"] = 1;// value = 1
                                 $response["message"] = "Login Berhasil"; // login berhasil
                                 return  json_encode($response);// data yang dikembalikan berupa json
-
+                  //login gagal karena bukan dosen
                   }else{
 
                                 $response["value"] = 2;// value = 2
@@ -63,13 +70,24 @@ class AndroidController extends Controller
                   }
 
 
-            }
+              }
 
+                //status nya sudah belum di konfirmasi 
+                else {
+
+                  $response["value"] = 3;// value = 3
+                  $response["message"] = "Anda Tidak Bisa Login Di Karenakan Belum Di Konfirmasi Oleh Admin";// login gagal
+                  return  json_encode($response);
+
+                }
+
+             }
+             //password nya salah
             else {
 
                 $response["value"] = 3;// value = 3
-                $response["message"] = "Anda Tidak Bisa Login Di Karenakan Belum Di Konfirmasi Oleh Admin atau Username dan Password anda Salah";// login gagal
-                return  json_encode($response);// data yang dikembalikan berupa json
+                $response["message"] = "username atau password salah";// login gagal
+                return  json_encode($response);
 
             }
 
