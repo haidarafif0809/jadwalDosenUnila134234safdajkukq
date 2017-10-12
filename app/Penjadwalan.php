@@ -86,7 +86,7 @@ class Penjadwalan extends Model
                            $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
                           });
                             })->where('status_jadwal','<','2')->where('status_jadwal','<','2')->where(function($query){
-                              $query->where('tipe_jadwal','!=','CSL')->orWhere('tipe_jadwal','!=','TUTORIAL');
+                              $query->where('tipe_jadwal','!=','CSL')->where('tipe_jadwal','!=','TUTORIAL');
                             });
 
               return $query;
@@ -138,7 +138,7 @@ class Penjadwalan extends Model
                            $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
                           });
                             })->where('status_jadwal','<','2')->where(function($query){
-                              $query->where('tipe_jadwal','!=','CSL')->orWhere('tipe_jadwal','!=','TUTORIAL');
+                              $query->where('tipe_jadwal','!=','CSL')->where('tipe_jadwal','!=','TUTORIAL');
                             });
 
               return $query;
