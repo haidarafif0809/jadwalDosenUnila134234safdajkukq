@@ -456,7 +456,7 @@ class PenjadwalanLainController extends Controller
                             $nama_dosen = User::find($dosen_punya_jadwals['id_dosen']);
                             $data_penjadwalans = Penjadwalan::find($dosen_punya_jadwals['id_jadwal']); 
 
-                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>".$data_penjadwalans->ruangan->nama_ruangan."</b> Block <b>".$data_penjadwalans->block->nama_block."</b>  Mata Kuliah <b>". $data_penjadwalans->mata_kuliah->nama_mata_kuliah." </b> </li>";   
+                            $message .= "<li><b>$nama_dosen->name</b> Memilik Jadwal Di Ruangan <b>".$data_penjadwalans->ruangan->nama_ruangan."</b> Block <b>".$data_penjadwalans->block->nama_block."</b> </b> </li>";   
                         }
                     $message .= '</ul>';
 
