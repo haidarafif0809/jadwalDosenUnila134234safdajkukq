@@ -99,7 +99,7 @@ class PenjadwalanLainController extends Controller
             $data_setting_waktu_2 = explode("-",$request->data_waktu_2);
 
             //MENGECEK PENJADWLAN
-            $data_penjadwalan_2 = Penjadwalan::statusRuangan($request,$data_setting_waktu_2); 
+            $data_penjadwalan_2 = Penjadwalan::statusRuanganCsl($request,$data_setting_waktu_2); 
 
 
                     //APABILA $data_penjadwalan == 0 maka ngecek dosen
@@ -157,7 +157,7 @@ class PenjadwalanLainController extends Controller
             $data_setting_waktu = explode("-",$request->data_waktu);
 
             //MENGECEK PENJADWLAN
-             $data_penjadwalan = Penjadwalan::statusRuangan($request,$data_setting_waktu);  
+             $data_penjadwalan = Penjadwalan::statusRuanganCsl($request,$data_setting_waktu);  
 
         //APABILA $data_penjadwalan == 0 maka ngecek dosen
         if ($data_penjadwalan->count() == 0) { 
@@ -215,9 +215,9 @@ class PenjadwalanLainController extends Controller
             $data_setting_waktu_2 = explode("-",$request->data_waktu_2);
 
             //MENGECEK PENJADWLAN
-            $data_penjadwalan = Penjadwalan::statusRuangan($request,$data_setting_waktu);  
+            $data_penjadwalan = Penjadwalan::statusRuanganCsl($request,$data_setting_waktu);  
 
-            $data_penjadwalan_2 = Penjadwalan::statusRuangan($request,$data_setting_waktu_2); 
+            $data_penjadwalan_2 = Penjadwalan::statusRuanganCsl($request,$data_setting_waktu_2); 
 
                     //APABILA $data_penjadwalan == 0 maka ngecek dosen
         if ($data_penjadwalan->count() == 0 OR $data_penjadwalan_2->count() == 0) { 
@@ -437,7 +437,7 @@ class PenjadwalanLainController extends Controller
 
             //MENGECEK DATA YANG SAMA APA TIDAK
             $penjadwalans = Penjadwalan::find($id); 
-            $data_penjadwalan = Penjadwalan::statusRuanganEdit($request,$data_setting_waktu,$id); 
+            $data_penjadwalan = Penjadwalan::statusRuanganEditCsl($request,$data_setting_waktu,$id); 
             //APABILA $data_penjadwalan == 0 maka ngecek dosen
             if ($data_penjadwalan->count() == 0) {
                 $dosen_punya_jadwal = array();
