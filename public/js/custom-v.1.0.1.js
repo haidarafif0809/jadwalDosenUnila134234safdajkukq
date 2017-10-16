@@ -26,15 +26,6 @@ $('.datepicker1').datepicker({
     autoclose: true,
 });
 
-var date = new Date();
-$('.datepicker-modul').datepicker({
-    format: 'yyyy-mm-dd',
-    daysOfWeekDisabled: '0,6',
-    daysOfWeekHighlighted: '1',
-    daysOfWeekDisabled: "0,2,3,4,5,6",
-    startDate: date,
-    autoclose: true,
-});
 
 
 
