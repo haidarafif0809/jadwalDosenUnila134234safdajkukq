@@ -465,6 +465,11 @@ public function filter(Request $request, Builder $htmlBuilder)
                         'id_jadwal' => $id_jadwal
                     ]);
                 })
+              ->addColumn('rekap_kehadiran', function($jadwal){
+              
+              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+
+            })
              //MENAMPILKAN STATUS PENJADWALAN
             ->addColumn('status',function($status_penjadwalan){
                 $status = "status_jadwal";
@@ -562,6 +567,7 @@ public function filter(Request $request, Builder $htmlBuilder)
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
+        ->addColumn(['data' => 'rekap_kehadiran', 'name' => 'rekap_kehadiran', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => 'Ubah & Hapus', 'orderable' => false, 'searchable'=>false]);
 
             $users = DB::table('users')
