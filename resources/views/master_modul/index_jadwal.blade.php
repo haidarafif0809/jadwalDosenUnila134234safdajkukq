@@ -73,7 +73,6 @@
 
 		$('.datepicker-modul-jadwal').datepicker({
 		    format: 'yyyy-mm-dd',
-		    daysOfWeekDisabled: '0,6',
 		    startDate: date,
 		    autoclose: true,
 		    endDate : end_date
@@ -167,7 +166,6 @@
 			$('.datepicker-modul-jadwal').datepicker('remove');
 			$('.datepicker-modul-jadwal').datepicker({
 			    format: 'yyyy-mm-dd',
-			    daysOfWeekDisabled: '0,6',
 			    startDate: date,
 			    autoclose: true,
 			    endDate : end_date

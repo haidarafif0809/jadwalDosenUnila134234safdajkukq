@@ -125,7 +125,7 @@ class MasterBlockController extends Controller
 
 
         $penjadwalan = Penjadwalan::with(['mata_kuliah','block','ruangan'])->where('id_block',$id_block)->where('tanggal','>=',$modul->dari_tanggal)->where('tanggal','<=',$modul->sampai_tanggal)->get();
-        $tanggal_akhir = date('Y-m-d', strtotime($modul->sampai_tanggal .' +2 day'));
+        $tanggal_akhir = $modul->sampai_tanggal;
 
 
         $jadwal_senin = array();
@@ -191,7 +191,7 @@ class MasterBlockController extends Controller
             ->pluck('name','id');
         $asal_input = 1;
         
-        return view('master_modul.index_jadwal',['jadwal_senin'=> $jadwal_senin,'jadwal_selasa' => $jadwal_selasa,'jadwal_rabu' => $jadwal_rabu,'jadwal_kamis' => $jadwal_kamis,'jadwal_jumat' => $jadwal_jumat,'modul' => $modul,'users' => $users,'asal_input' => $asal_input,'tanggal_akhir' => $tanggal_akhir]);
+    return view('master_modul.index_jadwal',['jadwal_senin'=> $jadwal_senin,'jadwal_selasa' => $jadwal_selasa,'jadwal_rabu' => $jadwal_rabu,'jadwal_kamis' => $jadwal_kamis,'jadwal_jumat' => $jadwal_jumat,'modul' => $modul,'users' => $users,'asal_input' => $asal_input,'tanggal_akhir' => $tanggal_akhir]);
     }
 
   public function createMahasiswa(Request $request, Builder $htmlBuilder,$id)
@@ -260,7 +260,7 @@ class MasterBlockController extends Controller
             'modul'    => 'required|exists:moduls,id|unique:modul_bloks,id_modul,NULL,id_modul_blok,id_blok,'.$id
             ]);   
 
-         $sampai_tanggal = date('d-m-Y', strtotime($request->dari_tanggal .' +4 day'));
+         $sampai_tanggal = date('d-m-Y', strtotime($request->dari_tanggal .' +6 day'));
 
          ModulBlok::create(['id_modul'=> $request->modul,'id_blok' => $id,'dari_tanggal' => tanggal_mysql($request->dari_tanggal),'sampai_tanggal' => tanggal_mysql($sampai_tanggal)]);
 
