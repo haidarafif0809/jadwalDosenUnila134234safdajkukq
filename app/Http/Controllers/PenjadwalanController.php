@@ -92,7 +92,7 @@ class PenjadwalanController extends Controller
                 } 
                 return $status;
                 })
-            ->addColumn('mata_kuliah',function($penjadwalan){
+            ->editColumn('mata_kuliah.nama_mata_kuliah',function($penjadwalan){
 
                 if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
                     return "-";
@@ -101,7 +101,7 @@ class PenjadwalanController extends Controller
                     return $penjadwalan->mata_kuliah->nama_mata_kuliah;
                 }
             })
-            ->addColumn('materi',function($penjadwalan){
+            ->editColumn('materi.nama_materi',function($penjadwalan){
 
                 if ($penjadwalan->id_materi == "-" OR $penjadwalan->id_materi == ""  OR $penjadwalan->id_materi == "0") {
                     return "-";
@@ -128,9 +128,9 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>false])  
+        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>true])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])  
-        ->addColumn(['data' => 'materi', 'name' => 'materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>false])  
+        ->addColumn(['data' => 'materi.nama_materi', 'name' => 'materi.nama_materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>true])  
         ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
