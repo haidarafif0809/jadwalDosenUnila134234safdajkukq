@@ -725,6 +725,8 @@ public function filter(Request $request, Builder $htmlBuilder)
                     'tanggal' =>$request->tanggal,
                     'waktu_mulai'=>$data_setting_waktu[0],
                     'waktu_selesai'=>$data_setting_waktu[1],
+                    'tipe_jadwal'=>$request->tipe_jadwal,
+
                     ]);                
             }
         //ALERT JIKA BERHASIL
@@ -939,6 +941,8 @@ public function filter(Request $request, Builder $htmlBuilder)
                     'tanggal' =>$request->tanggal,
                     'waktu_mulai'=>$data_setting_waktu[0],
                     'waktu_selesai'=>$data_setting_waktu[1],
+                    'tipe_jadwal'=>$request->tipe_jadwal,
+
                     ]);                
             }
 
@@ -1111,9 +1115,11 @@ public function filter(Request $request, Builder $htmlBuilder)
                     'id_block'=>$request->id_block,
                     'id_mata_kuliah'=>$request->id_mata_kuliah,
                     'id_ruangan'=>$request->id_ruangan,
-                      'tanggal' =>$request->tanggal,
-            'waktu_mulai'=>$data_setting_waktu[0],
-            'waktu_selesai'=>$data_setting_waktu[1],
+                    'tanggal' =>$request->tanggal,
+                    'waktu_mulai'=>$data_setting_waktu[0],
+                    'waktu_selesai'=>$data_setting_waktu[1],
+                    'tipe_jadwal'=>$request->tipe_jadwal,
+
                     ]);
                 
             }

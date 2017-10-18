@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class Jadwal_dosen extends Model
 {
     // 
-    	protected $fillable = ['id_jadwal','id_dosen','tanggal','waktu_mulai','waktu_selesai','id_block','id_mata_kuliah','id_ruangan'];
+    	protected $fillable = ['id_jadwal','id_dosen','tanggal','waktu_mulai','waktu_selesai','id_block','id_mata_kuliah','id_ruangan','tipe_jadwal'];
 
 		public function jadwal()
 		  {

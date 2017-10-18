@@ -355,6 +355,8 @@ class PenjadwalanLainController extends Controller
                     'tanggal' =>$request->tanggal_2,
                     'waktu_mulai'=>$data_setting_waktu_2[0],
                     'waktu_selesai'=>$data_setting_waktu_2[1],
+                    'tipe_jadwal'=>$jenis_kelompok,
+
                     ]);
             }
        //JIKA WAKTU DAN TANGGAL  PERTEMUAN DUA KOSONG  YANG MASUKAN PERTEMUAN SATU
@@ -369,6 +371,8 @@ class PenjadwalanLainController extends Controller
                     'tanggal' =>$request->tanggal,
                     'waktu_mulai'=>$data_setting_waktu[0],
                     'waktu_selesai'=>$data_setting_waktu[1],
+                    'tipe_jadwal'=>$jenis_kelompok,
+
                     ]);
         }
         //JIKA WAKTU DAN TANGGAL  PERTEMUAN DUA & PERTEMUAN SATU DIISI MASUKAN SEMUA
@@ -383,6 +387,8 @@ class PenjadwalanLainController extends Controller
                     'tanggal' =>$request->tanggal,
                     'waktu_mulai'=>$data_setting_waktu[0],
                     'waktu_selesai'=>$data_setting_waktu[1],
+                    'tipe_jadwal'=>$jenis_kelompok,
+
                     ]);
 
             $jadwal_dosen_2 = Jadwal_dosen::create([ 
@@ -394,6 +400,8 @@ class PenjadwalanLainController extends Controller
                     'tanggal' =>$request->tanggal_2,
                     'waktu_mulai'=>$data_setting_waktu_2[0],
                     'waktu_selesai'=>$data_setting_waktu_2[1],
+                    'tipe_jadwal'=>$jenis_kelompok,
+
                     ]); 
         
         }                   
@@ -433,7 +441,7 @@ class PenjadwalanLainController extends Controller
 
          //MEMISAHKAN WAKTU MULAI DAN SELESAI
         $data_setting_waktu = explode("-",$request->data_waktu);
-
+        $jenis_kelompok = $request->jenis_kelompok;
 
             //MENGECEK DATA YANG SAMA APA TIDAK
             $penjadwalans = Penjadwalan::find($id); 
@@ -503,6 +511,8 @@ class PenjadwalanLainController extends Controller
                     'tanggal' =>$request->tanggal,
             		'waktu_mulai'=>$data_setting_waktu[0],
             		'waktu_selesai'=>$data_setting_waktu[1],
+                    'tipe_jadwal'=>$jenis_kelompok,
+
                     ]);
                 
             }
