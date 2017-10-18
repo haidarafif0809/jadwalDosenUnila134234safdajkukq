@@ -29,7 +29,7 @@ class PenjadwalanController extends Controller
     public function index(Request $request, Builder $htmlBuilder)
     {
         if ($request->ajax()) { 
-            $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul','materi','kelompok']);
+            $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','modul','materi','kelompok'])->orderBy('tanggal','DESC');
             return Datatables::of($penjadwalans)
             //MENGONEKSIKAN TOMBOL HAPUS DAN EDIT
             ->addColumn('action', function($penjadwalan){ 
@@ -123,11 +123,11 @@ class PenjadwalanController extends Controller
 
         //MENAMPILKAN COLUM PENJADWALAN
         $html = $htmlBuilder
-        ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal'])         
+        ->addColumn(['data' => 'tanggal', 'name' => 'tanggal', 'title' => 'Tanggal', 'orderable' => false ])         
         ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
-        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
+        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false ])
         ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>true])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])  
         ->addColumn(['data' => 'materi.nama_materi', 'name' => 'materi.nama_materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>true])  
@@ -503,7 +503,7 @@ public function filter(Request $request, Builder $htmlBuilder)
                         'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
                         ]);
                 })
-            ->addColumn('mata_kuliah',function($penjadwalan){
+             ->editColumn('mata_kuliah.nama_mata_kuliah',function($penjadwalan){
 
                 if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
                     return "-";
@@ -560,7 +560,7 @@ public function filter(Request $request, Builder $htmlBuilder)
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>false])  
+        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>true])  
         ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])  
         ->addColumn(['data' => 'materi', 'name' => 'materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>false])  
         ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>false])   
