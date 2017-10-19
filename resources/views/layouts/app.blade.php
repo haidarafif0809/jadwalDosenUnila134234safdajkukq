@@ -89,6 +89,23 @@
                         </li>
                         <!-- DROPDOWN LAPORAN -->
                     @endrole  
+                    @role('perekap')
+                        <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li>  
+
+                             <!-- DROPDOWN LAPORAN -->
+                        <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                   Laporan <span class="caret"></span>
+                                </a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">                           
+                            <li><a href="{{ route('laporan_rekap_presensi_dosen.index') }}">Laporan Presensi Dosen</a></li>    
+                            <li><a href="{{ route('laporan_presensi_mahasiswa.index') }}">Laporan Presensi Mahasiswa</a></li>             
+                          </ul>
+                        </li>
+                        <!-- DROPDOWN LAPORAN -->
+
+                    @endrole
+
 
                     @role('pj_dosen')  
                      <li><a href="{{ route('master_mata_kuliahs.index') }}">Mata Kuliah</a></li> 

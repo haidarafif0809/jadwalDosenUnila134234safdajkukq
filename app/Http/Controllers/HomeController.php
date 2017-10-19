@@ -99,6 +99,10 @@ class HomeController extends Controller
              case 'pj_dosen':
                 # code...
                 return HomeController::halaman_pj_dosen($request,$htmlBuilder);
+                break;  
+            case 'perekap':
+                # code...
+                 return view('home',['jadwal_terlaksana'=>$jadwal_terlaksana,'jadwal_belum_terlaksana'=>$jadwal_belum_terlaksana,'jadwal_batal'=>$jadwal_batal,'jadwal_ubah_dosen'=>$jadwal_ubah_dosen,'agent' => $agent]);
                 break;
             
             default:

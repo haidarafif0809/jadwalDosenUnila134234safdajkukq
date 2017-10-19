@@ -49,7 +49,7 @@ Route::get('/jadwal-mahasiswa',[
 	'uses' => 'HomeController@proses_jadwal_mahasiswa'
 	]);
 Route::get('/lihat-jadwal-permodul/{id_modul}/{id_block}',[
-	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen|perekap'],
 	'as' => 'modul.jadwal',
 	'uses' => 'MasterBlockController@lihat_jadwal_permodul'
 	]);
@@ -75,13 +75,13 @@ Route::get('/jadwal-dosen',[
 	]);
 
 	Route::get('admin/penjadwalans/filter',[
-	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen|perekap'],
 	'as' => 'penjadwalans.filter',
 	'uses' => 'PenjadwalanController@filter'
 	]);	
 
   	Route::post('admin/penjadwalans/export', [
-  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
+  	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen|perekap'],
     'as'   => 'penjadwalans.export',
     'uses' => 'PenjadwalanController@exportPost'
   	]);
@@ -128,7 +128,7 @@ Route::get('/jadwal-dosen',[
 
 
 
-Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_dosen|dosen']], function () {
+Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_dosen|dosen|perekap|perekap']], function () {
 
 	Route::resource('master_ruangans', 'MasterRuanganController'); 
 	Route::resource('master_mata_kuliahs', 'MasterMataKuliahController'); 
@@ -278,12 +278,12 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'uses' => 'MasterUserController@no_konfirmasi'
 	]);	
 	Route::get('master_blocks/modul/{id}',[
-	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen|perekap'],
 	'as' => 'master_blocks.modul',
 	'uses' => 'MasterBlockController@createModul'
 	]);	
 	Route::get('master_blocks/mahasiswa/{id}',[
-	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen'],
+	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen|perekap'],
 	'as' => 'master_blocks.mahasiswa',
 	'uses' => 'MasterBlockController@createMahasiswa'
 	]);

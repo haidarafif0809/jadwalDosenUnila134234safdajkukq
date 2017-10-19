@@ -42,7 +42,12 @@ class UserSeeder extends Seeder
     $pjDosenRole = new Role();
     $pjDosenRole->name = "pj_dosen";
     $pjDosenRole->display_name = "PJ Dosen";
-    $pjDosenRole->save(); 
+    $pjDosenRole->save();  
+    // Membuat sample perekap
+    $perekapRole = new Role();
+    $perekapRole->name = "perekap";
+    $perekapRole->display_name = "Perekap";
+    $perekapRole->save(); 
 
     // Membuat sample admin
     $admin = new User();
@@ -55,6 +60,17 @@ class UserSeeder extends Seeder
     $admin->id_role = '1';
     $admin->save();
     $admin->attachRole($adminRole);
+
+    // Membuat sample perekap
+    $perekap = new User();
+    $perekap->name = "Perekap";
+    $perekap->email = 'perekap@gmail.com';
+    $perekap->password = bcrypt('rahasia'); 
+    $perekap->no_hp = '-';
+    $perekap->alamat = '-';
+    $perekap->id_role = '6';
+    $perekap->save();
+    $perekap->attachRole($perekapRole);
 
     // Membuat sample pj dosen
     $pj_dosen = new User();
