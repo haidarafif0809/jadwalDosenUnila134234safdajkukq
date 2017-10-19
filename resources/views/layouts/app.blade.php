@@ -90,6 +90,12 @@
                         <!-- DROPDOWN LAPORAN -->
                     @endrole  
 
+                    @role('pj_dosen')  
+                     <li><a href="{{ route('master_mata_kuliahs.index') }}">Mata Kuliah</a></li> 
+                      <li><a href="{{ route('materi.index') }}">Materi</a></li>  
+                    <li><a href="{{ route('kelompok_mahasiswa.index') }}">Kelompok Mahasiswa</a></li>  
+
+                    @endrole
                     @role('pimpinan')  
                         <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li> 
                         <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>      
@@ -152,7 +158,7 @@
 <script src="{{ asset('js/main.js') }}"></script> 
 <script type="text/javascript">
     
-        $.fn.dataTable.ext.errMode = 'throw';
+       // $.fn.dataTable.ext.errMode = 'throw';
 </script>
 
 @yield('scripts')
