@@ -1154,8 +1154,9 @@ public function filter(Request $request, Builder $htmlBuilder)
 
     // rekap kehadiran dosen
     public function rekap_kehadiran_dosen($id,$tipe_jadwal){
+        $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $id)->first();
 
-        return view('penjadwalans.rekap_dosen',['id'=> $id, 'tipe_jadwal' => $tipe_jadwal]);
+        return view('penjadwalans.rekap_dosen',['id'=> $id, 'tipe_jadwal' => $tipe_jadwal, 'data_jadwal' => $data_jadwal]);
 
     }
 
@@ -1230,13 +1231,14 @@ public function filter(Request $request, Builder $htmlBuilder)
                                     ->leftJoin('penjadwalans','presensi.id_jadwal','=','penjadwalans.id')// LEFT JOIN PENJADAWALAN ON ID JADWAL = PENJADWALN.ID
                                     ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')// LEFT JOIN MATA KULIAH ON ID MATA KULIAH MATAKULIAH.ID
                                     ->where('penjadwalans.id',$id)// WHERE TIPE JADWAL;    
-                                    ->get();                    
+                                    ->get();
+        $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $id)->first();                    
        
-           Excel::create("REKAP DOSEN YANG SUDAH HADIR", function($excel) use ($query_detail_presensi) {
+           Excel::create("REKAP DOSEN YANG SUDAH HADIR", function($excel) use ($query_detail_presensi, $data_jadwal) {
 
-            $excel->sheet("REKAP DOSEN YANG SUDAH HADIR", function ($sheet) use ($query_detail_presensi) {
+            $excel->sheet("REKAP DOSEN YANG SUDAH HADIR", function ($sheet) use ($query_detail_presensi, $data_jadwal) {
 
-                  $sheet->loadView('lap_presensi_dosen.export_detail_presensi',['presensi'=>$query_detail_presensi]);
+                  $sheet->loadView('lap_presensi_dosen.export_detail_presensi',['presensi'=>$query_detail_presensi, 'data_jadwal'=>$data_jadwal]);
   
             });
 
@@ -1323,12 +1325,56 @@ public function filter(Request $request, Builder $htmlBuilder)
                       ->where('jadwal_dosens.id_jadwal',$request->id)->where('presensi.id_user', NULL)// WHERE ID JADWAL = $request->id AND PRESENSI.ID_USER IS NULL
                       ->get();  
 
-           Excel::create("REKAP DOSEN YANG BELUM HADIR", function($excel) use ($jadwal_dosens,$request) {
+        $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $request->id)->first();
 
-            $excel->sheet("REKAP DOSEN YANG BELUM HADIR", function ($sheet) use ($jadwal_dosens,$request) {
+           Excel::create("REKAP DOSEN YANG BELUM HADIR", function($excel) use ($jadwal_dosens, $data_jadwal,$request) {
 
-                                // judul kolom
-                $row = 1;
+            $excel->sheet("REKAP DOSEN YANG BELUM HADIR", function ($sheet) use ($jadwal_dosens, $data_jadwal,$request) {
+
+                if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL") {
+                  $materi_kuliah = $data_jadwal->materi->nama_materi; 
+                }
+                else{
+                  $materi_kuliah = $data_jadwal->mata_kuliah->nama_mata_kuliah; 
+                }
+
+                $baris = 1;
+                $sheet->row($baris, [
+                    'Tipe Jadwal',
+                    ': '.$request->tipe_jadwal.''
+                ]);
+
+                $baris = 2;
+                $sheet->row($baris, [
+                    'Mata Kuliah / Materi',
+                    ': '.$materi_kuliah.''
+                ]);
+
+                $baris = 3;
+                $sheet->row($baris, [
+                    'Block',
+                    ': '.$data_jadwal->block->nama_block.''
+                ]);
+
+                $baris = 4;
+                $sheet->row($baris, [
+                    'Ruangan',
+                    ': '.$data_jadwal->ruangan->nama_ruangan.''
+                ]);
+
+                $baris = 5;
+                $sheet->row($baris, [
+                    'Tanggal',
+                    ': '.date("d-m-Y", strtotime($data_jadwal->tanggal)).''
+                ]);
+
+                $baris = 6;
+                $sheet->row($baris, [
+                    'Waktu',
+                    ': '.$data_jadwal->waktu_mulai.' s/d '.$data_jadwal->waktu_selesai.''
+                ]);
+
+                $row = 8;
                 $sheet->row($row,[
               
                 'Nama Dosen',
@@ -1478,25 +1524,72 @@ public function filter(Request $request, Builder $htmlBuilder)
     public function download_mahasiswa_hadir(Request $request){
 
       $data_presensi = PresensiMahasiswa::mahasiswaHadir($request)->get();
+      $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $request->id)->first();
 
-      Excel::create('Mahasiswa Hadir', function($excel) use ($data_presensi, $request) {
+      Excel::create('Mahasiswa Hadir', function($excel) use ($data_presensi, $data_jadwal, $request) {
         // Set property
-        $excel->sheet('Mahasiswa Hadir', function($sheet) use ($data_presensi, $request) {
-          $sheet->loadView('penjadwalans.export_rekap_mahasiswa_hadir', ['data_presensi' => $data_presensi ]);
+        $excel->sheet('Mahasiswa Hadir', function($sheet) use ($data_presensi, $data_jadwal, $request) {
+          $sheet->loadView('penjadwalans.export_rekap_mahasiswa_hadir', ['data_presensi' => $data_presensi, 'data_jadwal' => $data_jadwal]);
         });
 
       })->export('xls');  
+
     }
 
 //DONWLOAD MAHASISWA BELUM ABSEN
     public function download_mahasiswa_tidak_hadir(Request $request){
 
-      $data_presensi = User::mahasiswaTidakHadir($request)->get();  
+      $data_presensi = User::mahasiswaTidakHadir($request)->get();
+      $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $request->id)->first();  
 
-      Excel::create('Mahasiswa Tidak Hadir', function($excel) use ($data_presensi, $request) {
+      Excel::create('Mahasiswa Tidak Hadir', function($excel) use ($data_presensi, $data_jadwal, $request) {
         // Set property
-        $excel->sheet('Mahasiswa Tidak Hadir', function($sheet) use ($data_presensi, $request) {
-          $row = 1;
+        $excel->sheet('Mahasiswa Tidak Hadir', function($sheet) use ($data_presensi, $data_jadwal, $request) {
+
+          if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL") {
+            $materi_kuliah = $data_jadwal->materi->nama_materi; 
+          }
+          else{
+            $materi_kuliah = $data_jadwal->mata_kuliah->nama_mata_kuliah; 
+          }
+
+          $baris = 1;
+          $sheet->row($baris, [
+              'Tipe Jadwal',
+              ': '.$request->tipe_jadwal.''
+          ]);
+
+          $baris = 2;
+          $sheet->row($baris, [
+              'Mata Kuliah / Materi',
+              ': '.$materi_kuliah.''
+          ]);
+
+          $baris = 3;
+          $sheet->row($baris, [
+              'Block',
+              ': '.$data_jadwal->block->nama_block.''
+          ]);
+
+          $baris = 4;
+          $sheet->row($baris, [
+              'Ruangan',
+              ': '.$data_jadwal->ruangan->nama_ruangan.''
+          ]);
+
+          $baris = 5;
+          $sheet->row($baris, [
+              'Tanggal',
+              ': '.date("d-m-Y", strtotime($data_jadwal->tanggal)).''
+          ]);
+
+          $baris = 6;
+          $sheet->row($baris, [
+              'Waktu',
+              ': '.$data_jadwal->waktu_mulai.' s/d '.$data_jadwal->waktu_selesai.''
+          ]);
+
+          $row = 8;
           $sheet->row($row, [
 
                 'NPM',
@@ -1544,8 +1637,9 @@ public function filter(Request $request, Builder $htmlBuilder)
     }
 //VIEW REKAP MAHASISWA
     public function rekap_kehadiran_mahasiswa($id, $id_block, $tipe_jadwal){
-      return view('penjadwalans.rekap_mahasiswa', ['id'=>$id, 'id_block'=>$id_block, 'tipe_jadwal'=>$tipe_jadwal]);
+      $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $id)->first();
+
+      return view('penjadwalans.rekap_mahasiswa', ['id'=>$id, 'id_block'=>$id_block, 'tipe_jadwal'=>$tipe_jadwal, 'data_jadwal'=>$data_jadwal]);
     }
 
-    
 }

@@ -1,8 +1,23 @@
-
- <table>
+<table>
    <thead>
-     <tr>
 
+        <tr><td>Tipe Jadwal</td> : <td>{{$data_jadwal->tipe_jadwal}} </td></tr><br>
+
+        @if($data_jadwal->tipe_jadwal == 'CSL' || $data_jadwal->tipe_jadwal == 'TUTORIAL')
+           <tr><td>Mata Kuliah / Materi</td> : <td>{{$data_jadwal->materi->nama_materi}} </td></tr><br>
+        @else 
+           <tr><td>Mata Kuliah / Materi</td> : <td>{{$data_jadwal->mata_kuliah->nama_mata_kuliah}} </td></tr><br>
+        @endif 
+        
+        <tr><td>Block</td> : <td>{{$data_jadwal->block->nama_block}} </td></tr><br>
+        <tr><td>Ruangan</td> : <td>{{$data_jadwal->ruangan->nama_ruangan}} </td></tr><br>
+        <tr><td>Tanggal</td> : <td>{{date('d-m-Y', strtotime($data_jadwal->tanggal))}} </td></tr><br>
+        <tr><td>Waktu</td> : <td>{{$data_jadwal->waktu_mulai}} s/d {{$data_jadwal->waktu_selesai}} </td></tr><br>
+
+     
+    <tr></tr>
+
+    <tr>
         <th>Nama Dosen</th>
         <th>Tipe Jadwal</th>
         <th>Mata Kuliah</th>
@@ -11,7 +26,7 @@
         <th>Jarak Absen</th>
         <th>Foto</th>
                                
-     </tr>
+    </tr>
    </thead>
     <tbody>
 
@@ -37,4 +52,4 @@
 
     </tbody>
 
-</table> 
+</table>

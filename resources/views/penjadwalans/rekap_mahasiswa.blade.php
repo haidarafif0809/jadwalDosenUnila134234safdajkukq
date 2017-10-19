@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-12">
             <ul class="breadcrumb">
-                <li><a href="{{ url('/home') }}">Home</a></li>
+                <li><a href="{{ url('/home') }}" style="color: blue">Home</a></li>
                 <li class="active">Presensi Mahasiswa</li>
             </ul>
  
@@ -26,7 +26,38 @@
 
                 <a href="{{ route('penjadwalans.download_mahasiswa_hadir',[$id, $id_block, $tipe_jadwal]) }}" class="btn btn-warning" id="btnExcelHadir" target="blank"><span class="glyphicon glyphicon-export"></span> Export Excel</a>
 
-                <center><h1>DAFTAR HADIR MAHASISWA</h1></center><br>
+                <center><h1>DAFTAR HADIR MAHASISWA </h1></center><br>
+
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <table>
+                              <tbody>
+
+                                <tr><td width="50%">Tipe Jadwal</td> <td> :</td> <td>{{ $tipe_jadwal }}</td></tr>
+
+                                @if ($tipe_jadwal == "CSL" OR $tipe_jadwal == "TUTORIAL" ) 
+                                    <tr><td width="50%">Mata Kuliah / Materi</td> <td> :</td><td>{{ $data_jadwal->materi->nama_materi}}</td></tr>
+                                @else
+                                    <tr><td width="50%">Mata Kuliah / Materi</td> <td> :</td><td>{{ $data_jadwal->mata_kuliah->nama_mata_kuliah}}</td></tr>
+                                @endif  
+
+                                <tr><td width="50%">Block</td> <td> :</td> <td>{{ $data_jadwal->block->nama_block }}</td></tr>
+                                <tr><td width="50%">Ruangan</td> <td> :</td> <td>{{ $data_jadwal->ruangan->nama_ruangan }}</td></tr>
+
+                              </tbody>
+                            </table>
+                        </div>
+                        <div class="col-sm-4">
+                            <table>
+                              <tbody>
+                                  <tr><td width="50%">Tanggal</td> <td> :</td> <td>{{ date('d-m-Y', strtotime($data_jadwal->tanggal)) }}</td></tr>
+                                  <tr><td width="50%">Waktu</td> <td> :</td> <td>{{ $data_jadwal->waktu_mulai }} s/d {{ $data_jadwal->waktu_selesai }}</td></tr>
+                              </tbody>
+                            </table>                                                                                                                        
+                        </div>
+                    </div>
+                     
+                    <hr>
                     <div class="table-responsive">
                         <table class="table table-bordered table-sm" id="presensi_mahasiswa">
                             <thead>
