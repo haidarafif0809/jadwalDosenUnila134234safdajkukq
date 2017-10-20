@@ -465,9 +465,15 @@ public function filter(Request $request, Builder $htmlBuilder)
                         'id_jadwal' => $id_jadwal
                     ]);
                 })
-              ->addColumn('rekap_kehadiran', function($jadwal){
+              ->addColumn('rekap_kehadiran', function($jadwal) use ($request){
               
-              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+              if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
+                return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+              }
+              else {
+                 return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id_jadwal, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+              }
+              
 
             })
              //MENAMPILKAN STATUS PENJADWALAN
