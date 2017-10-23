@@ -375,6 +375,16 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth', 'role:admin|pimpinan|pj_
 	'uses' => 'PenjadwalanLainController@update'
 	]);
 
+	//UBAH DOSEN 
+
+	Route::put('penjadwalans/proses-ubah-dosen-csl-tutorial/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'penjadwalans.proses_ubah_dosen_csl_tutorial',
+	'uses' => 'PenjadwalanLainController@proses_ubah_dosen_csl_tutorial'
+	]);
+
+
+
 // REKAP KEHADIRAN DOSEN
 	Route::get('penjadwalans/rekap_kehadiran_dosen/{id}/{tipe_jadwal}',[
 	'middleware' => ['auth'],

@@ -66,15 +66,20 @@
 	</div>
 </div>
 
+
 <div class="form-group{{ $errors->has('id_mata_kuliah') ? ' has-error' : '' }} kolom-mata-kuliah">
 	{!! Form::label('id_mata_kuliah', 'Mata Kuliah', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::select('id_mata_kuliah', []+App\Master_mata_kuliah::pluck('nama_mata_kuliah','id')->all(), null, ['class'=>'form-control js-selectize-reguler','id' => 'id_mata_kuliah', 'placeholder' => 'Pilih Mata Kuliah']) !!}
+		@if(isset($penjadwalans))
+		{!! Form::select('id_mata_kuliah', []+App\Master_mata_kuliah::pluck('nama_mata_kuliah','id')->all(), $penjadwalans->id_mata_kuliah, ['class'=>'form-control js-selectize-reguler','id' => 'id_mata_kuliah', 'placeholder' => 'Pilih Mata Kuliah']) !!}
+		@else
+		{!! Form::select('id_mata_kuliah', []+App\Master_mata_kuliah::pluck('nama_mata_kuliah','id')->all(), null  , ['class'=>'form-control js-selectize-reguler','id' => 'id_mata_kuliah', 'placeholder' => 'Pilih Mata Kuliah']) !!}
+		@endif
 		{!! $errors->first('id_mata_kuliah', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
 
-@if(isset($asal_input))
+@if(isset($penjadwalans))
 <div class="form-group{{ $errors->has('tanggal') ? ' has-error' : '' }}">
 	{!! Form::label('tanggal', 'Tanggal', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
@@ -114,11 +119,15 @@
 
 
 
-<div class="form-group{{ $errors->has('id_ruangan') ? ' has-error' : '' }}">
-	{!! Form::label('id_ruangan', 'Ruangan', ['class'=>'col-md-2 control-label']) !!}
+<div class="form-group{{ $errors->has('id_ruangan[]') ? ' has-error' : '' }}">
+	{!! Form::label('id_ruangan[]', 'Ruangan', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
-		{!! Form::select('id_ruangan', []+App\Master_ruangan::pluck('nama_ruangan','id')->all(), null, ['class'=>'form-control js-selectize-reguler', 'placeholder' => 'Pilih Ruangan']) !!}
-		{!! $errors->first('id_ruangan', '<p class="help-block">:message</p>') !!}
+			@if (isset($penjadwalans) && $penjadwalans)  
+		{!! Form::select('id_ruangan[]', []+App\Master_ruangan::pluck('nama_ruangan','id')->all(), null, ['class'=>'form-control js-selectize-multi-edit-ruangan', 'placeholder' => 'Pilih Ruangan','required'=>'true' ])!!}
+		@else
+		{!! Form::select('id_ruangan[]', []+App\Master_ruangan::pluck('nama_ruangan','id')->all(), null, ['class'=>'form-control js-selectize-multi', 'placeholder' => 'Pilih Ruangan','required'=>'true' ])!!}
+		@endif
+		{!! $errors->first('id_ruangan[]', '<p class="help-block">:message</p>') !!}
 	</div>
 </div>
 
@@ -128,7 +137,7 @@
 	{!! Form::label('id_user[]', 'Dosen', ['class'=>'col-md-2 control-label']) !!}
 	<div class="col-md-4">
 	@if (isset($penjadwalans) && $penjadwalans)  
-		{!! Form::select('id_user[]', $users, null, ['class'=>'form-control js-selectize-multi-edit ', 'placeholder' => 'Pilih Dosen' ,'required' => 'true']) !!}
+		{!! Form::select('id_user[]', $users, null, ['class'=>'form-control js-selectize-multi-edit', 'placeholder' => 'Pilih Dosen' ,'required' => 'true']) !!}
 	@else
 		{!! Form::select('id_user[]', $users, null, ['class'=>'form-control js-selectize-multi ', 'placeholder' => 'Pilih Dosen','required' => 'true']) !!}
 	@endif

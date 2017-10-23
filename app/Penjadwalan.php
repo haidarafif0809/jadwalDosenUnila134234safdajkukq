@@ -40,6 +40,10 @@ class Penjadwalan extends Model
       {
         return $this->hasOne('App\KelompokMahasiswa','id','id_kelompok');
       } 
+      public function jadwal_ruangan()
+      {
+        return $this->hasOne('App\JadwalRuangan','id_jadwal','id');
+      } 
 
     //MENGECEK TAMBAH PENDAJWALAN, RUANGAN YANG SAMA DAN DI JADWAL YANG BERSMAAN
     public function scopeStatusRuangan($query, $request,$data_setting_waktu)

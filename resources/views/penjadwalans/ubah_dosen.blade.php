@@ -38,6 +38,16 @@
 	});
 </script>
 
+
+<script type="text/javascript">
+	$('.js-selectize-multi-edit-ruangan').selectize({
+	  sortField: 'text',
+	  delimiter: ',',
+	  maxItems: null,
+	  items: [<?php echo  $data_ruangan; ?>]
+	});
+</script>
+
 <script type="text/javascript">
 //MENGAMBIL ID BLOK UNTUK MENAMPILKAN MODUL YANG ADA DI BLOK YANG DI PILIH
 	$("#id_block").change(function(){
