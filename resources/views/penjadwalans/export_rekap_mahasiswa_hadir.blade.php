@@ -11,7 +11,7 @@
 	        @endif 
 	        
 	        <tr><td>Block</td> : <td>{{$data_jadwal->block->nama_block}} </td></tr>
-	        <tr><td>Ruangan</td> : <td>{{$data_jadwal->ruangan->nama_ruangan}} </td></tr>
+	        <tr><td>Ruangan</td> : <td>{{$ruangan}} </td></tr>
 	        <tr><td>Tanggal</td> : <td>{{date('d-m-Y', strtotime($data_jadwal->tanggal))}} </td></tr>
 	        <tr><td>Waktu</td> : <td>{{$data_jadwal->waktu_mulai}} s/d {{$data_jadwal->waktu_selesai}} </td></tr>
      
@@ -41,7 +41,7 @@
 						{{ $data_presensis->mata_kuliah }}
 					@endif
 				</td>
-				<td>{{ $data_presensis->nama_ruangan }}</td>
+				<td>{{ $ruangan }}</td>
 				<td>{{ $data_presensis->waktu }}</td>
 				<td>{{ $data_presensis->jarak_absen." m" }}</td>
 				<td>					

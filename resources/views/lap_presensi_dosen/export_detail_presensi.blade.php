@@ -10,7 +10,7 @@
         @endif 
         
         <tr><td>Block</td> : <td>{{$data_jadwal->block->nama_block}} </td></tr><br>
-        <tr><td>Ruangan</td> : <td>{{$data_jadwal->ruangan->nama_ruangan}} </td></tr><br>
+        <tr><td>Ruangan</td> : <td>{{$ruangan}} </td></tr><br>
         <tr><td>Tanggal</td> : <td>{{date('d-m-Y', strtotime($data_jadwal->tanggal))}} </td></tr><br>
         <tr><td>Waktu</td> : <td>{{$data_jadwal->waktu_mulai}} s/d {{$data_jadwal->waktu_selesai}} </td></tr><br>
 
@@ -42,7 +42,7 @@
            <td>{{$detail_presensi->nama_mata_kuliah}}</td><!-- NAMA MATA KULIAH -->
            @endif 
 
-           <td>{{$detail_presensi->ruangan}}</td> <!-- RUANGAN -->
+           <td>{{$ruangan}}</td> <!-- RUANGAN -->
            <td>{{$detail_presensi->waktu}}</td> <!-- WAKTU ABSEN -->
            <td>{{$detail_presensi->jarak_absen}} m</td><!-- JARAK ABSEN -->
            <td><img src="{{ public_path().'/'. ($detail_presensi->foto)}}"  ></td> <!-- FOTO ABSEN -->

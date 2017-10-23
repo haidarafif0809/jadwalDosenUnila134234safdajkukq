@@ -35,7 +35,7 @@
                                 @endif  
 
                                 <tr><td width="50%">Block</td> <td> :</td> <td>{{ $data_jadwal->block->nama_block }}</td></tr>
-                                <tr><td width="50%">Ruangan</td> <td> :</td> <td>{{ $data_jadwal->ruangan->nama_ruangan }}</td></tr>
+                                <tr><td width="50%">Ruangan</td> <td> :</td> <td>{{ $ruangan }}</td></tr>
 
                               </tbody>
                             </table>

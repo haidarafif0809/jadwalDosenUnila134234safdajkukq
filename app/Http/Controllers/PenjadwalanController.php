@@ -43,7 +43,7 @@ class PenjadwalanController extends Controller
                         ]);
                 })
 
-                       //MENGONEKSIKAN TOMBOL DOSEN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
+           //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
             ->addColumn('ruangan', function($jadwal){
                 $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$jadwal->id)->get(); 
                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$jadwal->id)->first();
@@ -148,9 +148,9 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
-        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false ])
+        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false ,'searchable'=>true])
         ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>true])  
-        ->addColumn(['data' => 'ruangan', 'name' => 'ruangan', 'title' => 'Ruangan', 'orderable' => false, ])  
+        ->addColumn(['data' => 'ruangan', 'name' => 'ruangan', 'title' => 'Ruangan', 'orderable' => false,'searchable'=>true])  
         ->addColumn(['data' => 'materi.nama_materi', 'name' => 'materi.nama_materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>true])  
         ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
@@ -277,7 +277,7 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                     # code...
                      $status = "Batal";
                 } 
-                elseif ($status_penjadwalan->status_jadwal == 3) {
+                elseif ($penjadwalan->status_jadwal == 3) {
                     # code...
                      $status = "Dosen Di Gantikan";
                 } 
@@ -298,20 +298,29 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
                 }
 
 
-                 $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$id_jadwal)->get(); 
 
-                 $ruangan_list = "";
+                // CARI JADWAL RUANGAN 
 
+                $ruangan_list = "";
                  $no_urut = 0;
-                foreach ($jadwal_ruangans as $jadwal_ruangan) {
-                    $no_urut++;
-                    if ($no_urut == 1){
-                    $ruangan_list.= $jadwal_ruangan->ruangan->nama_ruangan;
-                    }
-                    else{
-                    $ruangan_list.= ",".$jadwal_ruangan->ruangan->nama_ruangan;
+                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id_jadwal)->first();
+                 $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$id_jadwal)->get(); 
+                 if($jadwal_ruangans->count() >= 1){
+                       
+                    foreach($jadwal_ruangans as $jadwal_ruangan){
+                        $no_urut++;
+                        if ($no_urut == 1){
+                          $ruangan_list.= $jadwal_ruangan->ruangan->nama_ruangan;
+                        }
+                      else{
+                      $ruangan_list.= ",".$jadwal_ruangan->ruangan->nama_ruangan;
+                      }
                     }
                 }
+                elseif($jadwal_ruangans->count() < 1){
+                  $ruangan_list.=  $nama_ruangan->ruangan->nama_ruangan;
+                }
+                  //END CARI JADWAL RUANGAN 
 
 
             if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == 0 OR $penjadwalan->id_mata_kuliah == null) {
@@ -1419,9 +1428,31 @@ public function filter(Request $request, Builder $htmlBuilder)
 
     // rekap kehadiran dosen
     public function rekap_kehadiran_dosen($id,$tipe_jadwal){
-        $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $id)->first();
+        $data_jadwal = Penjadwalan::with(['block','mata_kuliah','materi','kelompok'])->where('id', $id)->first();
 
-        return view('penjadwalans.rekap_dosen',['id'=> $id, 'tipe_jadwal' => $tipe_jadwal, 'data_jadwal' => $data_jadwal]);
+                // CARI JADWAL RUANGAN 
+                $ruangan_list = "";
+                 $no_urut = 0;
+                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id)->first();
+                 $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$id)->get(); 
+                 if($jadwal_ruangans->count() >= 1){
+                       
+                    foreach($jadwal_ruangans as $jadwal_ruangan){
+                        $no_urut++;
+                        if ($no_urut == 1){
+                          $ruangan_list.= $jadwal_ruangan->ruangan->nama_ruangan;
+                        }
+                      else{
+                      $ruangan_list.= ",".$jadwal_ruangan->ruangan->nama_ruangan;
+                      }
+                    }
+                }
+                elseif($jadwal_ruangans->count() < 1){
+                  $ruangan_list.=  $nama_ruangan->ruangan->nama_ruangan;
+                }
+              //END CARI JADWAL RUANGAN 
+
+        return view('penjadwalans.rekap_dosen',['id'=> $id, 'tipe_jadwal' => $tipe_jadwal, 'data_jadwal' => $data_jadwal,'ruangan'=>$ruangan_list]);
 
     }
 
@@ -1465,9 +1496,17 @@ public function filter(Request $request, Builder $htmlBuilder)
 
 
                         })
-                        ->editColumn('ruangan', function ($presensi_dosen) {
-                                // ambil RUANGAN
-                        return $presensi_dosen['ruangan'];
+                        ->editColumn('ruangan', function ($presensi_dosen) use ($request) {
+                          //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
+                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id)->get(); 
+                          $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
+
+                         return view('penjadwalans._action_ruangan', [ 
+                        'model_user'     => $jadwal_ruangans,
+                        'id_jadwal' => $request->id,
+                        'nama_ruangan'=>$nama_ruangan,
+                        ]);
+
                         })                             
                         ->editColumn('waktu', function ($presensi_dosen) {
                       // WAKTU ABSEN
@@ -1499,11 +1538,33 @@ public function filter(Request $request, Builder $htmlBuilder)
                                     ->get();
         $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $id)->first();                    
        
+              // CARI JADWAL RUANGAN 
+                $ruangan_list = "";
+                 $no_urut = 0;
+                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id_jadwal)->first();
+                 $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$id_jadwal)->get(); 
+                 if($jadwal_ruangans->count() >= 1){
+                       
+                    foreach($jadwal_ruangans as $jadwal_ruangan){
+                        $no_urut++;
+                        if ($no_urut == 1){
+                          $ruangan_list.= $jadwal_ruangan->ruangan->nama_ruangan;
+                        }
+                      else{
+                      $ruangan_list.= ",".$jadwal_ruangan->ruangan->nama_ruangan;
+                      }
+                    }
+                }
+                elseif($jadwal_ruangans->count() < 1){
+                  $ruangan_list.=  $nama_ruangan->ruangan->nama_ruangan;
+                }
+              //END CARI JADWAL RUANGAN 
+
            Excel::create("REKAP DOSEN YANG SUDAH HADIR", function($excel) use ($query_detail_presensi, $data_jadwal) {
 
             $excel->sheet("REKAP DOSEN YANG SUDAH HADIR", function ($sheet) use ($query_detail_presensi, $data_jadwal) {
 
-                  $sheet->loadView('lap_presensi_dosen.export_detail_presensi',['presensi'=>$query_detail_presensi, 'data_jadwal'=>$data_jadwal]);
+                  $sheet->loadView('lap_presensi_dosen.export_detail_presensi',['presensi'=>$query_detail_presensi, 'data_jadwal'=>$data_jadwal,'ruangan'=>$ruangan_list]);
   
             });
 
@@ -1553,9 +1614,17 @@ public function filter(Request $request, Builder $htmlBuilder)
                             }
 
                         })
-                        ->editColumn('ruangan', function ($jadwal_dosen) {
+                        ->editColumn('ruangan', function ($jadwal_dosen) use ($request) {
                                 // ambil RUANGAN
-                         return $jadwal_dosen['nama_ruangan'];
+                         //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
+                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id)->get(); 
+                          $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
+
+                         return view('penjadwalans._action_ruangan', [ 
+                        'model_user'     => $jadwal_ruangans,
+                        'id_jadwal' => $request->id,
+                        'nama_ruangan'=>$nama_ruangan,
+                        ]);
 
                         })                             
                         ->editColumn('waktu', function ($jadwal_dosen) use ($request) {
@@ -1592,9 +1661,33 @@ public function filter(Request $request, Builder $htmlBuilder)
 
         $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $request->id)->first();
 
-           Excel::create("REKAP DOSEN YANG BELUM HADIR", function($excel) use ($jadwal_dosens, $data_jadwal,$request) {
 
-            $excel->sheet("REKAP DOSEN YANG BELUM HADIR", function ($sheet) use ($jadwal_dosens, $data_jadwal,$request) {
+              // CARI JADWAL RUANGAN 
+                $ruangan_list = "";
+                 $no_urut = 0;
+                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
+                 $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$request->id)->get(); 
+                 if($jadwal_ruangans->count() >= 1){
+                       
+                    foreach($jadwal_ruangans as $jadwal_ruangan){
+                        $no_urut++;
+                        if ($no_urut == 1){
+                          $ruangan_list.= $jadwal_ruangan->ruangan->nama_ruangan;
+                        }
+                      else{
+                      $ruangan_list.= ",".$jadwal_ruangan->ruangan->nama_ruangan;
+                      }
+                    }
+                }
+                elseif($jadwal_ruangans->count() < 1){
+                  $ruangan_list.=  $nama_ruangan->ruangan->nama_ruangan;
+                }
+              //END CARI JADWAL RUANGAN 
+
+
+           Excel::create("REKAP DOSEN YANG BELUM HADIR", function($excel) use ($jadwal_dosens, $data_jadwal,$request,$ruangan_list) {
+
+            $excel->sheet("REKAP DOSEN YANG BELUM HADIR", function ($sheet) use ($jadwal_dosens, $data_jadwal,$request,$ruangan_list) {
 
                 if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL") {
                   $materi_kuliah = $data_jadwal->materi->nama_materi; 
@@ -1624,7 +1717,7 @@ public function filter(Request $request, Builder $htmlBuilder)
                 $baris = 4;
                 $sheet->row($baris, [
                     'Ruangan',
-                    ': '.$data_jadwal->ruangan->nama_ruangan.''
+                    ': '.$ruangan_list.''
                 ]);
 
                 $baris = 5;
@@ -1674,7 +1767,7 @@ public function filter(Request $request, Builder $htmlBuilder)
                         $jadwal_dosen['nama_dosen'],                        
                         $request->tipe_jadwal,
                         $nama_mata_kuliah,
-                        $jadwal_dosen['nama_ruangan'],
+                        $ruangan_list,
                         "-",
                         "-",
                         "-",                   
@@ -1718,7 +1811,20 @@ public function filter(Request $request, Builder $htmlBuilder)
                      return $materi_kuliah = $materi_kuliah->mata_kuliah;
                    }
                 })
- 
+                
+                // ambil RUANGAN
+                 ->editColumn('nama_ruangan', function ($ruangan) use ($request) {
+                         //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
+                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id)->get(); 
+                          $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
+
+                         return view('penjadwalans._action_ruangan', [ 
+                        'model_user'     => $jadwal_ruangans,
+                        'id_jadwal' => $request->id,
+                        'nama_ruangan'=>$nama_ruangan,
+                        ]);
+               })       
+
             //WAKTU ABSEN
                 ->editColumn('waktu',function($waktu){
                   if ($waktu->waktu == "" ) {
@@ -1769,6 +1875,20 @@ public function filter(Request $request, Builder $htmlBuilder)
                    }
                 })
  
+                 // ambil RUANGAN
+                 ->editColumn('nama_ruangan', function ($ruangan) use ($request) {
+                         //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
+                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id)->get(); 
+                          $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
+
+                         return view('penjadwalans._action_ruangan', [ 
+                        'model_user'     => $jadwal_ruangans,
+                        'id_jadwal' => $request->id,
+                        'nama_ruangan'=>$nama_ruangan,
+                        ]);
+               })
+
+
             //WAKTU ABSEN
                 ->editColumn('waktu',function($waktu){
                      return "-";
@@ -1791,10 +1911,32 @@ public function filter(Request $request, Builder $htmlBuilder)
       $data_presensi = PresensiMahasiswa::mahasiswaHadir($request)->get();
       $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $request->id)->first();
 
-      Excel::create('Mahasiswa Hadir', function($excel) use ($data_presensi, $data_jadwal, $request) {
+              // CARI JADWAL RUANGAN 
+                $ruangan_list = "";
+                 $no_urut = 0;
+                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
+                 $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$request->id)->get(); 
+                 if($jadwal_ruangans->count() >= 1){
+                       
+                    foreach($jadwal_ruangans as $jadwal_ruangan){
+                        $no_urut++;
+                        if ($no_urut == 1){
+                          $ruangan_list.= $jadwal_ruangan->ruangan->nama_ruangan;
+                        }
+                      else{
+                      $ruangan_list.= ",".$jadwal_ruangan->ruangan->nama_ruangan;
+                      }
+                    }
+                }
+                elseif($jadwal_ruangans->count() < 1){
+                  $ruangan_list.=  $nama_ruangan->ruangan->nama_ruangan;
+                }
+              //END CARI JADWAL RUANGAN 
+
+      Excel::create('Mahasiswa Hadir', function($excel) use ($data_presensi, $data_jadwal, $request,$ruangan_list) {
         // Set property
-        $excel->sheet('Mahasiswa Hadir', function($sheet) use ($data_presensi, $data_jadwal, $request) {
-          $sheet->loadView('penjadwalans.export_rekap_mahasiswa_hadir', ['data_presensi' => $data_presensi, 'data_jadwal' => $data_jadwal]);
+        $excel->sheet('Mahasiswa Hadir', function($sheet) use ($data_presensi, $data_jadwal, $request,$ruangan_list) {
+          $sheet->loadView('penjadwalans.export_rekap_mahasiswa_hadir', ['data_presensi' => $data_presensi, 'data_jadwal' => $data_jadwal,'ruangan'=>$ruangan_list]);
         });
 
       })->export('xls');  
@@ -1805,11 +1947,33 @@ public function filter(Request $request, Builder $htmlBuilder)
     public function download_mahasiswa_tidak_hadir(Request $request){
 
       $data_presensi = User::mahasiswaTidakHadir($request)->get();
-      $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $request->id)->first();  
+      $data_jadwal = Penjadwalan::with(['block','mata_kuliah','materi','kelompok'])->where('id', $request->id)->first();  
 
-      Excel::create('Mahasiswa Tidak Hadir', function($excel) use ($data_presensi, $data_jadwal, $request) {
+              // CARI JADWAL RUANGAN 
+                $ruangan_list = "";
+                 $no_urut = 0;
+                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
+                 $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$request->id)->get(); 
+                 if($jadwal_ruangans->count() >= 1){
+                       
+                    foreach($jadwal_ruangans as $jadwal_ruangan){
+                        $no_urut++;
+                        if ($no_urut == 1){
+                          $ruangan_list.= $jadwal_ruangan->ruangan->nama_ruangan;
+                        }
+                      else{
+                      $ruangan_list.= ",".$jadwal_ruangan->ruangan->nama_ruangan;
+                      }
+                    }
+                }
+                elseif($jadwal_ruangans->count() < 1){
+                  $ruangan_list.=  $nama_ruangan->ruangan->nama_ruangan;
+                }
+              //END CARI JADWAL RUANGAN 
+
+      Excel::create('Mahasiswa Tidak Hadir', function($excel) use ($data_presensi, $data_jadwal, $request,$ruangan_list) {
         // Set property
-        $excel->sheet('Mahasiswa Tidak Hadir', function($sheet) use ($data_presensi, $data_jadwal, $request) {
+        $excel->sheet('Mahasiswa Tidak Hadir', function($sheet) use ($data_presensi, $data_jadwal, $request,$ruangan_list) {
 
           if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL") {
             $materi_kuliah = $data_jadwal->materi->nama_materi; 
@@ -1839,7 +2003,7 @@ public function filter(Request $request, Builder $htmlBuilder)
           $baris = 4;
           $sheet->row($baris, [
               'Ruangan',
-              ': '.$data_jadwal->ruangan->nama_ruangan.''
+              ': '.$ruangan_list.''
           ]);
 
           $baris = 5;
@@ -1868,7 +2032,7 @@ public function filter(Request $request, Builder $htmlBuilder)
 
               ]);
 
-               
+          //data dari presensi     
           foreach ($data_presensi as $data_presensis){
 
               if ($data_presensis->tipe_jadwal == "CSL" OR $data_presensis->tipe_jadwal == "TUTORIAL" ) {
@@ -1887,7 +2051,7 @@ public function filter(Request $request, Builder $htmlBuilder)
                   $data_presensis->email,
                   $data_presensis->name,
                   $materi_kuliah,
-                  $data_presensis->nama_ruangan,
+                  $ruangan_list,
                   $waktu_absen,
                   $jarak_absen,
                   $foto,
@@ -1904,7 +2068,30 @@ public function filter(Request $request, Builder $htmlBuilder)
     public function rekap_kehadiran_mahasiswa($id, $id_block, $tipe_jadwal){
       $data_jadwal = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('id', $id)->first();
 
-      return view('penjadwalans.rekap_mahasiswa', ['id'=>$id, 'id_block'=>$id_block, 'tipe_jadwal'=>$tipe_jadwal, 'data_jadwal'=>$data_jadwal]);
+
+                // CARI JADWAL RUANGAN 
+                $ruangan_list = "";
+                 $no_urut = 0;
+                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id)->first();
+                 $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$id)->get(); 
+                 if($jadwal_ruangans->count() >= 1){
+                       
+                    foreach($jadwal_ruangans as $jadwal_ruangan){
+                        $no_urut++;
+                        if ($no_urut == 1){
+                          $ruangan_list.= $jadwal_ruangan->ruangan->nama_ruangan;
+                        }
+                      else{
+                      $ruangan_list.= ",".$jadwal_ruangan->ruangan->nama_ruangan;
+                      }
+                    }
+                }
+                elseif($jadwal_ruangans->count() < 1){
+                  $ruangan_list.=  $nama_ruangan->ruangan->nama_ruangan;
+                }
+              //END CARI JADWAL RUANGAN 
+
+      return view('penjadwalans.rekap_mahasiswa', ['id'=>$id, 'id_block'=>$id_block, 'tipe_jadwal'=>$tipe_jadwal, 'data_jadwal'=>$data_jadwal,'ruangan'=>$ruangan_list]);
     }
 
 }
