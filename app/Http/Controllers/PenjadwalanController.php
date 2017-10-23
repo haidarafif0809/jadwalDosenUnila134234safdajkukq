@@ -398,7 +398,6 @@ public function exportPost(Request $request, Builder $htmlBuilder) {
 
     
 }
-
 public function filter(Request $request, Builder $htmlBuilder)
     {
         // 
@@ -409,60 +408,41 @@ public function filter(Request $request, Builder $htmlBuilder)
             'id_ruangan'    => 'required',
             'id_dosen'    => 'required'
             ]);   
-
          if ($request->ajax()) {
             # code...
-
             if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
                 
                 $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal);
-
                 $jenis_id_jadwal = 1;
       
-
             }
              elseif ($request->id_ruangan != 'semua' && $request->id_dosen != 'semua' && $request->id_block != 'semua') {
-
                  $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_ruangan',$request->id_ruangan)->where('id_dosen',$request->id_dosen)->where('id_block',$request->id_block)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
                  
                  $jenis_id_jadwal = 0;
                 
             }
-
             elseif ($request->id_ruangan == 'semua' && $request->id_dosen != 'semua' && $request->id_block == 'semua' ) {
-
                  $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$request->id_dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
-
                  $jenis_id_jadwal = 0;      
-
             }
             elseif ($request->id_ruangan != 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
-
                  $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_ruangan',$request->id_ruangan)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
                  $jenis_id_jadwal = 0;
-
             } 
              elseif ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block != 'semua') {
-
                  $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_block',$request->id_block)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
                  $jenis_id_jadwal = 0;
-
             } 
             elseif ($request->id_ruangan == 'semua' && $request->id_dosen != 'semua' && $request->id_block != 'semua') {
-
                  $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_dosen',$request->id_dosen)->where('id_block',$request->id_block)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
                  $jenis_id_jadwal = 0;
-
             } elseif ($request->id_ruangan != 'semua' && $request->id_dosen == 'semua' && $request->id_block != 'semua') {
-
                  $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_ruangan',$request->id_ruangan)->where('id_block',$request->id_block)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
                  $jenis_id_jadwal = 0;
-
             } elseif ($request->id_ruangan != 'semua' && $request->id_dosen != 'semua' && $request->id_block == 'semua') {
-
-                 $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_ruangan',$request->id_ruangan)->where('id_dosen',$request->id_dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
+    $penjadwalans = Jadwal_dosen::with(['block','mata_kuliah','ruangan'])->where('id_ruangan',$request->id_ruangan)->where('id_dosen',$request->id_dosen)->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->groupBy('id_jadwal');
                  $jenis_id_jadwal = 0;
-
             } 
            
      
@@ -475,7 +455,6 @@ public function filter(Request $request, Builder $htmlBuilder)
                         else {
                             $id_jadwal = $penjadwalan->id_jadwal;
                         }
-
                     return view('datatable._action', [
                         'model'     => $penjadwalan,
                         'form_url'  => route('penjadwalans.destroy', $id_jadwal),
@@ -488,7 +467,6 @@ public function filter(Request $request, Builder $htmlBuilder)
                     } else {
                         $id_jadwal = $penjadwalanss->id;
                     }
-
                 //PENGAMBILAN id materi di penjadwalan    
                 $penjadwalan_tipe = Penjadwalan::select('tipe_jadwal')->where('id',$id_jadwal)->get();
                     foreach ($penjadwalan_tipe as $penjadwalan_tipes) {
@@ -496,60 +474,37 @@ public function filter(Request $request, Builder $htmlBuilder)
                       return $penjadwalan_tipes->tipe_jadwal;
                     }
                 
-
             })->addColumn('jadwal_dosen', function($penjadwalan) use ($jenis_id_jadwal) {
                    if ($jenis_id_jadwal == 0) {
-
                         $id_jadwal = $penjadwalan->id_jadwal;  
                    
-
                     
                     } else 
                     {
                         $id_jadwal = $penjadwalan->id;
                     }
-
                 $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_jadwal',$id_jadwal)->get(); 
                     return view('penjadwalans._action', [ 
                         'model_user'     => $jadwal_dosens,
                         'id_jadwal' => $id_jadwal
                     ]);
-                })
-
-              ->addColumn('ruangan_jadwal', function($penjadwalan) use ($jenis_id_jadwal) {
-                   if ($jenis_id_jadwal == 0) {
+                }) 
+                //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
+            ->editColumn('ruangan', function($penjadwalan) use ($jenis_id_jadwal){
+                    if ($jenis_id_jadwal == 0) {
                         $id_jadwal = $penjadwalan->id_jadwal;  
-                        $nama_ruangan = Jadwal_dosen::with('ruangan')->where('id_jadwal',$id_jadwal)->first();
-                    
                     } else 
                     {
                         $id_jadwal = $penjadwalan->id;
-                        $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id_jadwal)->first();
                     }
-
                 $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$id_jadwal)->get(); 
-                
-
-
+                $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id_jadwal)->first();
                     return view('penjadwalans._action_ruangan', [ 
                         'model_user'     => $jadwal_ruangans,
                         'id_jadwal' => $id_jadwal,
                         'nama_ruangan'=>$nama_ruangan,
                         ]);
-
                 })
-
-              ->addColumn('rekap_kehadiran', function($jadwal){
-              
-              if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
-                return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
-              }
-              else {
-                 return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id_jadwal, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
-              }
-              
-
-            })
              //MENAMPILKAN STATUS PENJADWALAN
             ->addColumn('status',function($status_penjadwalan){
                 $status = "status_jadwal";
@@ -583,22 +538,21 @@ public function filter(Request $request, Builder $htmlBuilder)
                         'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
                         ]);
                 })
-             ->editColumn('mata_kuliah.nama_mata_kuliah',function($penjadwalan){
-
+            ->addColumn('mata_kuliah',function($penjadwalan){
                 if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
                     return "-";
                 }
                 else {
-
                     return $penjadwalan->mata_kuliah->nama_mata_kuliah;
                 }
-            })->addColumn('materi',function($penjadwalanss) use ($jenis_id_jadwal){
+            })
+
+            ->addColumn('materi',function($penjadwalanss) use ($jenis_id_jadwal){
                     if ($jenis_id_jadwal == 0) {
                         $id_jadwal = $penjadwalanss->id_jadwal; 
                     } else {
                         $id_jadwal = $penjadwalanss->id;
                     }
-
                 //PENGAMBILAN id materi di penjadwalan    
                 $penjadwalan_materi = Penjadwalan::with(['materi'])->where('id',$id_jadwal)->get();
                     foreach ($penjadwalan_materi as $penjadwalan_materis) {
@@ -618,7 +572,6 @@ public function filter(Request $request, Builder $htmlBuilder)
                     } else {
                         $id_jadwal = $penjadwalanss->id;
                     }
-
                 //PENGAMBILAN id kelompok di penjadwalan    
                 $penjadwalan_kelompok = Penjadwalan::with(['kelompok'])->where('id',$id_jadwal)->get();
                     foreach ($penjadwalan_kelompok as $penjadwalan_kelompoks) {
@@ -631,7 +584,6 @@ public function filter(Request $request, Builder $htmlBuilder)
                         }
                     }
                 
-
             })->make(true);
         }
         $html = $htmlBuilder
@@ -639,24 +591,20 @@ public function filter(Request $request, Builder $htmlBuilder)
         ->addColumn(['data' => 'waktu_mulai', 'name' => 'waktu_mulai', 'title' => 'Mulai'])  
         ->addColumn(['data' => 'waktu_selesai', 'name' => 'waktu_selesai', 'title' => 'Selesai'])         
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
-        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
-        ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>true])  
-        ->addColumn(['data' => 'ruangan_jadwal', 'name' => 'ruangan_jadwal', 'title' => 'Ruangan', 'orderable' => false, ])  
+        ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false,'searchable'=>true ])
+        ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>false])  
+        ->addColumn(['data' => 'ruangan', 'name' => 'ruangan', 'title' => 'Ruangan', 'orderable' => false,'searchable'=>false])  
         ->addColumn(['data' => 'materi', 'name' => 'materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>false])  
         ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
-        ->addColumn(['data' => 'rekap_kehadiran', 'name' => 'rekap_kehadiran', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])     
         ->addColumn(['data' => 'action', 'name' => 'action', 'title' => 'Ubah & Hapus', 'orderable' => false, 'searchable'=>false]);
-
             $users = DB::table('users')
             ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
             ->where('role_user.role_id',2)
             ->pluck('name','id');
-
            $users->prepend('Semua Dosen', 'semua');
-
         return view('penjadwalans.index',['users'=> $users])->with(compact('html'));
   
     }
