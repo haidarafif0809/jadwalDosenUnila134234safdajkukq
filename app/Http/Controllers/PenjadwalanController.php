@@ -541,7 +541,13 @@ public function filter(Request $request, Builder $htmlBuilder)
 
               ->addColumn('rekap_kehadiran', function($jadwal){
               
-              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+              if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
+                return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+              }
+              else {
+                 return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id_jadwal, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+              }
+              
 
             })
              //MENAMPILKAN STATUS PENJADWALAN
@@ -1422,7 +1428,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             "level"=>"danger",
             "message"=>"Penjadwalan berhasil dihapus"
             ]);
-        return redirect()->route('penjadwalans.index');
+        return redirect()->back();
             }
     }
 
