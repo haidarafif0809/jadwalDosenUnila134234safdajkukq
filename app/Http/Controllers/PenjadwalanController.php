@@ -1154,7 +1154,7 @@ public function filter(Request $request, Builder $htmlBuilder)
             "level"=>"danger",
             "message"=>"Penjadwalan berhasil dihapus"
             ]);
-        return redirect()->route('penjadwalans.index');
+        return redirect()->back();
             }
     }
 
