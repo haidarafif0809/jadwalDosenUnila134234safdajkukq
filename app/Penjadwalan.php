@@ -153,13 +153,15 @@ class Penjadwalan extends Model
       $waktu = date("Y-m-d H:i:s");
      
 
-      $query->select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'penjadwalans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')
+      $query->select('penjadwalans.id AS id_jadwal', 'penjadwalans.id_block AS id_block', 'jadwal_ruangans.id_ruangan AS id_ruangan', 'penjadwalans.tipe_jadwal AS tipe_jadwal', 'penjadwalans.tanggal AS tanggal',  'penjadwalans.waktu_mulai AS waktu_mulai',  'penjadwalans.waktu_selesai AS waktu_selesai', 'master_mata_kuliahs.nama_mata_kuliah', 'master_ruangans.nama_ruangan AS ruangan', 'master_ruangans.longitude AS longitude', 'master_ruangans.latitude AS latitude', 'master_ruangans.batas_jarak_absen AS batas_jarak_absen')
         // DATA YANG DIAMBIL TANGGAL,WAKTU MULAI, WAKTU SELESAI, NAMA MATA KULIAH, DAN RUANGAN
                         ->leftJoin('master_mata_kuliahs','penjadwalans.id_mata_kuliah','=','master_mata_kuliahs.id')
                         //LEFT JOIN KE TABLE MATA KULIAH
                         ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')      
                         //LEFT JOIN KE TABLE MATERI
-                        ->leftJoin('master_ruangans','penjadwalans.id_ruangan','=','master_ruangans.id')
+                        ->leftJoin('jadwal_ruangans','penjadwalans.id','=','jadwal_ruangans.id_jadwal')
+                        // LEFT JOIN JADWAL RUANGAN
+                        ->leftJoin('master_ruangans','jadwal_ruangans.id_ruangan','=','master_ruangans.id')
                         // LEFT JOIN MASTER RUANGAN
                         ->whereIn('penjadwalans.id_block', $array_block)
                         //WHERE ID BLOK = ID BLOK USER LOGIN
@@ -175,6 +177,7 @@ class Penjadwalan extends Model
 
                         return $query;
     }
+
 
     public function scopeJadwalCslTutorMahasiswa($query,$tanggal,$array_kelompok){
    $waktu = date("Y-m-d H:i:s");

@@ -383,7 +383,7 @@ $(document).on('click','#tampil_laporan',function(){
             columns: [
                 { data: 'email', name: 'email' },
                 { data: 'name', name: 'name' },
-                { data: 'nama_materi', name: 'nama_materi' },
+                { data: 'materi_kuliah', name: 'materi_kuliah' },
                 { data: 'nama_ruangan', name: 'nama_ruangan' },
                 { data: 'waktu', name: 'waktu' },
                 { data: 'jarak_absen', name: 'jarak_absen' },

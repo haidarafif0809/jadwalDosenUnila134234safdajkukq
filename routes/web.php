@@ -505,6 +505,8 @@ Route::get('/list_ruangan', "AndroidController@list_ruangan");
 	Route::post('/jadwal_lusa', "AndroidController@jadwal_lusa");
 	Route::post('/search_jadwal_mahasiswa_lusa', "AndroidController@search_jadwal_mahasiswa_lusa");
 	Route::post('/ubah_password_mahasiswa', "AndroidController@ubah_password_mahasiswa");
+	Route::post('/cek_profil_mahasiswa', "AndroidController@cek_profil_mahasiswa");
+	Route::post('/update_profil_mahasiswa', "AndroidController@update_profil_mahasiswa");
 
 
 
