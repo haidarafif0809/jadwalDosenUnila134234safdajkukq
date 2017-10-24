@@ -44,22 +44,22 @@ class Jadwal_dosen extends Model
 
 
     //MENGECEK DOSEN KETIKA TAMBAH DI PENJADWALAN
-    public function scopeStatusDosen($query, $request,$user_dosen,$data_setting_waktu)
+    public function scopeStatusDosen($query, $tanggal,$user_dosen,$data_setting_waktu)
     {
 
-      $query->where('id_dosen',$user_dosen)->where('tanggal',$request->tanggal)->where(function ($query) use ($request,$data_setting_waktu) {
-                  $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($request,$data_setting_waktu) {
-                    $query->where(function ($query) use ($request,$data_setting_waktu) {
+      $query->where('id_dosen',$user_dosen)->where('tanggal',$tanggal)->where(function ($query) use ($data_setting_waktu) {
+                  $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($data_setting_waktu) {
+                    $query->where(function ($query) use ($data_setting_waktu) {
                       $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
-                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                        })->orwhere(function($query) use ($data_setting_waktu) {
                          $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
                           });
                         });
-                      })->where(function($query) use ($request,$data_setting_waktu) {
+                      })->where(function($query) use ($data_setting_waktu) {
                 $query->where('waktu_selesai',$data_setting_waktu[1])
-                      ->orwhere(function($query) use ($request,$data_setting_waktu){
+                      ->orwhere(function($query) use ($data_setting_waktu){
                         $query->where('waktu_selesai','>=',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
-                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                        })->orwhere(function($query) use ($data_setting_waktu) {
                            $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
                           });
                             })->where('status_jadwal','<','2');
@@ -70,22 +70,22 @@ class Jadwal_dosen extends Model
 
     
     //MENGECEK DOSEN KETIKA TAMBAH DI PENJADWALAN 
-		public function scopeStatusDosenEdit($query, $request,$user_dosen,$data_setting_waktu,$id)
+		public function scopeStatusDosenEdit($query, $tanggal,$user_dosen,$data_setting_waktu,$id)
 		{
 
-			$query->where('id_jadwal','!=',$id)->where('id_dosen',$user_dosen)->where('tanggal',$request->tanggal)->where(function ($query) use ($request,$data_setting_waktu) {
-                  $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($request,$data_setting_waktu) {
-                    $query->where(function ($query) use ($request,$data_setting_waktu) {
+			$query->where('id_jadwal','!=',$id)->where('id_dosen',$user_dosen)->where('tanggal',$tanggal)->where(function ($query) use ($data_setting_waktu) {
+                  $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($data_setting_waktu) {
+                    $query->where(function ($query) use ($data_setting_waktu) {
                       $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
-                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                        })->orwhere(function($query) use ($data_setting_waktu) {
                          $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
                           });
                         });
-                      })->where(function($query) use ($request,$data_setting_waktu) {
+                      })->where(function($query) use ($data_setting_waktu) {
                 $query->where('waktu_selesai',$data_setting_waktu[1])
-                      ->orwhere(function($query) use ($request,$data_setting_waktu){
+                      ->orwhere(function($query) use ($data_setting_waktu){
                         $query->where('waktu_selesai','>=',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
-                        })->orwhere(function($query) use ($request,$data_setting_waktu) {
+                        })->orwhere(function($query) use ($data_setting_waktu) {
                            $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
                           });
                             })->where('status_jadwal','<','2');

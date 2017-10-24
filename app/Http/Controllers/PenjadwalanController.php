@@ -685,7 +685,8 @@ public function filter(Request $request, Builder $htmlBuilder)
             $ruangan_punya_jadwal = array();
 
                 foreach ($request->id_user as $user_dosen) {
-                 $jadwal_dosen = Jadwal_dosen::statusDosen($request,$user_dosen,$data_setting_waktu); 
+                 $tanggal = $request->tanggal;
+                 $jadwal_dosen = Jadwal_dosen::statusDosen($tanggal,$user_dosen,$data_setting_waktu); 
                 
                  $data_jadwal_dosen = $jadwal_dosen->first(); 
 
@@ -989,7 +990,8 @@ public function filter(Request $request, Builder $htmlBuilder)
 
 
                 foreach ($request->id_user as $user_dosen) {
-                 $jadwal_dosen = Jadwal_dosen::statusDosenEdit($request,$user_dosen,$data_setting_waktu,$id); 
+                 $tanggal = $request->tanggal;
+                 $jadwal_dosen = Jadwal_dosen::statusDosenEdit($tanggal,$user_dosen,$data_setting_waktu,$id); 
                  $data_jadwal_dosen = $jadwal_dosen->first(); 
 
                     if ($jadwal_dosen->count() > 0) {
@@ -1224,7 +1226,8 @@ public function filter(Request $request, Builder $htmlBuilder)
                  $ruangan_punya_jadwal = array();
 
                 foreach ($request->id_user as $user_dosen) {
-                 $jadwal_dosen = Jadwal_dosen::statusDosenEdit($request,$user_dosen,$data_setting_waktu,$id); 
+                 $tanggal = $request->tanggal;
+                 $jadwal_dosen = Jadwal_dosen::statusDosenEdit($tanggal,$user_dosen,$data_setting_waktu,$id); 
                  $data_jadwal_dosen = $jadwal_dosen->first(); 
 
                     if ($jadwal_dosen->count() > 0) {
