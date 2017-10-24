@@ -534,11 +534,6 @@ class AndroidController extends Controller
 
             return json_encode(array('value' => $value , 'result'=>$result));
 
-
-      
-       
-       return json_encode($response);
-
     }
 
     public function update_profile_dosen(Request $request)
@@ -1361,4 +1356,53 @@ class AndroidController extends Controller
     }
 //END UBAH PASSWORD MAHASISWA
 
+//CEK PROFIL MAHASISWA
+    public function cek_profil_mahasiswa(Request $request){
+      $mahasiswa = User::select('foto_profil','name','no_hp')->where('email',$request->user)->first();//  AMBIL ID MAHASISWA
+      $result = array();
+
+      if ($mahasiswa->foto_profil == '' || $mahasiswa->foto_profil == "NULL") {
+        $value = 0;// value = 0
+      }
+      else{
+        $value = 1;// value = 1
+      }
+
+      array_push($result,array('foto_profilnya' => $mahasiswa->foto_profil, 'nama_mahasiswa'=> $mahasiswa->name , 'no_telp' => $mahasiswa->no_hp));
+      return json_encode(array('value' => $value , 'result'=>$result));
+    }
+  //CEK PROFIL MAHASISWA
+
+  //UPDATE PROFIL MAHASISWA
+    public function update_profil_mahasiswa(Request $request) {
+      $image = $request->image; // FOTO PROFILE
+      $mahasiswa = User::select('foto_profil')->where('email',$request->user)->first();//  AMBIL FOTO PROFILNYA
+      $filepath = $mahasiswa->foto_profil;
+
+      // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 
+      $filename = 'image' . DIRECTORY_SEPARATOR . str_random(40) . '.png';
+      // UPLOAD FOTO
+      file_put_contents($filename,base64_decode($image));
+      // UPDATE FOTO
+      $user = User::where('email',$request->user)->update(["foto_profil" => $filename]);
+      // JIKA QUERY BERHASIL DI EKSKUSI
+      if ($user == TRUE) {
+        try {// hapus foto lama
+          File::delete($filepath);
+        } 
+        catch (FileNotFoundException $e) {
+          // File sudah dihapus/tidak ada
+        }
+
+        $response["value"] = 1;// value = 1
+        $response["message"] = "Berhasil Mengubah Foto"; //  berhasil
+      }
+      else{
+        $response["value"] = 0;// value = 1
+        $response["message"] = "Gagal Mengubah Foto"; // GAGAL
+      }
+
+      return  json_encode($response);// data yang dikembalikan berupa json
+    }
+    //UPDATE PROFIL MAHASISWA
 }//END CLASS

@@ -1560,6 +1560,15 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                   else{
                     return view('laporan_presensi_mahasiswa._foto_absen', ['foto'=> $foto]);
                   }                
+                })
+                //MATERI ? MATA KULIAH 
+                ->editColumn('materi_kuliah',function($materi_kuliah)use($request){
+                  if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL" ) {
+                     return $materi_kuliah = $materi_kuliah->nama_materi;
+                   } 
+                   else{
+                     return $materi_kuliah = $materi_kuliah->mata_kuliah;
+                   }
                 })->make(true);
 
 
