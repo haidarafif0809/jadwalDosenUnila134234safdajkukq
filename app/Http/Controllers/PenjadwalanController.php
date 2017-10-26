@@ -54,9 +54,7 @@ class PenjadwalanController extends Controller
                         'nama_ruangan'=>$nama_ruangan,
                         ]);
                 })
-
-
-            //MENGONEKSIKAN TOMBOL DOSEN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
+             //MENGONEKSIKAN TOMBOL DOSEN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
             ->addColumn('jadwal_dosen', function($jadwal){
                 $jadwal_dosens = Jadwal_dosen::with(['dosen'])->where('id_jadwal',$jadwal->id)->get(); 
                     return view('penjadwalans._action', [ 
@@ -150,7 +148,7 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false ,'searchable'=>true])
         ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>true])  
-        ->addColumn(['data' => 'ruangan', 'name' => 'ruangan', 'title' => 'Ruangan', 'orderable' => false,'searchable'=>true])  
+        ->addColumn(['data' => 'ruangan', 'name' => 'ruangan', 'title' => 'Ruangan', 'orderable' => false,'searchable'=>false])  
         ->addColumn(['data' => 'materi.nama_materi', 'name' => 'materi.nama_materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>true])  
         ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
