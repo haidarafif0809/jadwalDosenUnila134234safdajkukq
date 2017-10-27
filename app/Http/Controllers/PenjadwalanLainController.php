@@ -298,8 +298,8 @@ class PenjadwalanLainController extends Controller
         }   
         if ($request->tanggal_2 != "") {
             //cek apakah kelompok mahasiswa sudah memiliki jadwal di pertemuan  kedua
-             $data_setting_waktu = explode("-",$request->data_waktu_2);
-             $kelompok_pertemuan_2 = Penjadwalan::statusKelompok($request->id_kelompok,$request->tanggal_2,$data_setting_waktu);
+             $data_setting_waktu_2 = explode("-",$request->data_waktu_2);
+             $kelompok_pertemuan_2 = Penjadwalan::statusKelompok($request->id_kelompok,$request->tanggal_2,$data_setting_waktu_2);
              if ($kelompok_pertemuan_2->count() > 0) {
                 $kelompok_punya_jadwal += 1;
                  $nama_kelompok_mahasiswa = $kelompok_pertemuan_2->first()->kelompok->nama_kelompok_mahasiswa;
