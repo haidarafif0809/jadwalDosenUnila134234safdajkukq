@@ -12,6 +12,8 @@ use App\User_otoritas;
 use Auth;
 use App\Angkatan;
 use Session;
+use App\ListKelompokMahasiswa;
+
 
 class MasterUserController extends Controller
 {
@@ -27,6 +29,9 @@ class MasterUserController extends Controller
             # code...
             $master_users = User::with('role');
             return Datatables::of($master_users)
+             ->editColumn('name',function($user){
+                return "<a href='".route('users.info',$user->id)."' class='btn-link'>".$user->name."</a>";
+            })
             ->addColumn('action', function($master_user){
                     return view('datatable._action', [
                         'model'     => $master_user,
@@ -95,6 +100,15 @@ class MasterUserController extends Controller
         return view('master_users.index',['angkatan' => $angkatan,'role' => $role])->with(compact('html'));
     }
 
+
+    public function info_user($id){
+
+        $user = User::find($id);
+        $kelompok_mahasiswa = ListKelompokMahasiswa::where('id_mahasiswa',$id);
+
+        return view('master_users.info',['user' => $user,'kelompok_mahasiswa' => $kelompok_mahasiswa]);
+    }
+
  
     public function filter_konfirmasi(Request $request, Builder $htmlBuilder,$id)
     {
@@ -103,6 +117,9 @@ class MasterUserController extends Controller
             # code...
             $master_users = User::with('role')->where('status',$id);
             return Datatables::of($master_users)
+              ->editColumn('name',function($user){
+                return "<a href='".route('users.info',$user->id)."' class='btn-link'>".$user->name."</a>";
+            })
             ->addColumn('action', function($master_user){
                     return view('datatable._action', [
                         'model'     => $master_user,
@@ -150,7 +167,7 @@ class MasterUserController extends Controller
                 })->make(true);
         }
         $html = $htmlBuilder
-        ->addColumn(['data' => 'name', 'name' => 'name', 'title' => 'Nama'])
+        ->addColumn(['data' => 'name', 'name' => 'name', 'title' => 'Namasasdadsad'])
         ->addColumn(['data' => 'email', 'name' => 'email', 'title' => 'Username']) 
         ->addColumn(['data' => 'no_hp', 'name' => 'no_hp', 'title' => 'Nomor Hp', 'orderable' => false])
         ->addColumn(['data' => 'alamat', 'name' => 'alamat', 'title' => 'Alamat', 'orderable' => false])
@@ -173,6 +190,9 @@ class MasterUserController extends Controller
             # code...
             $master_users = User::with('role')->where('id_angkatan',$id);
             return Datatables::of($master_users)
+            ->editColumn('name',function($user){
+                return "<a href='".route('users.info',$user->id)."' class='btn-link'>".$user->name."</a>";
+            })
             ->addColumn('action', function($master_user){
                     return view('datatable._action', [
                         'model'     => $master_user,
@@ -247,6 +267,9 @@ class MasterUserController extends Controller
             ->where('role_id',$id);
 
             return Datatables::of($master_users)
+            ->editColumn('name',function($user){
+                return "<a href='".route('users.info',$user->id)."' class='btn-link'>".$user->name."</a>";
+            })
             ->addColumn('action', function($master_user){
                     return view('datatable._action', [
                         'model'     => $master_user,

@@ -62,10 +62,16 @@ Route::get('/jadwal-dosen',[
 	Route::get('/home', 'HomeController@index')->name('home'); 
 
 
+//user 
 	Route::get('/ubah-password',[
 	'middleware' => ['auth'],
 	'as' => 'users.ubah_password',
 	'uses' => 'UbahPasswordController@ubah_password'
+	]);
+	Route::get('/info-user/{id}',[
+	'middleware' => ['auth'],
+	'as' => 'users.info',
+	'uses' => 'MasterUserController@info_user'
 	]);
 
 	Route::put('/proses-ubah-password/{id}',[
@@ -73,6 +79,8 @@ Route::get('/jadwal-dosen',[
 	'as' => 'users.proses_ubah_password',
 	'uses' => 'UbahPasswordController@proses_ubah_password'
 	]);
+
+//user
 
 	Route::get('admin/penjadwalans/filter',[
 	'middleware' => ['auth','role:admin|pimpinan|pj_dosen|dosen|perekap'],
