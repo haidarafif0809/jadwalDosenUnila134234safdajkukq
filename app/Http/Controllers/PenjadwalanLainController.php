@@ -326,7 +326,7 @@ class PenjadwalanLainController extends Controller
      
         //JIKA WAKTU DAN TANGGAL  PERTEMUAN SATU KOSONG  YANG MASUKAN PERTEMUAN DUA
 
-        if($request->data_waktu == "" AND $request->tanggal == ""){
+        if($request->data_waktu_2 != "" AND $request->tanggal_2 != ""){
 
             $penjadwalan_2 = Penjadwalan::create([ 
             'tanggal' =>$request->tanggal_2,
@@ -340,7 +340,7 @@ class PenjadwalanLainController extends Controller
             'id_kelompok'=>$request->id_kelompok]);
         }
        //JIKA WAKTU DAN TANGGAL  PERTEMUAN DUA KOSONG  YANG MASUKAN PERTEMUAN SATU
-        elseif($request->data_waktu_2 == "" AND $request->tanggal_2 == ""){
+        if($request->data_waktu != "" AND $request->tanggal_2 != ""){
 
             $penjadwalan = Penjadwalan::create([ 
             'tanggal' =>$request->tanggal,
@@ -354,39 +354,14 @@ class PenjadwalanLainController extends Controller
             'id_kelompok'=>$request->id_kelompok]);
 
         }
-        //JIKA WAKTU DAN TANGGAL  PERTEMUAN DUA & PERTEMUAN SATU DIISI MASUKAN SEMUA
-        else{
-
-            $penjadwalan_2 = Penjadwalan::create([ 
-            'tanggal' =>$request->tanggal_2,
-            'waktu_mulai'=>$data_setting_waktu_2[0],
-            'waktu_selesai'=>$data_setting_waktu_2[1],
-            'id_block'=>$request->id_block,
-            'id_materi'=>$request->id_materi,
-            'tipe_jadwal'=>$jenis_kelompok,
-            'id_mata_kuliah'=>"-",
-            'id_ruangan'=>$request->id_ruangan,
-            'id_kelompok'=>$request->id_kelompok]);
-
-            $penjadwalan = Penjadwalan::create([ 
-            'tanggal' =>$request->tanggal,
-            'waktu_mulai'=>$data_setting_waktu[0],
-            'waktu_selesai'=>$data_setting_waktu[1],
-            'id_block'=>$request->id_block,
-            'id_materi'=>$request->id_materi,
-            'tipe_jadwal'=>$jenis_kelompok,
-            'id_mata_kuliah'=>"-",
-            'id_ruangan'=>$request->id_ruangan,
-            'id_kelompok'=>$request->id_kelompok]);
-
-        }
+       
 
         //UNTUK MEMBUAT JADWAL DOSEN YANG BERKAIT SAMA PENJADWALAN
    foreach ($request->id_user as $user_dosen) {
 
              //JIKA WAKTU DAN TANGGAL  PERTEMUAN SATU KOSONG  YANG MASUKAN PERTEMUAN DUA
 
-        if($request->data_waktu == "" AND $request->tanggal == ""){
+        if($request->data_waktu_2 != "" AND $request->tanggal_2 != ""){
  
                      $jadwal_dosen_2 = Jadwal_dosen::create([ 
                     'id_jadwal' =>$penjadwalan_2->id,
@@ -402,7 +377,7 @@ class PenjadwalanLainController extends Controller
                     ]);
             }
        //JIKA WAKTU DAN TANGGAL  PERTEMUAN DUA KOSONG  YANG MASUKAN PERTEMUAN SATU
-        elseif($request->data_waktu_2 == "" AND $request->tanggal_2 == ""){
+        if($request->data_waktu != "" AND $request->tanggal != ""){
 
                 $jadwal_dosen = Jadwal_dosen::create([ 
                     'id_jadwal' =>$penjadwalan->id,
@@ -417,37 +392,8 @@ class PenjadwalanLainController extends Controller
 
                     ]);
         }
-        //JIKA WAKTU DAN TANGGAL  PERTEMUAN DUA & PERTEMUAN SATU DIISI MASUKAN SEMUA
-        else{
-
-            $jadwal_dosen = Jadwal_dosen::create([ 
-                    'id_jadwal' =>$penjadwalan->id,
-                    'id_dosen'=>$user_dosen,
-                    'id_block'=>$request->id_block,
-                    'id_mata_kuliah'=>"-",
-                    'id_ruangan'=>$request->id_ruangan,
-                    'tanggal' =>$request->tanggal,
-                    'waktu_mulai'=>$data_setting_waktu[0],
-                    'waktu_selesai'=>$data_setting_waktu[1],
-                    'tipe_jadwal'=>$jenis_kelompok,
-
-                    ]);
-
-            $jadwal_dosen_2 = Jadwal_dosen::create([ 
-                    'id_jadwal' =>$penjadwalan_2->id,
-                    'id_dosen'=>$user_dosen,
-                    'id_block'=>$request->id_block,
-                    'id_mata_kuliah'=>"-",
-                    'id_ruangan'=>$request->id_ruangan,
-                    'tanggal' =>$request->tanggal_2,
-                    'waktu_mulai'=>$data_setting_waktu_2[0],
-                    'waktu_selesai'=>$data_setting_waktu_2[1],
-                    'tipe_jadwal'=>$jenis_kelompok,
-
-                    ]); 
-        
-        }                   
-    }
+            
+    } // end foreach jadwal dosen
         //ALERT JIKA BERHASIL
         Session::flash("flash_notification", [
             "level"=>"success",
