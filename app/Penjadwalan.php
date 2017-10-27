@@ -45,6 +45,31 @@ class Penjadwalan extends Model
         return $this->hasOne('App\JadwalRuangan','id_jadwal','id');
       } 
 
+    //mengecek status kelompok mahasiswa apakah sudah punya jadwal
+    public function scopeStatusKelompok($query, $id_kelompok,$tanggal,$data_setting_waktu)
+    {
+
+      $query->where('id_kelompok',$id_kelompok)->where('tanggal',$tanggal)->where(function ($query) use ($data_setting_waktu) {
+                  $query->where('waktu_mulai',$data_setting_waktu[0])->orwhere( function ($query) use ($data_setting_waktu) {
+                    $query->where(function ($query) use ($data_setting_waktu) {
+                      $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
+                        })->orwhere(function($query) use ($data_setting_waktu) {
+                         $query->where('waktu_mulai','<',$data_setting_waktu[0])->where('waktu_selesai','>',$data_setting_waktu[0]);
+                          });
+                        });
+                      })->where(function($query) use ($data_setting_waktu) {
+                $query->where('waktu_selesai',$data_setting_waktu[1])
+                      ->orwhere(function($query) use ($data_setting_waktu){
+                        $query->where('waktu_selesai','>=',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
+                        })->orwhere(function($query) use ($data_setting_waktu) {
+                           $query->where('waktu_selesai','<',$data_setting_waktu[1])->where('waktu_mulai','<=',$data_setting_waktu[1]);
+                          });
+                            })->where('status_jadwal','<','2');
+
+              return $query;
+    
+    }
+
     //MENGECEK TAMBAH PENDAJWALAN, RUANGAN YANG SAMA DAN DI JADWAL YANG BERSMAAN
     public function scopeStatusRuangan($query, $request,$data_setting_waktu)
     {
