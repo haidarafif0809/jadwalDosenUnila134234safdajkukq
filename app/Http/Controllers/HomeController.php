@@ -624,24 +624,22 @@ class HomeController extends Controller
             
             //RUANGAN
             //jika ruangan di jadwal sudah memakai table yang terpisah maka data ruangan di ambil dari table jadwal_ruangan
-            if ($penjadwalans->ruangan == "0") {
-                   $jadwal_ruangan = JadwalRuangan::where('id_jadwal',$request->id_jadwal)->get();
+
+            $jadwal_ruangan = JadwalRuangan::where('id_jadwal',$request->id_jadwal);
+            if ($jadwal_ruangan->count() > 0) {
                    $ruangan = '';
-                   foreach ($jadwal_ruangan as $jadwal_ruangans) {
-                    if ($ruangan == '') {
-                        $ruangan .= $jadwal_ruangans->ruangan->nama_ruangan;
-                    }
-                    else {
-                        $ruangan .= " , ".$jadwal_ruangans->ruangan->nama_ruangan;
-
-                    }
+                   foreach ($jadwal_ruangan->get() as $jadwal_ruangans) {
+                        if ($ruangan == '') {
+                            $ruangan .= $jadwal_ruangans->ruangan->nama_ruangan;
+                        }
+                        else {
+                            $ruangan .= " , ".$jadwal_ruangans->ruangan->nama_ruangan;
+                        }
                    }
-
                }
                else {
                 $ruangan = $penjadwalans->ruangan->nama_ruangan;
                }
-
                $isi_event .=  "Waktu : ".$penjadwalans->tanggal." ". $penjadwalans->waktu_mulai ."-". $penjadwalans->waktu_selesai ." <br>
                 Block : ".$penjadwalans->block->nama_block ."<br>
                 Ruangan :". $ruangan ."<br>

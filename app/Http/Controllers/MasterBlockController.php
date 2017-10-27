@@ -121,29 +121,23 @@ class MasterBlockController extends Controller
 
 
         $modul = ModulBlok::with('modul','block')->where('id_blok',$id_block)->where('id_modul_blok',$id_modul)->first();
-
-
-
         $penjadwalan = Penjadwalan::with(['mata_kuliah','block','ruangan'])->where('id_block',$id_block)->where('tanggal','>=',$modul->dari_tanggal)->where('tanggal','<=',$modul->sampai_tanggal)->get();
         $tanggal_akhir = $modul->sampai_tanggal;
-
 
         $jadwal_senin = array();
         $jadwal_selasa = array();
         $jadwal_rabu = array();
         $jadwal_kamis = array();
         $jadwal_jumat = array();
-
-
-        foreach ($penjadwalan as $penjadwalans) {
-            
-
-                if ($penjadwalans->id_mata_kuliah == "-" OR $penjadwalans->id_mata_kuliah == ""  OR $penjadwalans->id_mata_kuliah == "0") {
-                    $mata_kuliah = "-";
-                }
-                else {
-                    $mata_kuliah = $penjadwalans->mata_kuliah->nama_mata_kuliah;
-                }
+        
+         foreach ($penjadwalan as $penjadwalans) {
+           
+           if ($penjadwalans->id_mata_kuliah == "-" OR $penjadwalans->id_mata_kuliah == ""  OR $penjadwalans->id_mata_kuliah == "0") {
+                $mata_kuliah = "-";
+            }
+            else {
+                $mata_kuliah = $penjadwalans->mata_kuliah->nama_mata_kuliah;
+            }
 
             $timestamp = strtotime($penjadwalans->tanggal);
             $day = date('w', $timestamp);
