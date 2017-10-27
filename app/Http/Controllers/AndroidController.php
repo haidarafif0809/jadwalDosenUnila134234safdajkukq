@@ -222,12 +222,13 @@ class AndroidController extends Controller
               // maka tipe jadwal = -
 
               $materi = Materi::select('nama_materi')->where('id',$list_jadwal_dosen['id_materi'])->first();
-
-
-              $nama_mata_kuliah = $materi->nama_materi;              
+              $nama_mata_kuliah = $materi->nama_materi;       
+              $jadwal = Jadwal_dosen::with('ruangan')->where('id_jadwal',$list_jadwal_dosen['id_jadwal'])->first();  
+              $nama_ruangan = $jadwal->ruangan->nama_ruangan;         
 
             }else{ // jika tidak
-              $nama_mata_kuliah = $list_jadwal_dosen['nama_mata_kuliah'];
+              $nama_mata_kuliah = $list_jadwal_dosen['nama_mata_kuliah'];              
+              $nama_ruangan = $list_jadwal_dosen['ruangan']; 
             }
 
         //ARRAY PUSH
@@ -236,7 +237,7 @@ class AndroidController extends Controller
                           // TANGGAL DI FORMAT=> Y/M/D
                         'waktu' => $list_jadwal_dosen['waktu_mulai'] ." - " . $list_jadwal_dosen['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
                         'mata_kuliah' => $nama_mata_kuliah,// MATA KULIAH
-                        'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
+                        'nama_ruangan' => $nama_ruangan, // NAMA RUANGAN
                         'id_jadwal' => $list_jadwal_dosen['id_jadwal'], // ID JADWAL
                         'id_ruangan' => $list_jadwal_dosen['id_ruangan'], // ID RUANGAN
                         'latitude' => $list_jadwal_dosen['latitude'], // LATITUDE
@@ -276,14 +277,14 @@ class AndroidController extends Controller
           // jika tipe jadwal nya kosong atau null
             if (($list_jadwal_dosen['id_mata_kuliah'] == "" OR $list_jadwal_dosen['id_mata_kuliah'] == NULL OR $list_jadwal_dosen['id_mata_kuliah'] == 0) AND ($list_jadwal_dosen['tipe_jadwal'] == "CSL" OR $list_jadwal_dosen['tipe_jadwal'] == 'TUTORIAL' )) {
               // maka tipe jadwal = -
-
               $materi = Materi::select('nama_materi')->where('id',$list_jadwal_dosen['id_materi'])->first();
-
-
-              $nama_mata_kuliah = $materi->nama_materi;              
+              $nama_mata_kuliah = $materi->nama_materi;     
+              $jadwal = Jadwal_dosen::with('ruangan')->where('id_jadwal',$list_jadwal_dosen['id_jadwal'])->first();  
+              $nama_ruangan = $jadwal->ruangan->nama_ruangan;      
 
             }else{ // jika tidak
               $nama_mata_kuliah = $list_jadwal_dosen['nama_mata_kuliah'];
+              $nama_ruangan = $list_jadwal_dosen['ruangan'];
             }
 
         //ARRAY PUSH
@@ -292,7 +293,7 @@ class AndroidController extends Controller
                           // TANGGAL DI FORMAT=> Y/M/D
                         'waktu' => $list_jadwal_dosen['waktu_mulai'] ." - " . $list_jadwal_dosen['waktu_selesai'],// WAKTU MULAI DAN WAKTU SELESAI DIJADIKAN SATU STRING
                         'mata_kuliah' => $nama_mata_kuliah,// MATA KULIAH
-                        'nama_ruangan' => $list_jadwal_dosen['ruangan'], // NAMA RUANGAN
+                        'nama_ruangan' => $nama_ruangan, // NAMA RUANGAN
                         'id_jadwal' => $list_jadwal_dosen['id_jadwal'], // ID JADWAL
                         'id_ruangan' => $list_jadwal_dosen['id_ruangan'], // ID RUANGAN
                         'latitude' => $list_jadwal_dosen['latitude'], // LATITUDE
