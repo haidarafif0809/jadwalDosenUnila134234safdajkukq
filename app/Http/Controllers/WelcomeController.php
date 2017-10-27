@@ -10,6 +10,7 @@ use App\Penjadwalan;
 use App\Jadwal_dosen; 
 use App\SettingSlide;
 use Jenssegers\Agent\Agent;
+use App\JadwalRuangan;
 
 class WelcomeController extends Controller
 {
@@ -50,6 +51,17 @@ class WelcomeController extends Controller
                 } 
                 return $status;
                 })
+                       //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
+            ->addColumn('ruangan', function($jadwal){
+                $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$jadwal->id); 
+                $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$jadwal->id)->first();
+
+                    return view('penjadwalans._action_ruangan', [ 
+                        'model_ruangan'     => $jadwal_ruangans,
+                        'id_jadwal' => $jadwal->id,
+                        'nama_ruangan'=>$nama_ruangan,
+                        ]);
+                })
             ->addColumn('mata_kuliah',function($penjadwalan){
 
                 if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
@@ -67,7 +79,7 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
         ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
-        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
+        ->addColumn(['data' => 'ruangan', 'name' => 'ruangan', 'title' => 'Ruangan', 'orderable' => false,'searchable'=>false ])    
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
   
@@ -144,6 +156,16 @@ class WelcomeController extends Controller
                 } 
                 return $status;
                 })
+            ->addColumn('ruangan', function($jadwal){
+                $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$jadwal->id); 
+                $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$jadwal->id)->first();
+
+                    return view('penjadwalans._action_ruangan', [ 
+                        'model_ruangan'     => $jadwal_ruangans,
+                        'id_jadwal' => $jadwal->id,
+                        'nama_ruangan'=>$nama_ruangan,
+                        ]);
+                })
             ->addColumn('mata_kuliah',function($penjadwalan){
 
                 if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
@@ -161,7 +183,7 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
         ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
-        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
+        ->addColumn(['data' => 'ruangan', 'name' => 'ruangan', 'title' => 'Ruangan', 'orderable' => false, 'searchable'=>false ])    
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
    
@@ -239,6 +261,16 @@ class WelcomeController extends Controller
                 } 
                 return $status;
                 })
+            ->addColumn('ruangan', function($jadwal){
+                $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$jadwal->id); 
+                $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$jadwal->id)->first();
+
+                    return view('penjadwalans._action_ruangan', [ 
+                        'model_ruangan'     => $jadwal_ruangans,
+                        'id_jadwal' => $jadwal->id,
+                        'nama_ruangan'=>$nama_ruangan,
+                        ]);
+                })
             ->addColumn('mata_kuliah',function($penjadwalan){
 
                 if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
@@ -256,7 +288,7 @@ class WelcomeController extends Controller
         ->addColumn(['data' => 'tipe_jadwal', 'name' => 'tipe_jadwal', 'title' => 'Tipe Jadwal'])     
         ->addColumn(['data' => 'block.nama_block', 'name' => 'block.nama_block', 'title' => 'Block', 'orderable' => false, ])
         ->addColumn(['data' => 'mata_kuliah', 'name' => 'mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, ])  
-        ->addColumn(['data' => 'ruangan.nama_ruangan', 'name' => 'ruangan.nama_ruangan', 'title' => 'Ruangan', 'orderable' => false, ])    
+        ->addColumn(['data' => 'ruangan', 'name' => 'ruangan', 'title' => 'Ruangan', 'orderable' => false, 'searchable'=>false ])    
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status Penjadwalan', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false]);
   

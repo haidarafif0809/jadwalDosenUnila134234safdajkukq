@@ -45,11 +45,11 @@ class PenjadwalanController extends Controller
 
            //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
             ->addColumn('ruangan', function($jadwal){
-                $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$jadwal->id)->get(); 
+                $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$jadwal->id); 
                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$jadwal->id)->first();
 
                     return view('penjadwalans._action_ruangan', [ 
-                        'model_user'     => $jadwal_ruangans,
+                        'model_ruangan'     => $jadwal_ruangans,
                         'id_jadwal' => $jadwal->id,
                         'nama_ruangan'=>$nama_ruangan,
                         ]);
@@ -495,18 +495,26 @@ public function filter(Request $request, Builder $htmlBuilder)
                     {
                         $id_jadwal = $penjadwalan->id;
                     }
-                $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$id_jadwal)->get(); 
+                $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$id_jadwal); 
                 $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id_jadwal)->first();
                     return view('penjadwalans._action_ruangan', [ 
-                        'model_user'     => $jadwal_ruangans,
+                        'model_ruangan'     => $jadwal_ruangans,
                         'id_jadwal' => $id_jadwal,
                         'nama_ruangan'=>$nama_ruangan,
                         ]);
                 })
               // MEMBUAT TOMBOL DROPDOWN REKAP PRESENSI DOSEN DAN MAHASISWA
-            ->addColumn('rekap_kehadiran', function($jadwal){
+            ->addColumn('rekap_kehadiran', function($jadwal) use ($jenis_id_jadwal){
+
+               if ($jenis_id_jadwal == 1) {
+                    
+                    $id_jadwal = $jadwal->id;
+                }
+                else {
+                    $id_jadwal = $jadwal->id_jadwal;
+                }
               
-              return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id_jadwal, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
+              return view('penjadwalans._action_rekap',['id_jadwal' => $id_jadwal , 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
 
             })
              //MENAMPILKAN STATUS PENJADWALAN
@@ -1460,11 +1468,11 @@ public function filter(Request $request, Builder $htmlBuilder)
                         })
                         ->editColumn('ruangan', function ($presensi_dosen) use ($request) {
                           //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
-                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id)->get(); 
+                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id); 
                           $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
 
                          return view('penjadwalans._action_ruangan', [ 
-                        'model_user'     => $jadwal_ruangans,
+                        'model_ruangan'     => $jadwal_ruangans,
                         'id_jadwal' => $request->id,
                         'nama_ruangan'=>$nama_ruangan,
                         ]);
@@ -1579,11 +1587,11 @@ public function filter(Request $request, Builder $htmlBuilder)
                         ->editColumn('ruangan', function ($jadwal_dosen) use ($request) {
                                 // ambil RUANGAN
                          //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
-                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id)->get(); 
+                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id); 
                           $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
 
                          return view('penjadwalans._action_ruangan', [ 
-                        'model_user'     => $jadwal_ruangans,
+                        'model_ruangan'     => $jadwal_ruangans,
                         'id_jadwal' => $request->id,
                         'nama_ruangan'=>$nama_ruangan,
                         ]);
@@ -1777,11 +1785,11 @@ public function filter(Request $request, Builder $htmlBuilder)
                 // ambil RUANGAN
                  ->editColumn('nama_ruangan', function ($ruangan) use ($request) {
                          //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
-                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id)->get(); 
+                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id); 
                           $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
 
                          return view('penjadwalans._action_ruangan', [ 
-                        'model_user'     => $jadwal_ruangans,
+                        'model_ruangan'     => $jadwal_ruangans,
                         'id_jadwal' => $request->id,
                         'nama_ruangan'=>$nama_ruangan,
                         ]);
@@ -1840,11 +1848,11 @@ public function filter(Request $request, Builder $htmlBuilder)
                  // ambil RUANGAN
                  ->editColumn('nama_ruangan', function ($ruangan) use ($request) {
                          //MENGONEKSIKAN TOMBOL RUANGAN(ISI NYA DOSEN YANG ADA DI PENJADWALAN)
-                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id)->get(); 
+                          $jadwal_ruangans = JadwalRuangan::with('ruangan')->where('id_jadwal',$request->id); 
                           $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
 
                          return view('penjadwalans._action_ruangan', [ 
-                        'model_user'     => $jadwal_ruangans,
+                        'model_ruangan'     => $jadwal_ruangans,
                         'id_jadwal' => $request->id,
                         'nama_ruangan'=>$nama_ruangan,
                         ]);
