@@ -129,7 +129,7 @@ class PenjadwalanController extends Controller
                     return $penjadwalan->materi->nama_materi;
                 }
             })
-            ->addColumn('kelompok',function($penjadwalan){
+            ->editColumn('kelompok.nama_kelompok_mahasiswa',function($penjadwalan){
 
                 if ($penjadwalan->id_kelompok == "-" OR $penjadwalan->id_kelompok == ""  OR $penjadwalan->id_kelompok == "0") {
                     return "-";
@@ -150,7 +150,7 @@ class PenjadwalanController extends Controller
         ->addColumn(['data' => 'mata_kuliah.nama_mata_kuliah', 'name' => 'mata_kuliah.nama_mata_kuliah', 'title' => 'Mata Kuliah', 'orderable' => false, 'searchable'=>true])  
         ->addColumn(['data' => 'ruangan', 'name' => 'ruangan', 'title' => 'Ruangan', 'orderable' => false,'searchable'=>false])  
         ->addColumn(['data' => 'materi.nama_materi', 'name' => 'materi.nama_materi', 'title' => 'Materi', 'orderable' => false,'searchable'=>true])  
-        ->addColumn(['data' => 'kelompok', 'name' => 'kelompok', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>false])   
+        ->addColumn(['data' => 'kelompok.nama_kelompok_mahasiswa', 'name' => 'kelompok.nama_kelompok_mahasiswa', 'title' => 'Kelompok Mahasiswa', 'orderable' => false, 'searchable'=>true])   
         ->addColumn(['data' => 'status', 'name' => 'status', 'title' => 'Status', 'orderable' => false, 'searchable'=>false])    
         ->addColumn(['data' => 'tombol_status', 'name' => 'tombol_status', 'title' => '', 'orderable' => false, 'searchable'=>false])   
         ->addColumn(['data' => 'jadwal_dosen', 'name' => 'jadwal_dosen', 'title' => 'Dosen', 'orderable' => false, 'searchable'=>false])   

@@ -13,6 +13,7 @@ use App\Jadwal_dosen;
 use Yajra\Datatables\Datatables;
 use Jenssegers\Agent\Agent;
 use App\UserPjDosen;
+use App\JadwalRuangan;
 
 
 class HomeController extends Controller
@@ -617,13 +618,31 @@ class HomeController extends Controller
                 {
                     $isi_event .= "Apabila Ingin Mengubah Penjadwalan Klik <a class='btn btn-sm btn-success' href=".$link." target='_blank'>Ubah</a> <br>";
                 }else{
-                   $isi_event .=  "";
-                }
-                    
 
+                   $isi_event .=  "";   
+                }
+            
+            //RUANGAN
+            //jika ruangan di jadwal sudah memakai table yang terpisah maka data ruangan di ambil dari table jadwal_ruangan
+
+            $jadwal_ruangan = JadwalRuangan::where('id_jadwal',$request->id_jadwal);
+            if ($jadwal_ruangan->count() > 0) {
+                   $ruangan = '';
+                   foreach ($jadwal_ruangan->get() as $jadwal_ruangans) {
+                        if ($ruangan == '') {
+                            $ruangan .= $jadwal_ruangans->ruangan->nama_ruangan;
+                        }
+                        else {
+                            $ruangan .= " , ".$jadwal_ruangans->ruangan->nama_ruangan;
+                        }
+                   }
+               }
+               else {
+                $ruangan = $penjadwalans->ruangan->nama_ruangan;
+               }
                $isi_event .=  "Waktu : ".$penjadwalans->tanggal." ". $penjadwalans->waktu_mulai ."-". $penjadwalans->waktu_selesai ." <br>
                 Block : ".$penjadwalans->block->nama_block ."<br>
-                Ruangan :". $penjadwalans->ruangan->nama_ruangan ."<br>
+                Ruangan :". $ruangan ."<br>
                 Mata Kuliah : ".$mata_kuliah . "<br>
                 Dosen: <br>
 
