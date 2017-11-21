@@ -50,12 +50,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
                             if ($jumlah_jadwal->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $jumlah_jadwal->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $jumlah_jadwal->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -84,12 +84,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                         // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
                             if ($presentase->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $presentase->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $presentase->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -130,12 +130,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                       // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)    
                             if ($keterangan->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $keterangan->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $keterangan->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -184,12 +184,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
                             if ($jumlah_jadwal->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $jumlah_jadwal->id_block_mahasiswa)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $jumlah_jadwal->id_block)->count();
                             }
 
@@ -214,12 +214,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                         // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
                             if ($presentase->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $presentase->id_block_mahasiswa)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $presentase->id_block)->count();
                             }
 
@@ -256,12 +256,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                       // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)    
                             if ($keterangan->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $keterangan->id_block_mahasiswa)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $keterangan->id_block)->count();
                             }
 
@@ -307,11 +307,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
                             if ($jumlah_jadwal->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $jumlah_jadwal->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $jumlah_jadwal->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $jumlah_jadwal->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $jumlah_jadwal->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
                         return $data_jadwal;
@@ -343,12 +343,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                         // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
                             if ($presentase->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $presentase->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $presentase->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -393,12 +393,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                       // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)    
                             if ($keterangan->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $keterangan->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $keterangan->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -459,12 +459,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
                             if ($jumlah_jadwal->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $jumlah_jadwal->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $jumlah_jadwal->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -493,12 +493,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                         // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
                             if ($presentase->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $presentase->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $presentase->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -539,12 +539,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                       // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)    
                             if ($keterangan->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $keterangan->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $keterangan->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -591,7 +591,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             //JUMLAH SELURUH JADWAL TERLAKSANA
                     ->addColumn('jumlah_jadwal', function($jumlah_jadwal)use($request){
 
-                      $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                      $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                       ->where('penjadwalans.id_kelompok', $jumlah_jadwal->id_kelompok_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
                       return $data_jadwal;
@@ -610,7 +610,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             //PRESENTASE KEHADIRAN USER (MAHASISWA)
                     ->addColumn('presentase', function($presentase)use($request){
 
-                            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                      $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_kelompok', $presentase->id_kelompok_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
                             $data_user_hadir = PresensiMahasiswa::leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
@@ -640,7 +640,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             //KETERANGAN UJIAN USER (MAHASISWA)
                     ->addColumn('keterangan', function($keterangan)use($request){
                       
-                            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                      $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_kelompok', $keterangan->id_kelompok_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
                             $data_user_hadir = PresensiMahasiswa::leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
@@ -678,12 +678,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
                             if ($jumlah_jadwal->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $jumlah_jadwal->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $jumlah_jadwal->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -712,12 +712,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                         // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
                             if ($presentase->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $presentase->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $presentase->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -758,12 +758,12 @@ class LaporanRekapPresensiMahasiswaController extends Controller
                       // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)    
                             if ($keterangan->id_block != $request->id_block) {
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_block', $keterangan->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
                             else{
 
-                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)                        
+                              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)                        
                               ->where('penjadwalans.id_block', $keterangan->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
                             }
 
@@ -809,7 +809,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             //JUMLAH SELURUH JADWAL TERLAKSANA
                     ->addColumn('jumlah_jadwal', function($jumlah_jadwal)use($request){
 
-                      $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                      $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                       ->where('penjadwalans.id_kelompok', $jumlah_jadwal->id_kelompok_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
                       return $data_jadwal;
@@ -828,7 +828,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             //PRESENTASE KEHADIRAN USER (MAHASISWA)
                     ->addColumn('presentase', function($presentase)use($request){
 
-                            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                      $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_kelompok', $presentase->id_kelompok_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
                             $data_user_hadir = PresensiMahasiswa::leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
@@ -858,7 +858,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             //KETERANGAN UJIAN USER (MAHASISWA)
                     ->addColumn('keterangan', function($keterangan)use($request){
                       
-                            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+                      $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
                               ->where('penjadwalans.id_kelompok', $keterangan->id_kelompok_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
                             $data_user_hadir = PresensiMahasiswa::leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
@@ -916,11 +916,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           //JUMLAH SELURUH JADWAL TERLAKSANA
               if ($data_mahasiswas->id_block != $request->id_block) {
-                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
+                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
                 ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
               }
               else{
-                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
+                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
                 ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
               }
 
@@ -978,10 +978,10 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           //JUMLAH SELURUH JADWAL TERLAKSANA
               if ($data_mahasiswas->id_block != $request->id_block) {
-                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)->count();
+                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)->count();
               }
               else{
-                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)->count();
+                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)->count();
               }
 
           //JUMLAH JADWAL DIHADIRI USER (MAHASISWA)              
@@ -1034,11 +1034,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           //JUMLAH SELURUH JADWAL TERLAKSANA
               if ($data_mahasiswas->id_block != $request->id_block) {
-                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
+                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
                 ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
               }
               else{
-                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
+                $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
                 ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
               }
 
@@ -1148,7 +1148,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             if ($data_mahasiswas->id_block != $request->id_block) {
 
               //JADWAL
-              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
               ->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
               //PRESENSI
@@ -1159,7 +1159,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             else{
 
               //JADWAL
-              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
               ->where('penjadwalans.id_block', $data_mahasiswas->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
               //PRESENSI
@@ -1206,7 +1206,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
             //JUMLAH SELURUH JADWAL TERLAKSANA
             //JADWAL
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
             ->where('penjadwalans.id_kelompok', $data_mahasiswas->id_kelompok_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
             //PRESENSI
@@ -1256,7 +1256,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             if ($data_mahasiswas->id_block != $request->id_block) {
 
               //JADWAL
-              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
               ->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
               //PRESENSI
@@ -1267,7 +1267,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             else{
 
               //JADWAL
-              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
               ->where('penjadwalans.id_block', $data_mahasiswas->id_block)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
               //PRESENSI
@@ -1314,7 +1314,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
             //JUMLAH SELURUH JADWAL TERLAKSANA
             //JADWAL
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)
+              $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)
             ->where('penjadwalans.id_kelompok', $data_mahasiswas->id_kelompok_mahasiswa)->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->count();
 
             //PRESENSI
@@ -1745,11 +1745,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($persentase_csl->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_csl->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_csl->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "CSL")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_csl->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_csl->id_block)
             ->where('penjadwalans.tipe_jadwal', "CSL")->count();
           }
 
@@ -1800,11 +1800,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($persentase_kuliah->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_kuliah->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_kuliah->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "KULIAH")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_kuliah->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_kuliah->id_block)
             ->where('penjadwalans.tipe_jadwal', "KULIAH")->count();
           }
 
@@ -1854,11 +1854,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($persentase_pleno->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_pleno->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_pleno->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "PLENO")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_pleno->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_pleno->id_block)
             ->where('penjadwalans.tipe_jadwal', "PLENO")->count();
           }
 
@@ -1910,11 +1910,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($persentase_praktikum->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_praktikum->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_praktikum->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "PRAKTIKUM")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_praktikum->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_praktikum->id_block)
             ->where('penjadwalans.tipe_jadwal', "PRAKTIKUM")->count();
           }
 
@@ -1966,11 +1966,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($persentase_tutorial->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_tutorial->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_tutorial->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "TUTORIAL")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $persentase_tutorial->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $persentase_tutorial->id_block)
             ->where('penjadwalans.tipe_jadwal', "TUTORIAL")->count();
           }
 
@@ -2021,7 +2021,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG) CSL & TUTORIAL
           if ($keterangan->id_block != $request->id_block) {
-            $data_jadwal_csl_tutor =Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $keterangan->id_block_mahasiswa)
+            $data_jadwal_csl_tutor =Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $keterangan->id_block_mahasiswa)
             ->whereIn('penjadwalans.tipe_jadwal', ["CSL", "TUTORIAL"])->count();
 
             $data_user_hadir_csl_tutor = PresensiMahasiswa::leftJoin('penjadwalans','presensi_mahasiswas.id_jadwal','=','penjadwalans.id')
@@ -2029,7 +2029,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             ->whereIn('penjadwalans.tipe_jadwal', ["CSL", "TUTORIAL"])->count();
           }
           else{
-            $data_jadwal_csl_tutor =Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $keterangan->id_block)
+            $data_jadwal_csl_tutor =Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $keterangan->id_block)
             ->whereIn('penjadwalans.tipe_jadwal', ["CSL", "TUTORIAL"])->count();
 
             $data_user_hadir_csl_tutor = PresensiMahasiswa::leftJoin('penjadwalans','presensi_mahasiswas.id_jadwal','=','penjadwalans.id')
@@ -2039,7 +2039,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG) KULIAH, PLENO & PRAKTIKUM
           if ($keterangan->id_block != $request->id_block) {
-            $data_jadwal_kuliah_pleno_praktikum =Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $keterangan->id_block_mahasiswa)
+            $data_jadwal_kuliah_pleno_praktikum =Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $keterangan->id_block_mahasiswa)
             ->whereIn('penjadwalans.tipe_jadwal', ["KULIAH", "PLENO", "TUTORIAL"])->count();
 
             $data_user_hadir_kuliah_pleno_praktikum = PresensiMahasiswa::leftJoin('penjadwalans','presensi_mahasiswas.id_jadwal','=','penjadwalans.id')
@@ -2047,7 +2047,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             ->whereIn('penjadwalans.tipe_jadwal', ["KULIAH", "PLENO", "TUTORIAL"])->count();
           }
           else{
-            $data_jadwal_kuliah_pleno_praktikum =Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $keterangan->id_block)
+            $data_jadwal_kuliah_pleno_praktikum =Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $keterangan->id_block)
             ->whereIn('penjadwalans.tipe_jadwal', ["KULIAH", "PLENO", "TUTORIAL"])->count();
 
             $data_user_hadir_kuliah_pleno_praktikum = PresensiMahasiswa::leftJoin('penjadwalans','presensi_mahasiswas.id_jadwal','=','penjadwalans.id')
@@ -2135,11 +2135,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($data_mahasiswas->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "CSL")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
             ->where('penjadwalans.tipe_jadwal', "CSL")->count();
           }
 
@@ -2184,11 +2184,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
         // #KULIAH
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($data_mahasiswas->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "KULIAH")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
             ->where('penjadwalans.tipe_jadwal', "KULIAH")->count();
           }
 
@@ -2232,11 +2232,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
         // #PLENO
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($data_mahasiswas->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "PLENO")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
             ->where('penjadwalans.tipe_jadwal', "PLENO")->count();
           }
 
@@ -2282,11 +2282,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
         // #PRAKTIKUM
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($data_mahasiswas->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "PRAKTIKUM")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
             ->where('penjadwalans.tipe_jadwal', "PRAKTIKUM")->count();
           }
 
@@ -2332,11 +2332,11 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($data_mahasiswas->id_block != $request->id_block) {
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
             ->where('penjadwalans.tipe_jadwal', "TUTORIAL")->count();
           }
           else{
-            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
+            $data_jadwal = Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
             ->where('penjadwalans.tipe_jadwal', "TUTORIAL")->count();
           }
 
@@ -2381,7 +2381,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
     //KETERANGAN UJIAN USER (MAHASISWA)
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG) CSL & TUTORIAL
           if ($data_mahasiswas->id_block != $request->id_block) {
-            $data_jadwal_csl_tutor =Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
+            $data_jadwal_csl_tutor =Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
             ->whereIn('penjadwalans.tipe_jadwal', ["CSL", "TUTORIAL"])->count();
 
             $data_user_hadir_csl_tutor = PresensiMahasiswa::leftJoin('penjadwalans','presensi_mahasiswas.id_jadwal','=','penjadwalans.id')
@@ -2389,7 +2389,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             ->whereIn('penjadwalans.tipe_jadwal', ["CSL", "TUTORIAL"])->count();
           }
           else{
-            $data_jadwal_csl_tutor =Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
+            $data_jadwal_csl_tutor =Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
             ->whereIn('penjadwalans.tipe_jadwal', ["CSL", "TUTORIAL"])->count();
 
             $data_user_hadir_csl_tutor = PresensiMahasiswa::leftJoin('penjadwalans','presensi_mahasiswas.id_jadwal','=','penjadwalans.id')
@@ -2399,7 +2399,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
 
           // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG) KULIAH, PLENO & PRAKTIKUM
           if ($data_mahasiswas->id_block != $request->id_block) {
-            $data_jadwal_kuliah_pleno_praktikum =Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
+            $data_jadwal_kuliah_pleno_praktikum =Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block_mahasiswa)
             ->whereIn('penjadwalans.tipe_jadwal', ["KULIAH", "PLENO", "TUTORIAL"])->count();
 
             $data_user_hadir_kuliah_pleno_praktikum = PresensiMahasiswa::leftJoin('penjadwalans','presensi_mahasiswas.id_jadwal','=','penjadwalans.id')
@@ -2407,7 +2407,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             ->whereIn('penjadwalans.tipe_jadwal', ["KULIAH", "PLENO", "TUTORIAL"])->count();
           }
           else{
-            $data_jadwal_kuliah_pleno_praktikum =Penjadwalan::where('penjadwalans.status_jadwal', 1)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
+            $data_jadwal_kuliah_pleno_praktikum =Penjadwalan::where('penjadwalans.status_jadwal','<' ,2)->where('penjadwalans.id_block', $data_mahasiswas->id_block)
             ->whereIn('penjadwalans.tipe_jadwal', ["KULIAH", "PLENO", "TUTORIAL"])->count();
 
             $data_user_hadir_kuliah_pleno_praktikum = PresensiMahasiswa::leftJoin('penjadwalans','presensi_mahasiswas.id_jadwal','=','penjadwalans.id')
