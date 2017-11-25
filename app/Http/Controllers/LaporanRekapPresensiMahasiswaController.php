@@ -94,7 +94,7 @@ class LaporanRekapPresensiMahasiswaController extends Controller
             //PRESENTASE KEHADIRAN USER (MAHASISWA)
         ->addColumn('presentase', function($presentase)use($request, $jumlah_hadir_terbanyak){
                         // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
-          $data_jadwal =  $jumlah_hadir_terbanya;
+          $data_jadwal =  $jumlah_hadir_terbanyak;
 
                         // JIKA ADA MAHASISWA YG BERBEDA ANGKATAN (MAHASISWA YG MENGULANG)
           if ($presentase->id_block != $request->id_block) {
