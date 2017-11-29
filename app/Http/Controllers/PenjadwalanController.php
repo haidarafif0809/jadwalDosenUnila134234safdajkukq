@@ -85,7 +85,7 @@ class PenjadwalanController extends Controller
       })
             // MEMBUAT TOMBOL DROPDOWN REKAP PRESENSI DOSEN DAN MAHASISWA
       ->addColumn('rekap_kehadiran', function($jadwal){
-        
+
         return view('penjadwalans._action_rekap',['id_jadwal' => $jadwal->id, 'id_block' => $jadwal->id_block, 'tipe_jadwal' => $jadwal->tipe_jadwal]);
 
       })
@@ -170,7 +170,7 @@ class PenjadwalanController extends Controller
 
   public function exportPost(Request $request, Builder $htmlBuilder) {  
     $this->validate($request, [
-     
+
       'dari_tanggal'     => 'required',
       'sampai_tanggal'     => 'required',
       'id_ruangan'    => 'required',
@@ -178,7 +178,7 @@ class PenjadwalanController extends Controller
     ]);   
 
     if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
-      
+
       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan'])->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal)->get();
 
       $jenis_id_jadwal = 1;
@@ -304,7 +304,7 @@ class PenjadwalanController extends Controller
     $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id_jadwal)->first();
     $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$id_jadwal)->get(); 
     if($jadwal_ruangans->count() >= 1){
-     
+
       foreach($jadwal_ruangans as $jadwal_ruangan){
         $no_urut++;
         if ($no_urut == 1){
@@ -322,7 +322,7 @@ class PenjadwalanController extends Controller
 
 
     if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == 0 OR $penjadwalan->id_mata_kuliah == null) {
-      
+
       $mata_kuliah = "-";
     }
     else {
@@ -400,7 +400,7 @@ public function filter(Request $request, Builder $htmlBuilder)
 {
         // 
   $this->validate($request, [
-   
+
     'dari_tanggal'     => 'required',
     'sampai_tanggal'     => 'required',
     'id_ruangan'    => 'required',
@@ -409,7 +409,7 @@ public function filter(Request $request, Builder $htmlBuilder)
   if ($request->ajax()) {
             # code...
     if ($request->id_ruangan == 'semua' && $request->id_dosen == 'semua' && $request->id_block == 'semua') {
-      
+
       $penjadwalans = Penjadwalan::with(['block','mata_kuliah','ruangan','materi','kelompok'])->where('tanggal' ,'>=',$request->dari_tanggal)->where('tanggal','<=',$request->sampai_tanggal);
       $jenis_id_jadwal = 1;
       
@@ -445,9 +445,9 @@ public function filter(Request $request, Builder $htmlBuilder)
   
   
   return Datatables::of($penjadwalans)->addColumn('action', function($penjadwalan) use ($jenis_id_jadwal) {
-    
+
     if ($jenis_id_jadwal == 1) {
-      
+
       $id_jadwal = $penjadwalan->id;
     }
     else {
@@ -507,7 +507,7 @@ public function filter(Request $request, Builder $htmlBuilder)
   ->addColumn('rekap_kehadiran', function($jadwal) use ($jenis_id_jadwal){
 
    if ($jenis_id_jadwal == 1) {
-    
+
     $id_jadwal = $jadwal->id;
   }
   else {
@@ -538,18 +538,22 @@ public function filter(Request $request, Builder $htmlBuilder)
    } 
    return $status;
  })
-  ->addColumn('tombol_status', function($data_status){  
-    return view('penjadwalans._action_status', [ 
-      'model'     => $data_status,
-      'ubah_dosen'  => route('penjadwalans.ubah_dosen', $data_status->id),
-      'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
-      'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
-      'batal_url' => route('penjadwalans.batal', $data_status->id),
-      'terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Terlaksana ?',
-      'belum_terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Belum Terlaksana?',
-      'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
-    ]);
-  })
+  ->addColumn('tombol_status', function($data_status) use ($jenis_id_jadwal){  
+    if ($jenis_id_jadwal == 0) {
+     $data_status->id = $data_status->id_jadwal;
+   }
+   
+   return view('penjadwalans._action_status', [ 
+    'model'     => $data_status,
+    'ubah_dosen'  => route('penjadwalans.ubah_dosen', $data_status->id),
+    'terlaksana_url' => route('penjadwalans.terlaksana', $data_status->id),
+    'belum_terlaksana_url' => route('penjadwalans.belumterlaksana', $data_status->id),
+    'batal_url' => route('penjadwalans.batal', $data_status->id),
+    'terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Terlaksana ?',
+    'belum_terlaksana_message'   => 'Apakah Anda Yakin Penjadwalan Belum Terlaksana?',
+    'batal_message'   => 'Apakah Anda Yakin Mau Membatalakan Penjadwalan ?',
+  ]);
+ })
   ->addColumn('mata_kuliah',function($penjadwalan){
     if ($penjadwalan->id_mata_kuliah == "-" OR $penjadwalan->id_mata_kuliah == ""  OR $penjadwalan->id_mata_kuliah == "0") {
       return "-";
@@ -644,7 +648,7 @@ public function create()
     //MENAMPILKAN MODUL DENGAN BLOCK YANG DI PILIH
 public function data_modul_perblock_penjadwalan (Request $request){
   if ($request->ajax()) {
-    
+
     $modul =  ModulBlok::with('modul')->where('id_blok',$request->id_block)->orderBy('dari_tanggal','ASC')->get();
     echo "<option readonly='on'>Pilih Modul</option>";
     foreach ($modul as $data) {
@@ -657,7 +661,7 @@ public function data_modul_perblock_penjadwalan (Request $request){
     //MENAMPILKAN TANGGAL SESUAI PERIODE YANG ADA DI MODUL
 public function tanggal_modul_perblock_penjadwalan (Request $request){
   if ($request->ajax()) {
-    
+
     $modul =  ModulBlok::select('id_modul','dari_tanggal','sampai_tanggal')->where('id_modul_blok',$request->id_modul)->first(); 
     return $modul->dari_tanggal.','.$modul->sampai_tanggal;
   }
@@ -691,7 +695,7 @@ public function store(Request $request)
 
         //apabila ruangan tidak ada yang terpakai , lanjut mengecek apakah ada dosen yang sudah punya jadwal
   if (count($ruangan_terpakai) == 0) { 
-    
+
     $dosen_punya_jadwal = array();
     foreach ($request->id_user as $user_dosen) {
      $tanggal = $request->tanggal;
@@ -794,7 +798,7 @@ if (isset($request->asal_input)) {
       }
 
       public function status_terlaksana($id){ 
-        
+
         //MEMBUAT PROSES UPDATE STATUS TERLAKSANA PENJADWALAN DAN JADWAL DOSEN
         $penjadwalan = Penjadwalan::find($id)->update(["status_jadwal" => 1]);
         $jadwal_dosen = Jadwal_dosen::where("id_jadwal",$id)->update(["status_jadwal" => 1]);
@@ -917,7 +921,7 @@ if (isset($request->asal_input)) {
             }
             else{
 
-              
+
               return view('penjadwalans.ubah_dosen',['users' => $users,'data_waktu' => $data_waktu,'data_block'=>$data_block])->with(compact('penjadwalans','data_dosen','data_ruangan','modul')); 
 
             }
@@ -1154,7 +1158,7 @@ if (isset($request->asal_input)) {
             }
             else{
 
-             
+
 
               return view('penjadwalans.edit',['users' => $users,'data_waktu' => $data_waktu,'data_block'=>$data_block])->with(compact('penjadwalans','data_dosen','data_ruangan','modul'));
             }
@@ -1250,7 +1254,7 @@ if (isset($request->asal_input)) {
       }
       else{ 
             //APABILA RUANGAN SUDAH DI PAKAI MAKA MUNCUL PERINGATAN 
-        
+
         foreach ($request->id_ruangan as $jadwal_ruangans ) {
             # code...
           $data_ruangan =  Master_ruangan::find($jadwal_ruangans);
@@ -1361,7 +1365,7 @@ if (isset($request->asal_input)) {
       $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id)->first();
       $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$id)->get(); 
       if($jadwal_ruangans->count() >= 1){
-       
+
         foreach($jadwal_ruangans as $jadwal_ruangan){
           $no_urut++;
           if ($no_urut == 1){
@@ -1383,7 +1387,7 @@ if (isset($request->asal_input)) {
 
     // Datatable dosen yang sudah Hadir
     public function datatable_dosen_hadir(Request $request){
-      
+
 
      $query_detail_presensi = Presensi::select('penjadwalans.id_materi AS id_materi','users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
                 // SELECT ID MATERI,NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
@@ -1409,7 +1413,7 @@ if (isset($request->asal_input)) {
 
                           // JHIKA TIPE JADWAL NYA CSL ATAU TUTORIAL
                                       if ($presensi_dosen['tipe_jadwal'] == 'CSL' || $presensi_dosen['tipe_jadwal'] == 'TUTORIAL') {
-                                        
+
                           // KITA AMBIL NAMA MATERI     
                                         $materi = Materi::select('nama_materi')->where('id',$presensi_dosen['id_materi'])->first();
                                         return $materi->nama_materi;   
@@ -1452,7 +1456,7 @@ if (isset($request->asal_input)) {
 
                                   public function export_rekap_dosen_hadir($id){
 
-                                    
+
                                     $query_detail_presensi = Presensi::select('penjadwalans.id_materi AS id_materi','users.name AS nama_dosen','master_mata_kuliahs.nama_mata_kuliah AS nama_mata_kuliah','master_ruangans.nama_ruangan AS ruangan','penjadwalans.tipe_jadwal AS tipe_jadwal','presensi.created_at AS waktu','presensi.jarak_ke_lokasi_absen AS jarak_absen','presensi.foto AS foto')
                 // SELECT ID MATERI ,NAMA DOSEN, NAMA MATA KULIAH, RUANGAN, TIPE JADWAL, WAKTU, JARAK ABSEN, FOTO
                                     ->leftJoin('users','presensi.id_user','=','users.id')// LEFT JOIN USER ON ID USER = USER.ID
@@ -1469,7 +1473,7 @@ if (isset($request->asal_input)) {
                                     $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id_jadwal)->first();
                                     $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$id_jadwal)->get(); 
                                     if($jadwal_ruangans->count() >= 1){
-                                     
+
                                       foreach($jadwal_ruangans as $jadwal_ruangan){
                                         $no_urut++;
                                         if ($no_urut == 1){
@@ -1522,10 +1526,10 @@ if (isset($request->asal_input)) {
                       })
                       ->editColumn('mata_kuliah', function ($jadwal_dosen) use($request) {
                         // NAMA MATA KULIAH
-                        
+
                         // JIKA TIPE JADWAL == CSL ATAU TUTORIAL
                         if ($request->tipe_jadwal == 'CSL' || $request->tipe_jadwal == 'TUTORIAL') {
-                          
+
                               // KITA AMBIL ID MATERI DARI TABLE PENJADAWALAN
                           $penjadwalans = Penjadwalan::select('id_materi')->where('id',$request->id)->first();
                                // KITA AMBIL NAMA MATERI  DARI TABLE METERI
@@ -1593,7 +1597,7 @@ if (isset($request->asal_input)) {
                       $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
                       $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$request->id)->get(); 
                       if($jadwal_ruangans->count() >= 1){
-                       
+
                         foreach($jadwal_ruangans as $jadwal_ruangan){
                           $no_urut++;
                           if ($no_urut == 1){
@@ -1659,7 +1663,7 @@ if (isset($request->asal_input)) {
 
                           $row = 8;
                           $sheet->row($row,[
-                            
+
                             'Nama Dosen',
                             'Tipe Jadwal',                
                             'Materi/Mata Kuliah',
@@ -1674,7 +1678,7 @@ if (isset($request->asal_input)) {
                           foreach ($jadwal_dosens as $jadwal_dosen) {
                         // JIKA TIPE JADWAL == CSL ATAU TUTORIAL
                             if ($request->tipe_jadwal == 'CSL' || $request->tipe_jadwal == 'TUTORIAL') {
-                              
+
                               // KITA AMBIL ID MATERI DARI TABLE PENJADAWALAN
                               $penjadwalans = Penjadwalan::select('id_materi')->where('id',$request->id)->first();
                                // KITA AMBIL NAMA MATERI  DARI TABLE METERI
@@ -1712,7 +1716,7 @@ if (isset($request->asal_input)) {
 //MAHASISWA
 //MAHASISWA SUDAH ABSEN
                     public function kehadiran_mahasiswa(Request $request){
-                      
+
                      $data_presensi = PresensiMahasiswa::mahasiswaHadir($request)->get();
 
                      return Datatables::of($data_presensi)
@@ -1842,7 +1846,7 @@ if (isset($request->asal_input)) {
                     $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
                     $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$request->id)->get(); 
                     if($jadwal_ruangans->count() >= 1){
-                     
+
                       foreach($jadwal_ruangans as $jadwal_ruangan){
                         $no_urut++;
                         if ($no_urut == 1){
@@ -1880,7 +1884,7 @@ if (isset($request->asal_input)) {
                     $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$request->id)->first();
                     $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$request->id)->get(); 
                     if($jadwal_ruangans->count() >= 1){
-                     
+
                       foreach($jadwal_ruangans as $jadwal_ruangan){
                         $no_urut++;
                         if ($no_urut == 1){
@@ -2000,7 +2004,7 @@ if (isset($request->asal_input)) {
                     $nama_ruangan = Penjadwalan::with('ruangan')->where('id',$id)->first();
                     $jadwal_ruangans = JadwalRuangan::with(['ruangan'])->where('id_jadwal',$id)->get(); 
                     if($jadwal_ruangans->count() >= 1){
-                     
+
                       foreach($jadwal_ruangans as $jadwal_ruangan){
                         $no_urut++;
                         if ($no_urut == 1){
