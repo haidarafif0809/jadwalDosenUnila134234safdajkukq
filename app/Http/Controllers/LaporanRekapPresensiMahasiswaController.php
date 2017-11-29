@@ -1385,98 +1385,38 @@ public function download_lap_rekap_csl_tutor_presensi(Request $request, $id_bloc
 //PROSES LAPORAN DETAIL
 public function proses_laporan_detail(Request $request){
 
-
-
 //JIKA TIPE JADWAL DAN MAHASISWA KOSONG
   if ($request->tipe_jadwal == "" AND $request->mahasiswa == "") {
 
-    $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
-    ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
-    ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
-    ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
-    ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
-    ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
-    ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
-    ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-    ->where('role_user.role_id',3)
-    ->where('master_blocks.id', $request->id_block)->get();
+    $data_presensi =PresensiMahasiswa::semuaTipeSemuaMahasiswa($request->id_block)->get();
 
   }
   //JIKA MAHASISWA SAJA YG KOSONG
   elseif ($request->tipe_jadwal != "" AND $request->mahasiswa == "") {
-
         //JIKA TIPE JADWAL YG DIPILIH CSL ATAU TUTORIAL
     if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL") {
-
           //JIKA KOLOM KELOMPOK TIDAK KOSONG (DIPILIH)
       if ($request->id_kelompok != "") {
-
-        $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
-        ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
-        ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
-        ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
-        ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
-        ->leftJoin('kelompok_mahasiswas','presensi_mahasiswas.id_kelompok','=','kelompok_mahasiswas.id')
-        ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
-        ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
-        ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-        ->where('role_user.role_id',3)
-        ->where('master_blocks.id', $request->id_block)
-        ->where('kelompok_mahasiswas.id', $request->id_kelompok)
-        ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->get();
+        $data_presensi =PresensiMahasiswa::cslTutorPerkelompok($request)->get();
       }
           //JIKA KOLOM KELOMPOK KOSONG (TIDAK DIPILIH)
       else{
-
-        $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
-        ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
-        ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
-        ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
-        ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
-        ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
-        ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
-        ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-        ->where('role_user.role_id',3)
-        ->where('master_blocks.id', $request->id_block)
-        ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->get();
-
-      }
-
+        $data_presensi =PresensiMahasiswa::cslTutorTidakPerkelompok($request)->get();
+      }   
+      //JIKA MAHASISWA SAJA YG KOSONG
     }
         //JIKA TIPE JADWAL YG DIPILIH BUKAN CSL ATAU TUTORIAL
     else{
-
-
-      $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
-      ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
-      ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
-      ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
-      ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
-      ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
-      ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
-      ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-      ->where('role_user.role_id',3)
-      ->where('master_blocks.id', $request->id_block)
-      ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)->get();
+      $data_presensi =PresensiMahasiswa::kuliahPlenoSemuaMahasiswa($request)->get();
     }
 
   }
-  //JIKA MAHASISWA SAJA YG KOSONG
+  //PRESENSI SEMUA TIPE DAN PERMAHASISWA
   elseif ($request->tipe_jadwal == "" AND $request->mahasiswa != "") {
 
-    $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
-    ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
-    ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
-    ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
-    ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
-    ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
-    ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
-    ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-    ->where('role_user.role_id',3)
-    ->where('master_blocks.id', $request->id_block)
-    ->where('users.id', $request->mahasiswa)->get();
+    $data_presensi =PresensiMahasiswa::semuaTipePermahasiswa($request)->get();
   }
-  //JIKA SEMUA DIISI
+  //PRESENSI PERTIPE DAN PERMAHASISWA
   else{
 
         //JIKA TIPE JADWAL YG DIPILIH CSL ATAU TUTORIAL
@@ -1485,94 +1425,73 @@ public function proses_laporan_detail(Request $request){
           //JIKA KOLOM KELOMPOK TIDAK KOSONG (DIPILIH)
       if ($request->id_kelompok != "") {
 
-        $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block'])
-        ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
-        ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
-        ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
-        ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
-        ->leftJoin('kelompok_mahasiswas','presensi_mahasiswas.id_kelompok','=','kelompok_mahasiswas.id')
-        ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
-        ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
-        ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-        ->where('role_user.role_id',3)
-        ->where('master_blocks.id', $request->id_block)
-        ->where('kelompok_mahasiswas.id', $request->id_kelompok)
-        ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)
-        ->where('users.id', $request->mahasiswa)->get();
+        $data_presensi =PresensiMahasiswa::cslTutorPerkelompokPermahasiswa($request)->get();
       }
           //JIKA KOLOM KELOMPOK KOSONG (TIDAK DIPILIH)
       else{
 
-        $data_presensi =PresensiMahasiswa::select(['presensi_mahasiswas.id AS id_presensi','presensi_mahasiswas.id_user AS id_user',DB::raw('IFNULL(presensi_mahasiswas.jarak_ke_lokasi_absen, "-") AS jarak_absen'), 'presensi_mahasiswas.foto AS foto', 'master_mata_kuliahs.nama_mata_kuliah AS mata_kuliah', 'materis.nama_materi AS nama_materi', DB::raw('IFNULL(master_ruangans.nama_ruangan, "-") AS nama_ruangan'), 'presensi_mahasiswas.created_at AS waktu', 'users.email AS email', 'users.name AS name', 'master_blocks.id AS id_block', 'penjadwalans.id_mata_kuliah AS id_mata_kuliah'])
-        ->leftJoin('master_blocks','presensi_mahasiswas.id_block','=','master_blocks.id')
-        ->leftJoin('users', 'presensi_mahasiswas.id_user', '=', 'users.id')
-        ->leftJoin('penjadwalans', 'presensi_mahasiswas.id_jadwal', '=', 'penjadwalans.id')
-        ->leftJoin('materis','penjadwalans.id_materi','=','materis.id')
-        ->leftJoin('master_mata_kuliahs', 'penjadwalans.id_mata_kuliah', '=', 'master_mata_kuliahs.id')
-        ->leftJoin('master_ruangans', 'presensi_mahasiswas.id_ruangan', '=', 'master_ruangans.id')
-        ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-        ->where('role_user.role_id',3)
-        ->where('master_blocks.id', $request->id_block)
-        ->where('penjadwalans.tipe_jadwal', $request->tipe_jadwal)
-        ->where('users.id', $request->mahasiswa)->get();
+        $data_presensi =PresensiMahasiswa::cslTutorTidakPerkelompokPermahasiswa($request)->get();
 
       }
 
     }
+    else {
+     $data_presensi =PresensiMahasiswa::kuliahPlenoPermahasiswa($request)->get();
+   }
 
-  }
+ }
 
-  return Datatables::of($data_presensi)
+ return Datatables::of($data_presensi)
 
             //KETERANGAN UJIAN USER (MAHASISWA)
-  ->addColumn('keterangan', function($keterangan){                     
+ ->addColumn('keterangan', function($keterangan){                     
 
                     //LOGIKA KETERNAGAN UJIAN / BOLEH UJIAN
-    $data_hadir = PresensiMahasiswa::where('id',$keterangan->id_presensi)->where('id_block',$keterangan->id_block)->count();
+  $data_hadir = PresensiMahasiswa::where('id',$keterangan->id_presensi)->where('id_block',$keterangan->id_block)->count();
 
-    if ($data_hadir > 0) {
-      $data_keterangan = '<b style="color:green"> <span class="glyphicon glyphicon-ok-sign"></span> MASUK </b>';
-    }
-    else{
-      $data_keterangan = '<b style="color:red"> <span class="glyphicon glyphicon-remove-sign"></span> BELUM MASUK </b>';
-    }
+  if ($data_hadir > 0) {
+    $data_keterangan = '<b style="color:green"> <span class="glyphicon glyphicon-ok-sign"></span> MASUK </b>';
+  }
+  else{
+    $data_keterangan = '<b style="color:red"> <span class="glyphicon glyphicon-remove-sign"></span> BELUM MASUK </b>';
+  }
 
-    return $data_keterangan;
-  })
+  return $data_keterangan;
+})
 
             //WAKTU ABSEN
-  ->editColumn('waktu',function($waktu){
-    if ($waktu->waktu == "" ) {
-     return "-";
-   } 
-   else{
-    return $waktu->waktu; 
-  }
+ ->editColumn('waktu',function($waktu){
+  if ($waktu->waktu == "" ) {
+   return "-";
+ } 
+ else{
+  return $waktu->waktu; 
+}
 })
 
             //JARAK ABSEN
-  ->editColumn('jarak_absen',function($jarak){                  
-    return $jarak->jarak_absen." m";
-  })
+ ->editColumn('jarak_absen',function($jarak){                  
+  return $jarak->jarak_absen." m";
+})
 
             //FOTO ABSEN
-  ->addColumn('foto',function($foto){
-    if ($foto->foto == "") {
-      return "";
-    }
-    else{
-      return view('laporan_presensi_mahasiswa._foto_absen', ['foto'=> $foto]);
-    }                
-  })
+ ->addColumn('foto',function($foto){
+  if ($foto->foto == "") {
+    return "";
+  }
+  else{
+    return view('laporan_presensi_mahasiswa._foto_absen', ['foto'=> $foto]);
+  }                
+})
                 //MATERI ? MATA KULIAH 
-  ->editColumn('materi_kuliah',function($materi_kuliah)use($request){
-    if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL" ) {
-     return $materi_kuliah = $materi_kuliah->nama_materi;
-   } 
-   else{
-     return $materi_kuliah = $materi_kuliah->mata_kuliah;
-   }
- })->make(true);
+ ->editColumn('materi_kuliah',function($materi_kuliah)use($request){
+  if ($request->tipe_jadwal == "CSL" OR $request->tipe_jadwal == "TUTORIAL" ) {
+   return $materi_kuliah = $materi_kuliah->nama_materi;
+ } 
+ else{
+   return $materi_kuliah = $materi_kuliah->mata_kuliah;
+ }
+})->make(true);
 
 
     }// END CLASS FUNCTION PROSES LAP DETAIL
