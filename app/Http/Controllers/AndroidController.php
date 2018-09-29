@@ -620,7 +620,7 @@ class AndroidController extends Controller
     //DAFTAR JADWAL MAHASISWA
     public function list_jadwal_mahasiswa(Request $request){
 
-        $mahasiswa =  $request->username;// MAHASISWA YANG LOGIN
+        $mahasiswa = Auth::user()->email;// MAHASISWA YANG LOGIN
         $data_mahasiswa = User::select(['id', 'id_angkatan'])->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA dan ANGKATAN
         $data_kelompok = ListKelompokMahasiswa::where('id_mahasiswa',$data_mahasiswa->id)->get();
 //SELECT SEMUA ID BLOCK BERDASARKAN ANGKATAN USER LOGIN
@@ -713,7 +713,9 @@ class AndroidController extends Controller
 
 
      // DATA YANG DIKIRIM BERUPA JSON
-      return json_encode(array('value' => $value , 'result'=>$result));
+      return json_encode(array(
+                  'value' => $value , 'result'=>$result
+               ));
 
     }
     //DAFTAR JADWAL MAHASISWA
@@ -801,7 +803,7 @@ class AndroidController extends Controller
                       public function search_jadwal_mahasiswa(Request $request){
 
         $search = $request->search;// REQUEST SEARCH
-        $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
+        $mahasiswa = Auth::user()->email;// MAHASISWA YANG LOGIN
         $data_mahasiswa = User::select(['id', 'id_angkatan'])->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA
 
 //SELECT SEMUA ID BLOCK BERDASARKAN ANGKATAN USER LOGIN
