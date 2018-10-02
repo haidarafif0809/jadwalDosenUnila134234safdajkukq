@@ -1106,7 +1106,7 @@ class AndroidController extends Controller
     //DAFTAR JADWAL MAHASISWA LUSA
     public function jadwal_lusa(Request $request){
 
-        $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
+        $mahasiswa = Auth::user()->email;// MAHASISWA YANG LOGIN
         $data_mahasiswa = User::select(['id', 'id_angkatan'])->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA
         $data_block = Master_block::select('id')->where('id_angkatan',$data_mahasiswa->id_angkatan)->get();
         $value = 0;
@@ -1208,7 +1208,7 @@ class AndroidController extends Controller
     public function search_jadwal_mahasiswa_lusa(Request $request){
 
         $search = $request->search;// REQUEST SEARCH
-        $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
+        $mahasiswa = Auth::user()->email;// MAHASISWA YANG LOGIN
         $data_mahasiswa = User::select(['id', 'id_angkatan'])->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA
         $data_block = Master_block::select('id')->where('id_angkatan',$data_mahasiswa->id_angkatan)->get();
         $value = 0;
