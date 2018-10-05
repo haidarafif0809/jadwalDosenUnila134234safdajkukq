@@ -1377,7 +1377,8 @@ class AndroidController extends Controller
 
 //CEK PROFIL MAHASISWA
       public function cek_profil_mahasiswa(Request $request){
-      $mahasiswa = User::select('foto_profil','name','no_hp')->where('email',$request->user)->first();//  AMBIL ID MAHASISWA
+      $user = Auth::user()->email;
+      $mahasiswa = User::select('foto_profil','name','no_hp')->where('email',$user)->first();//  AMBIL ID MAHASISWA
       $result = array();
 
       if ($mahasiswa->foto_profil == '' || $mahasiswa->foto_profil == "NULL") {
