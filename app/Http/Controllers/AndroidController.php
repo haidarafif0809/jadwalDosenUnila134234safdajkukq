@@ -1306,7 +1306,7 @@ class AndroidController extends Controller
 //UBAH PASSWORD MAHASISWA
     public function ubah_password_mahasiswa (Request $request){
 
-      $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
+      $mahasiswa = Auth::user()->email;// MAHASISWA YANG LOGIN
       $id_mahasiswa = User::select('id')->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA
 
       $password_lama = $request->password_lama;
@@ -1366,6 +1366,7 @@ class AndroidController extends Controller
 
             $response["value"] = 2;// RESPONSE VALUE 0
             $response["message"] = "Mohon Maaf, Username Atau Email Anda Sudah Ada";// RESPONSE GAGAL ABSEN
+            $response["data"] = $mahasiswa.$username_baru;
 
             return json_encode($response);
           }
@@ -1388,7 +1389,7 @@ class AndroidController extends Controller
         $value = 1;// value = 1
       }
 
-      array_push($result,array('foto_profilnya' => $mahasiswa->foto_profil, 'nama_mahasiswa'=> $mahasiswa->name , 'no_telp' => $mahasiswa->no_hp));
+      array_push($result,array('foto_profilnya' => url($mahasiswa->foto_profil), 'nama_mahasiswa'=> $mahasiswa->name , 'no_telp' => $mahasiswa->no_hp,'username' => $user));
       return json_encode(array('value' => $value , 'result'=>$result));
     }
   //CEK PROFIL MAHASISWA
