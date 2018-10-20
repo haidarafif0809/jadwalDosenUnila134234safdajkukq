@@ -724,7 +724,7 @@ class AndroidController extends Controller
     // presendi dosen
     public function presensi_mahasiswa(Request $request){
 
-      $mahasiswa = $request->username;// MAHASISWA YANG LOGIN
+      $mahasiswa = Auth::user()->email;// MAHASISWA YANG LOGIN
       $id_mahasiswa = User::select('id')->where('email',$mahasiswa)->first();//  AMBIL ID MAHASISWA
       $id_jadwal = $request->id_jadwal;// ID JADWAL
       $id_ruangan = $request->id_ruangan; // ID RUANGAN
