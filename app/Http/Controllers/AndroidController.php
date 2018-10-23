@@ -777,11 +777,8 @@ class AndroidController extends Controller
                                 //Mengambil file yang diupload
                                 $uploaded_image = $request->file('image');
 
-                                //mengambil extensi file 
-                                $extensi = $uploaded_image->getClientOriginalExtension();
-                                
                                 // membuat nama file random berikut extensi
-                                $filename = md5(time()) . '.' . $extensi;
+                                $filename = md5(time()) . '.' . 'png';
 
                                 //meyimpan cover ke folder public/image
                                 $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'image';
