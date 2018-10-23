@@ -1402,7 +1402,13 @@ class AndroidController extends Controller
         $value = 1;// value = 1
       }
 
-      array_push($result,array('foto_profilnya' => url($mahasiswa->foto_profil), 'nama_mahasiswa'=> $mahasiswa->name , 'no_telp' => $mahasiswa->no_hp,'username' => $user));
+      if($mahasiswa->foto_profil){
+         $foto_profil = url($mahasiswa->foto_profil);
+      }else{
+         $foto_profil = $mahasiswa->foto_profil;
+      }
+
+      array_push($result,array('foto_profilnya' => $foto_profil, 'nama_mahasiswa'=> $mahasiswa->name , 'no_telp' => $mahasiswa->no_hp,'username' => $user));
       return json_encode(array('value' => $value , 'result'=>$result));
     }
   //CEK PROFIL MAHASISWA
