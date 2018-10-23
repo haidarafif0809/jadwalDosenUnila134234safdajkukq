@@ -730,7 +730,7 @@ class AndroidController extends Controller
       $id_ruangan = $request->id_ruangan; // ID RUANGAN
       $longitude = $request->longitude_sekarang;// LONGITUDE
       $latitude = $request->latitude_sekarang;// LATITUDE
-      $image = $request->image; // FOTO ABSEN
+      //$image = $request->image; // FOTO ABSEN
       $jarak_ke_lokasi_absen = $request->jarak_ke_lokasi_absen; //JARAK LOKASI
       $waktu = date("Y-m-d H:i:s");
       $tanggal_db = $request->tanggal;
@@ -768,14 +768,30 @@ class AndroidController extends Controller
                         ]);
 
                           // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 
-                            $filename = 'image' . DIRECTORY_SEPARATOR . str_random(40) . '.png';
+                            //$filename = 'image' . DIRECTORY_SEPARATOR . str_random(40) . '.png';
 
                           // UPLOAD FOTO
-                            file_put_contents($filename,base64_decode($image));
+                            //file_put_contents($filename,base64_decode($image));
 
-                          // INSERT FOTO KE TABLE PRSENSI   
-                            $presensi->foto = $filename;     
-                            $presensi->save();
+                            if($request->hasFile('image')){
+                                //Mengambil file yang diupload
+                                $uploaded_image = $request->file('image');
+
+                                //mengambil extensi file 
+                                $extensi = $uploaded_image->getClientOriginalExtension();
+                                
+                                // membuat nama file random berikut extensi
+                                $filename = md5(time()) . '.' . $extensi;
+
+                                //meyimpan cover ke folder public/image
+                                $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'image';
+                                $uploaded_image->move($destinationPath, $filename);
+
+                                // INSERT FOTO KE TABLE PRSENSI   
+                                $presensi->foto = $filename;     
+                                $presensi->save();
+
+                            }
 
                           $response["value"] = 1;// RESPONSE VALUE 1
                           $response["message"] = "Berhasil Absen";// RESPONSE BERHASIL ABSEN     
