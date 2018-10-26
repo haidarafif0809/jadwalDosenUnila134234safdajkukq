@@ -1415,8 +1415,9 @@ class AndroidController extends Controller
 
   //UPDATE PROFIL MAHASISWA
     public function update_profil_mahasiswa(Request $request) {
+      $email = Auth::user()->email;
       $image = $request->image; // FOTO PROFILE
-      $mahasiswa = User::select('foto_profil')->where('email',$request->user)->first();//  AMBIL FOTO PROFILNYA
+      $mahasiswa = User::select('foto_profil')->where('email',$email)->first();//  AMBIL FOTO PROFILNYA
       $filepath = $mahasiswa->foto_profil;
 
       // MEMBUAT NAMA FILE DENGAN EXTENSI PNG 
@@ -1424,7 +1425,7 @@ class AndroidController extends Controller
       // UPLOAD FOTO
       file_put_contents($filename,base64_decode($image));
       // UPDATE FOTO
-      $user = User::where('email',$request->user)->update(["foto_profil" => $filename]);
+      $user = User::where('email',$email)->update(["foto_profil" => $filename]);
       // JIKA QUERY BERHASIL DI EKSKUSI
       if ($user == TRUE) {
         try {// hapus foto lama
