@@ -15,7 +15,7 @@
 				</div>
 
 				<div class="panel-body">
-					<p> <a class="btn btn-primary" href="{{ route('master_blocks.create') }}">Tambah Block</a> </p>
+					<p> @role('admin') <a class="btn btn-primary" href="{{ route('master_blocks.create') }}">Tambah Block</a> @endrole</p>
 					<div class="table-responsive">
 					{!! $html->table(['class'=>'table-striped table']) !!}
 					</div>

@@ -60,5 +60,6 @@ class Kernel extends HttpKernel
         'permission' => \Laratrust\Middleware\LaratrustPermission::class,
         'ability' => \Laratrust\Middleware\LaratrustAbility::class,
         'user-should-verified' => \App\Http\Middleware\UserShouldVerified::class,
+        'user-should-verified-register' => \App\Http\Middleware\UserShouldVerifiedRegister::class,
     ];
 }

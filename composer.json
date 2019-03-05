@@ -6,11 +6,15 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
+        "doctrine/dbal": "^2.5",
+        "jenssegers/agent": "^2.5",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
         "laravelcollective/html": "~5.3",
+        "maatwebsite/excel": "^2.1",
         "santigarcor/laratrust": "3.0.*",
-        "yajra/laravel-datatables-oracle": "~6.0"
+        "yajra/laravel-datatables-oracle": "~6.0",
+        "yajra/laravel-auditable": "^1.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

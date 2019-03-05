@@ -13,9 +13,15 @@
     <!-- Styles --> 
     <link href="{{ asset('css/font-awesome.min.css') }}" rel='stylesheet' type='text/css'>
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/sb-admin-2.css') }}" rel="stylesheet">
     <link href="{{ asset('css/dataTables.bootstrap.css') }}" rel="stylesheet"> 
     <link href="{{ asset('css/selectize.bootstrap3.css') }}" rel="stylesheet">
     <link href="{{ asset('css/bootstrap-datepicker.min.css') }}" rel="stylesheet">  
+    <link href="{{ asset('css/bootstrap-clockpicker.min.css') }}" rel="stylesheet">  
+    <link rel="stylesheet" href="{{ asset('css/reset.css') }}"> <!-- CSS reset -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}"> <!-- Resource style -->
+
+
 </head>
 <body>
     <div id="app">
@@ -40,23 +46,82 @@
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
+                        <li><a href="http://anjungan.fk.unila.ac.id/">Agenda Pimpinan</a></li> 
 
-
-
+                    @if (!Auth::guest())
+                        <li><a href="{{ route('home') }}">Beranda</a></li>
+                    @endif
                     @role('admin')
+                        <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li>
                         <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                   Master Data
+                                   Master Data <span class="caret"></span>
                                 </a>
                           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a href="{{ route('master_ruangans.index') }}">Ruangan</a></li>
-                            <li><a href="{{ route('master_users.index') }}">User</a></li>
+                            <li><a href="{{ route('master_users.index') }}">User</a></li><li><a href="{{ route('angkatan.index') }}">Angkatan</a></li>
                             <li><a href="{{ route('master_mata_kuliahs.index') }}">Mata Kuliah</a></li> 
-                            <li><a href="{{ route('master_blocks.index') }}">Blok</a></li> 
-                            <li><a href="{{ route('master_otoritas.index') }}">Otoritas</a></li>
+                            <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>   
+                            <li><a href="{{ route('materi.index') }}">Materi</a></li>  
+                            <li><a href="{{ route('modul.index') }}">Modul</a></li>  
+                            <li><a href="{{ route('kelompok_mahasiswa.index') }}">Kelompok Mahasiswa</a></li>  
                           </ul>
                         </li>
-                    @endrole   
+                        <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                   Setting <span class="caret"></span>
+                                </a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">                           
+                            <li><a href="{{ route('settingwaktu.index') }}">Setting Waktu</a></li>             
+                            <li><a href="{{ route('setting_slide.index') }}">Setting Slide</a></li>
+                          </ul>
+                        </li>
+
+                        <!-- DROPDOWN LAPORAN -->
+                        <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                   Laporan <span class="caret"></span>
+                                </a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">                           
+                            <li><a href="{{ route('laporan_rekap_presensi_dosen.index') }}">Laporan Presensi Dosen</a></li>    
+                            <li><a href="{{ route('laporan_presensi_mahasiswa.index') }}">Laporan Presensi Mahasiswa</a></li>             
+                          </ul>
+                        </li>
+                        <!-- DROPDOWN LAPORAN -->
+                    @endrole  
+                    @role('perekap')
+                        <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li>  
+
+                             <!-- DROPDOWN LAPORAN -->
+                        <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                   Laporan <span class="caret"></span>
+                                </a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">                           
+                            <li><a href="{{ route('laporan_rekap_presensi_dosen.index') }}">Laporan Presensi Dosen</a></li>    
+                            <li><a href="{{ route('laporan_presensi_mahasiswa.index') }}">Laporan Presensi Mahasiswa</a></li>             
+                          </ul>
+                        </li>
+                        <!-- DROPDOWN LAPORAN -->
+
+                    @endrole
+
+
+                    @role('pj_dosen')  
+                     <li><a href="{{ route('master_mata_kuliahs.index') }}">Mata Kuliah</a></li> 
+                      <li><a href="{{ route('materi.index') }}">Materi</a></li>  
+                    <li><a href="{{ route('kelompok_mahasiswa.index') }}">Kelompok Mahasiswa</a></li>  
+
+                    @endrole
+                    @role('pimpinan')  
+                        <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li> 
+                        <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>      
+                    @endrole 
+
+                    @role('dosen')  
+                        <li><a href="{{ route('penjadwalans.index') }}">Penjadwalan</a></li> 
+                        <li><a href="{{ route('master_blocks.index') }}">Blok</a></li>      
+                    @endrole 
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -96,14 +161,23 @@
     </div>
 
     <!-- Scripts -->
+    <script src="{{ asset('js/modernizr.js') }}"></script>
      <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
 <script src="{{ asset('js/tether.min.js') }}"></script>
-<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="{{ asset('js/jquery.dataTables.js') }}"></script>
 <script src="{{ asset('js/dataTables.bootstrap.js') }}"></script>
 <script src="{{ asset('js/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap-clockpicker.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap-clockpicker.js') }}"></script>
 <script src="{{ asset('js/selectize.min.js') }}"></script> 
-<script src="{{ asset('js/custom.js') }}"></script>
+<script src="{{ asset('js/custom-v.1.0.1.js') }}"></script>
+<script src="{{ asset('js/main.js') }}"></script> 
+<script type="text/javascript">
+    
+       // $.fn.dataTable.ext.errMode = 'throw';
+</script>
+
 @yield('scripts')
 </body>
 </html>

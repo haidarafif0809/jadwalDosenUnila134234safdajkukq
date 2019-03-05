@@ -26,3 +26,13 @@
 	</div>
 @endsection
 	
+@section('scripts')
+<script type="text/javascript">
+	$('.js-selectize-multi-edit').selectize({
+	  sortField: 'text',
+	  delimiter: ',',
+	  maxItems: null,
+	  items: [<?php echo  $data_pj_dosen; ?>]
+	});
+</script>
+@endsection

@@ -1,0 +1,1 @@
+<a href="{{ asset('img/'.$slide->slide)}}" target="blank"><img src="{{ asset('img/'.$slide->slide)}}"  style="width:100px" ></a>

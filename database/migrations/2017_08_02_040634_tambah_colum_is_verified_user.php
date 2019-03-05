@@ -15,7 +15,7 @@ class TambahColumIsVerifiedUser extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-        $table->integer('status')->nullable();
+        $table->integer('status')->nullable()->default(0);
         });
     }
 
